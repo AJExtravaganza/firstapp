@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:firstapp/teasessions.dart' as teasessions;
 import 'package:firstapp/climate.dart' as climate;
 import 'package:flutter/material.dart';
 
@@ -84,8 +85,7 @@ class ViewSessionsRoute extends PageRoute {
   @override
   Widget buildPage(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation) {
-    // TODO: implement buildPage
-    return getStubContent('SESSIONS');
+    return teasessions.SessionsView();
   }
 
   @override
