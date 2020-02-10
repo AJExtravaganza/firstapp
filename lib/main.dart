@@ -13,25 +13,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'TeaVault',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('TeaVault'),
-        ),
-        body: Center(
-          child: Column(
-            children: <Widget>[
-              SessionsHomeMenuItem(),
-              StashHomeMenuItem(),
-              ClimateHomeMenuItem(),
-            ],
-          ),
-        ),
-      ),
+      home: HomeView(),
     );
   }
 }
 
-Scaffold getStubContent([String textContent='STUBCONTENT']) {
+Scaffold getStubContent([String textContent = 'STUBCONTENT']) {
   return Scaffold(
     appBar: AppBar(
       title: Text('${textContent}APPBARTITLE'),
@@ -40,136 +27,71 @@ Scaffold getStubContent([String textContent='STUBCONTENT']) {
   );
 }
 
-abstract class HomeMenuButton extends StatelessWidget {
-  final String labelText = null;
+class HomeView extends StatefulWidget {
+  @override
+  _HomeViewState createState() => _HomeViewState();
+}
 
-  PageRoute getNavigationTarget();
+class _HomeViewState extends State<HomeView>
+    with SingleTickerProviderStateMixin {
+
+  static final String sessionTabLabel = 'Session';
+  static final String stashTabLabel = 'Stash';
+  static final String climateTabLabel = 'Climate';
+
+  final List<Tab> homeTabs = <Tab>[
+    Tab(
+      text: sessionTabLabel,
+    ),
+    Tab(
+      text: stashTabLabel,
+    ),
+    Tab(
+      text: climateTabLabel,
+    )
+  ];
+
+  TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: homeTabs.length, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return RaisedButton(
-      child: Text(labelText),
-      onPressed: () {
-        Navigator.push(context, getNavigationTarget());
-      },
+    return DefaultTabController(
+      length: homeTabs.length,
+      child: Scaffold(
+        appBar: AppBar(
+//          title: Text('TeaVault v0.1'),
+          title: TabBar(
+            controller: _tabController,
+            tabs: homeTabs,
+          ),
+        ),
+        body: TabBarView(
+            controller: _tabController,
+            children: homeTabs.map((Tab tab) {
+              if (tab.text == sessionTabLabel) {
+                return getStubContent('SESSION');
+              } else if (tab.text == stashTabLabel){
+                return getStubContent('STASH');
+              } else if (tab.text == climateTabLabel) {
+                return climate.DateTimeComboLinePointChart.withSampleData();
+              } else {
+                return getStubContent('ERROR: INVALID TAB ${tab.text} SPECIFIED');
+              }
+
+            }).toList()),
+      ),
     );
   }
 }
-
-class ViewSessionsHomeMenuButton extends HomeMenuButton {
-  final String labelText = 'Sessions';
-
-  @override
-  PageRoute getNavigationTarget() => ViewSessionsRoute();
-}
-
-class ViewStashHomeMenuButton extends HomeMenuButton {
-  final String labelText = 'Stash';
-
-  getNavigationTarget() => ViewStashRoute();
-}
-
-class ViewClimateHomeMenuButton extends HomeMenuButton {
-  final String labelText = 'Climate';
-
-  PageRoute getNavigationTarget() => ViewClimateRoute();
-}
-
-class ViewSessionsRoute extends PageRoute {
-  @override
-  Color get barrierColor => null;
-
-  @override
-  String get barrierLabel => null;
-
-  @override
-  Widget buildPage(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation) {
-    return teasessions.SessionsView();
-  }
-
-  @override
-  bool get maintainState => false;
-
-  @override
-  Duration get transitionDuration => Duration(milliseconds: 0);
-}
-
-class ViewStashRoute extends PageRoute {
-  @override
-  Color get barrierColor => null;
-
-  @override
-  String get barrierLabel => null;
-
-  @override
-  Widget buildPage(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation) {
-    // TODO: implement buildPage
-    return getStubContent('STASH');
-  }
-
-  @override
-  bool get maintainState => false;
-
-  @override
-  Duration get transitionDuration => Duration(milliseconds: 0);
-}
-
-class ViewClimateRoute extends PageRoute {
-  @override
-  Color get barrierColor => null;
-
-  @override
-  String get barrierLabel => null;
-
-  @override
-  Widget buildPage(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Climate Control Chart')),
-      body: Center(child: climate.DateTimeComboLinePointChart.withSampleData(),),
-
-    );
-  }
-
-  @override
-  bool get maintainState => false;
-
-  @override
-  Duration get transitionDuration => Duration(milliseconds: 0);
-}
-
-class StashHomeMenuItem extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        ViewStashHomeMenuButton(),
-        Text('AddToStashButtonPlaceholder')
-      ],
-    );
-  }
-}
-
-class SessionsHomeMenuItem extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        ViewSessionsHomeMenuButton(),
-        Text('NewSessionButtonPlaceholder')
-      ],
-    );
-  }
-}
-
-class ClimateHomeMenuItem extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[ViewClimateHomeMenuButton()],
-    );
-  }
-}
-
