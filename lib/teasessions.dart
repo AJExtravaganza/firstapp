@@ -19,12 +19,12 @@ class Timer extends StatefulWidget {
 
 class _Timer extends State<Timer> {
 
-  Duration _timerDuration;
+  Duration timerDuration;
 
   @override
   void initState() {
     super.initState();
-    _timerDuration = Duration(seconds: 10);
+    timerDuration = Duration(seconds: 10);
   }
 
   @override
@@ -32,20 +32,19 @@ class _Timer extends State<Timer> {
     return Row(
       children: <Widget>[
         TimerIconButton(),
-//        TimerDisplay()
+        TimerDisplay()
       ],
     );
   }
 }
 
-//class TimerDisplay extends AnimatedWidget{
-//  @override
-//  Widget build(BuildContext context) {
-//    // TODO: implement build
-//    return null;
-//  }
-//
-//}
+class TimerDisplay extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    return Text(context.findAncestorStateOfType<_Timer>().timerDuration.toString());
+  }
+
+}
 
 class TimerIconButton extends StatelessWidget {
   @override
