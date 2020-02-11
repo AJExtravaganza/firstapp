@@ -4,6 +4,7 @@
 
 import 'package:firstapp/teasessions.dart' as teasessions;
 import 'package:firstapp/climate.dart' as climate;
+import 'package:firstapp/teasessions.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -81,7 +82,7 @@ class _HomeViewState extends State<HomeView>
             controller: _tabController,
             children: homeTabs.map((Tab tab) {
               if (tab.text == sessionTabLabel) {
-                return getStubContent('SESSION');
+                return SessionsView();
               } else if (tab.text == stashTabLabel){
                 return getStubContent('STASH');
               } else if (tab.text == climateTabLabel) {
