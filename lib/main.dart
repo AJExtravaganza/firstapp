@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:firstapp/teasessions.dart' as teasessions;
+import 'package:firstapp/teasessions/teasessions.dart' as teasessions;
 import 'package:firstapp/climate.dart' as climate;
-import 'package:firstapp/teasessions.dart';
+import 'package:firstapp/teasessions/teasessions.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -12,7 +12,7 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return  MaterialApp(
       title: 'TeaVault',
       home: HomeView(),
     );
