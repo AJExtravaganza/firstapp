@@ -20,9 +20,18 @@ class _SessionsView extends State<SessionsView> {
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          BrewProfileInfoDisplay(),
-          SteepCounter(),
-          SteepTimer(),
+          Expanded(
+            flex: 2,
+            child: BrewProfileInfoDisplay(),
+          ),
+          Expanded(
+            flex: 3,
+            child: SteepCounter(),
+          ),
+          Expanded(
+            flex: 4,
+            child: SteepTimer(),
+          )
         ]);
   }
 }
