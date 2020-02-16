@@ -6,9 +6,13 @@ class Tea {
   Production production;
 
   String asString() =>
-      "${this.year} ${this.producer.shorthandName} ${this.production}";
+      "${this.year} ${this.producer.shorthandName} ${this.production.name}";
 
   Tea(this.year, this.producer, this.production);
+
+  bool operator == (dynamic other) {
+    return this.year == other.year && this.producer == other.producer && this.production.name == other.production.name;
+  }
 }
 
 class Producer {
@@ -19,6 +23,10 @@ class Producer {
     if (this.shorthandName == null) {
       this.shorthandName = this.name;
     }
+  }
+
+  bool operator == (dynamic other) {
+    return this.name == other.name;
   }
 }
 
@@ -110,4 +118,31 @@ List<BrewingVessel> getSampleVesselList() {
       VesselForm.shuiping
     )
   ];
+}
+
+class BrewProfile {
+  Tea tea;
+  int nominalRatio; // expressed as integer n for ratio n:1 water:leaf
+  int brewTemperature; // expressed in degrees Celsius
+  List<int> steepTimings;
+  int steeps;
+
+  BrewProfile(this.tea, this.nominalRatio, this.brewTemperature, this.steepTimings) {
+    this.steeps = steepTimings.length;
+  }
+
+  double getDose(BrewingVessel vessel) {
+    return vessel.volumeMilliliters / this.nominalRatio;
+  }
+}
+
+List<BrewProfile> getSampleBrewProfileList() {
+  List<BrewProfile> brewProfiles = [];
+  List<int> sampleTimingList = [5,8,10,20,30,60];
+
+  for (final tea in getSampleTeaList()) {
+    brewProfiles.add(BrewProfile(tea, 15, 100, sampleTimingList));
+  }
+
+  return brewProfiles;
 }
