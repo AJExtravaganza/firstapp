@@ -12,11 +12,13 @@ class SteepTimer extends StatefulWidget {
 
 class _SteepTimer extends State<SteepTimer> {
   int _currentSteep;
+  List<int> _brewProfileSteepTimings;
 
   @override
   void initState() {
     super.initState();
     _currentSteep = 0;
+    _brewProfileSteepTimings = getSampleBrewProfileList()[0].steepTimings;
     _resetTimer();
   }
 
@@ -43,7 +45,7 @@ class _SteepTimer extends State<SteepTimer> {
   }
 
   incrementSteep() {
-    int newCurrentSteep = min(10, _currentSteep + 1);
+    int newCurrentSteep = min(_brewProfileSteepTimings.length - 1, _currentSteep + 1);
     setState(() {
       if (_timer != null) {
         _timer.cancel();
@@ -55,7 +57,7 @@ class _SteepTimer extends State<SteepTimer> {
 
   _resetTimer() {
     setState(() {
-      _timeRemaining = Duration(seconds: getSampleBrewProfileList()[0].steepTimings[_currentSteep]);
+      _timeRemaining = Duration(seconds: _brewProfileSteepTimings[_currentSteep]);
     });
   }
 
