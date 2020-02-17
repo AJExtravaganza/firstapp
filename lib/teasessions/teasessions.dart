@@ -33,7 +33,7 @@ class _SessionsView extends State<SessionsView> {
             child: BrewProfileInfo(),
           ),
           Expanded(
-            flex: 3,
+            flex: 4,
             child: Row(
               children: <Widget>[
                 Expanded(
@@ -44,7 +44,7 @@ class _SessionsView extends State<SessionsView> {
             ),
           ),
           Expanded(
-            flex: 4,
+            flex: 3,
             child: SteepTimer(),
           )
         ]);

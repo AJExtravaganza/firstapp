@@ -9,18 +9,19 @@ class SteepTimer extends StatefulWidget {
 
 class _SteepTimer extends State<SteepTimer> {
   Duration timerDuration;
-  int _currentSteep = 0;
+  int _currentSteep;
 
   @override
   void initState() {
     super.initState();
+    _currentSteep = 0;
     timerDuration = Duration(seconds: 10);
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: <Widget>[TimerDisplay(), SteepTimerControls()],
+      children: <Widget>[SteepCountRow(), TimerDisplay(), SteepTimerControls()],
     );
   }
 
@@ -34,7 +35,7 @@ class _SteepTimer extends State<SteepTimer> {
   }
 
   incrementSteep() {
-    int newCurrentSteep = max(1, _currentSteep - 1);
+    int newCurrentSteep = min(10, _currentSteep + 1);
     setState(() {
       _currentSteep = newCurrentSteep;
     });
@@ -42,6 +43,34 @@ class _SteepTimer extends State<SteepTimer> {
 
   startBrewTimer() {
     // todo: Implement
+  }
+}
+
+class SteepCountRow extends StatelessWidget {
+  String getCurrentSteepText(BuildContext context) {
+    _SteepTimer parentTimerState =
+        context.findAncestorStateOfType<_SteepTimer>();
+
+    if (parentTimerState.getCurrentSteep() == 0) {
+      return 'Rinse';
+    } else {
+      return 'Steep ${parentTimerState.getCurrentSteep()}';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Expanded(
+          flex: 10,
+          child: Text(
+            getCurrentSteepText(context),
+            textAlign: TextAlign.center,
+          ),
+        )
+      ],
+    );
   }
 }
 
