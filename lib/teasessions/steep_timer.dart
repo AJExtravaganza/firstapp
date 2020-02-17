@@ -1,5 +1,6 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class SteepTimer extends StatefulWidget {
   @override
@@ -8,6 +9,7 @@ class SteepTimer extends StatefulWidget {
 
 class _SteepTimer extends State<SteepTimer> {
   Duration timerDuration;
+  int _currentSteep = 0;
 
   @override
   void initState() {
@@ -17,64 +19,29 @@ class _SteepTimer extends State<SteepTimer> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        TimerIconButton(),
-        Text('SteepTimerStub')
-//        TimerDisplay()
-      ],
+    return Column(
+      children: <Widget>[TimerDisplay(), SteepTimerControls()],
     );
   }
 
-//  showPopup(BuildContext context, Widget widget, String title,
-//      {BuildContext popupContext}) {
-//    Navigator.push(
-//      context,
-//      PopupLayout(
-//        top: 30,
-//        left: 30,
-//        right: 30,
-//        bottom: 50,
-//        child: PopupContent(
-//          content: Scaffold(
-//            appBar: AppBar(
-//              title: Text(title),
-//              leading: new Builder(builder: (context) {
-//                return IconButton(
-//                  icon: Icon(Icons.arrow_back),
-//                  onPressed: () {
-//                    try {
-//                      Navigator.pop(context); //close the popup
-//                    } catch (e) {}
-//                  },
-//                );
-//              }),
-//              brightness: Brightness.light,
-//            ),
-//            resizeToAvoidBottomPadding: false,
-//            body: widget,
-//          ),
-//        ),
-//      ),
-//    );
-//  }
+  int getCurrentSteep() => _currentSteep;
 
-  showPopup(BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute<void>(
-      builder: (BuildContext context) {
-        return Scaffold(
-          appBar: AppBar(title: Text('My Page')),
-          body: Center(
-            child: FlatButton(
-              child: Text('POP'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ),
-        );
-      },
-    ));
+  decrementSteep() {
+    int newCurrentSteep = max(1, _currentSteep - 1);
+    setState(() {
+      _currentSteep = newCurrentSteep;
+    });
+  }
+
+  incrementSteep() {
+    int newCurrentSteep = max(1, _currentSteep - 1);
+    setState(() {
+      _currentSteep = newCurrentSteep;
+    });
+  }
+
+  startBrewTimer() {
+    // todo: Implement
   }
 }
 
@@ -83,10 +50,32 @@ class TimerDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     _SteepTimer parentTimerState =
         context.findAncestorStateOfType<_SteepTimer>();
-    String currentValueStr = parentTimerState.timerDuration.toString();
-    return FlatButton(
-      child: Text(currentValueStr),
-      onPressed: parentTimerState.showPopup(context),
+    String currentValueStr =
+        parentTimerState.timerDuration.toString().split('.').first.substring(2);
+    return Row(
+      children: <Widget>[
+        Expanded(
+          flex: 1,
+          child: Container(),
+        ),
+        Expanded(
+          flex: 1,
+          child: TimerIconButton(),
+        ),
+        Expanded(
+            flex: 6,
+            child: FlatButton(
+              child: Text(
+                currentValueStr,
+                style: TextStyle(fontSize: 72, fontFamily: 'RobotoMono'),
+              ),
+              onPressed: () {},
+            )),
+        Expanded(
+          flex: 2,
+          child: Container(),
+        ),
+      ],
     );
   }
 }
@@ -95,22 +84,80 @@ class TimerIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: () {
-        launchTestModal(context);
-      },
+      onPressed: () {},
       alignment: Alignment.centerLeft,
       icon: Icon(Icons.timelapse),
     );
   }
 }
 
-launchTestModal(BuildContext context) {
-  Navigator.push(
-      context,
-      MaterialPageRoute<Null>(
-        builder: (BuildContext context) {
-          return Text('something');
-        },
-        fullscreenDialog: true,
-      ));
+class SteepTimerControls extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Expanded(
+          flex: 1,
+          child: Container(),
+        ),
+        Expanded(
+          flex: 3,
+          child: PreviousSteepButton(),
+        ),
+        Expanded(
+          flex: 1,
+          child: Container(),
+        ),
+        Expanded(
+          flex: 3,
+          child: BrewButton(),
+        ),
+        Expanded(
+          flex: 1,
+          child: Container(),
+        ),
+        Expanded(
+          flex: 3,
+          child: NextSteepButton(),
+        ),
+        Expanded(
+          flex: 1,
+          child: Container(),
+        ),
+      ],
+    );
+  }
+}
+
+class PreviousSteepButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    _SteepTimer sessionState = context.findAncestorStateOfType<_SteepTimer>();
+    return RaisedButton(
+      onPressed: sessionState.decrementSteep,
+      child: Text('Previous\nSteep'),
+    );
+  }
+}
+
+class BrewButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    _SteepTimer sessionState = context.findAncestorStateOfType<_SteepTimer>();
+    return RaisedButton(
+      onPressed: sessionState.startBrewTimer,
+      child: Text('BREW'),
+    );
+  }
+}
+
+class NextSteepButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    _SteepTimer sessionState = context.findAncestorStateOfType<_SteepTimer>();
+    return RaisedButton(
+      onPressed: sessionState.incrementSteep,
+      child: Text('Next\nSteep'),
+    );
+  }
 }

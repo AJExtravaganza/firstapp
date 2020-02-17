@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:firstapp/teasessions/popup_content.dart';
+import 'package:firstapp/teasessions/popup_layout.dart';
 import 'package:firstapp/teasessions/teasessions.dart' as teasessions;
 import 'package:firstapp/climate.dart' as climate;
 import 'package:firstapp/teasessions/teasessions.dart';

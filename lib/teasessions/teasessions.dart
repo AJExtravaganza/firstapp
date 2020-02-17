@@ -1,6 +1,4 @@
 import 'package:firstapp/models.dart';
-import 'package:firstapp/teasessions/brew_profile_info.dart';
-import 'package:firstapp/teasessions/steep_counter.dart';
 import 'package:firstapp/teasessions/steep_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -11,7 +9,6 @@ class SessionsView extends StatefulWidget {
 }
 
 class _SessionsView extends State<SessionsView> {
-  int currentSteep = 0;
   Tea selectedTea = getSampleTeaList()[0];
   BrewingVessel selectedBrewingVessel = getSampleVesselList()[0];
   List<BrewProfile> brewProfiles = getSampleBrewProfileList();
@@ -37,7 +34,14 @@ class _SessionsView extends State<SessionsView> {
           ),
           Expanded(
             flex: 3,
-            child: SteepCounter(),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Container(
+                      color: Colors.grey, child: Text('EvaluationAreaStub')),
+                )
+              ],
+            ),
           ),
           Expanded(
             flex: 4,
@@ -59,10 +63,16 @@ class BrewProfileInfo extends StatelessWidget {
     } else {
       return Column(
         children: <Widget>[
-          Expanded(flex: 3, child: Container(),),
+          Expanded(
+            flex: 3,
+            child: Container(),
+          ),
           Expanded(flex: 3, child: TeaNameRow()),
           Expanded(flex: 3, child: BrewingParametersRow()),
-          Expanded(flex: 3, child: Container(),),
+          Expanded(
+            flex: 3,
+            child: Container(),
+          ),
         ],
       );
     }
@@ -104,7 +114,6 @@ class BrewingParametersRow extends StatelessWidget {
   Widget build(BuildContext context) {
     _SessionsView sessionState =
         context.findAncestorStateOfType<_SessionsView>();
-    int currentSteep = sessionState.currentSteep;
     BrewingVessel brewingVessel = sessionState.selectedBrewingVessel;
     BrewProfile brewProfile = context
         .findAncestorStateOfType<_SessionsView>()
