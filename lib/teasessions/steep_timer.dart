@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:firstapp/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
@@ -16,7 +17,7 @@ class _SteepTimer extends State<SteepTimer> {
   void initState() {
     super.initState();
     _currentSteep = 0;
-    _timeRemaining = Duration(seconds: 5);
+    _resetTimer();
   }
 
   @override
@@ -36,8 +37,8 @@ class _SteepTimer extends State<SteepTimer> {
           _timer.cancel();
         }
         _currentSteep = newCurrentSteep;
-        _timeRemaining = Duration(seconds: 5);
       });
+      _resetTimer();
     }
   }
 
@@ -48,7 +49,13 @@ class _SteepTimer extends State<SteepTimer> {
         _timer.cancel();
       }
       _currentSteep = newCurrentSteep;
-      _timeRemaining = Duration(seconds: 5);
+    });
+    _resetTimer();
+  }
+
+  _resetTimer() {
+    setState(() {
+      _timeRemaining = Duration(seconds: getSampleBrewProfileList()[0].steepTimings[_currentSteep]);
     });
   }
 

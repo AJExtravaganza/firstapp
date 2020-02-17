@@ -138,7 +138,7 @@ class BrewProfile {
 
 List<BrewProfile> getSampleBrewProfileList() {
   List<BrewProfile> brewProfiles = [];
-  List<int> sampleTimingList = [5,8,10,20,30,60];
+  List<int> sampleTimingList = [10,5,8,10,20,30,60];
 
   for (final tea in getSampleTeaList()) {
     brewProfiles.add(BrewProfile(tea, 15, 100, sampleTimingList));
