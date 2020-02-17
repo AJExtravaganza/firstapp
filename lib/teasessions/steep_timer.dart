@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -8,14 +9,13 @@ class SteepTimer extends StatefulWidget {
 }
 
 class _SteepTimer extends State<SteepTimer> {
-  Duration timerDuration;
   int _currentSteep;
 
   @override
   void initState() {
     super.initState();
     _currentSteep = 0;
-    timerDuration = Duration(seconds: 10);
+    _timeRemaining = Duration(seconds: 5);
   }
 
   @override
@@ -28,21 +28,46 @@ class _SteepTimer extends State<SteepTimer> {
   int getCurrentSteep() => _currentSteep;
 
   decrementSteep() {
-    int newCurrentSteep = max(1, _currentSteep - 1);
-    setState(() {
-      _currentSteep = newCurrentSteep;
-    });
+    if (! (_currentSteep == 0)) {
+      int newCurrentSteep = max(1, _currentSteep - 1);
+      setState(() {
+        if (_timer != null) {
+          _timer.cancel();
+        }
+        _currentSteep = newCurrentSteep;
+        _timeRemaining = Duration(seconds: 5);
+      });
+    }
   }
 
   incrementSteep() {
     int newCurrentSteep = min(10, _currentSteep + 1);
     setState(() {
+      if (_timer != null) {
+        _timer.cancel();
+      }
       _currentSteep = newCurrentSteep;
+      _timeRemaining = Duration(seconds: 5);
     });
   }
 
-  startBrewTimer() {
-    // todo: Implement
+  Timer _timer;
+  Duration _timeRemaining;
+
+  void startBrewTimer() {
+    const oneSecond = Duration(seconds: 1);
+    _timer = new Timer.periodic(oneSecond, (Timer timer) {
+      if (_timeRemaining > Duration(seconds: 0)) {
+        setState(() {
+          _timeRemaining -= Duration(seconds: 1);
+        });
+      }
+
+      if (!(_timeRemaining > Duration(seconds: 0))){
+        timer.cancel();
+        incrementSteep();
+      }
+    });
   }
 }
 
@@ -79,8 +104,11 @@ class TimerDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     _SteepTimer parentTimerState =
         context.findAncestorStateOfType<_SteepTimer>();
-    String currentValueStr =
-        parentTimerState.timerDuration.toString().split('.').first.substring(2);
+    String currentValueStr = parentTimerState._timeRemaining
+        .toString()
+        .split('.')
+        .first
+        .substring(2);
     return Row(
       children: <Widget>[
         Expanded(
