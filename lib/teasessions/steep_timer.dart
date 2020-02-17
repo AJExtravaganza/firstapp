@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 
 class SteepTimer extends StatefulWidget {
   @override
@@ -65,6 +66,7 @@ class _SteepTimer extends State<SteepTimer> {
 
       if (!(_timeRemaining > Duration(seconds: 0))){
         timer.cancel();
+        FlutterRingtonePlayer.playNotification();
         incrementSteep();
       }
     });
