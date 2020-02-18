@@ -45,9 +45,20 @@ class Terroir {
 List<Tea> getSampleTeaList() {
   return [
     Tea(2007, Producer('Xizihao', 'XZH'), Production("Dingji Gushu")),
-    Tea(2003, Producer('Menghai Dayi Tea Factory', 'Dayi'),
-        Production("Purple Mark")),
-    Tea(2003, Producer('Wisteria'), Production("Dingji Gushu")),
+    Tea(2005, Producer('Menghai Dayi Tea Factory', 'Dayi'),
+        Production("502-7542")),
+    Tea(2005, Producer('Menghai Dayi Tea Factory', 'Dayi'),
+        Production("504-8542")),
+    Tea(2009, Producer('Menghai Dayi Tea Factory', 'Dayi'),
+        Production("901-7542")),
+    Tea(2007, Producer('Wisteria'), Production("Honyin (Red Mark)")),
+    Tea(2007, Producer('Wisteria'), Production("Lanyin (Blue Mark)")),
+    Tea(2003, Producer('Wisteria'), Production("Ziyin Youle (Purple Mark)")),
+    Tea(2003, Producer('Wisteria'), Production("Ziyin Nannuo (Blue Mark)")),
+    Tea(2001, Producer('Xiaguan'), Production("8653 Tiebing")),
+    Tea(2013, Producer('Xiaguan'), Production("Love Forever (Paper Tong)")),
+    Tea(2004, Producer('Xiaguan'), Production("Jinsi")),
+
   ];
 }
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:firstapp/stash/stash.dart';
 import 'package:firstapp/teasessions/popup_content.dart';
 import 'package:firstapp/teasessions/popup_layout.dart';
 import 'package:firstapp/teasessions/teasessions.dart' as teasessions;
@@ -86,7 +87,7 @@ class _HomeViewState extends State<HomeView>
               if (tab.text == sessionTabLabel) {
                 return SessionsView();
               } else if (tab.text == stashTabLabel){
-                return getStubContent('STASH');
+                return StashView();
               } else if (tab.text == climateTabLabel) {
                 return climate.DateTimeComboLinePointChart.withSampleData();
               } else {
