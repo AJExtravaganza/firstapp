@@ -1,4 +1,4 @@
-import 'package:firstapp/models/stash.dart';
+import 'package:firstapp/models/tea_collection.dart';
 import 'package:firstapp/models/tea.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 class StashView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<StashModel>(
+    return Consumer<TeaCollectionModel>(
       builder: (context, stash, child) {
         List<Tea> stashContents = stash.items;
         return ListView.builder(

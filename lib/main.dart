@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:firstapp/models/stash.dart';
+import 'package:firstapp/models/active_tea_session.dart';
+import 'package:firstapp/models/brewing_vessel.dart';
+import 'package:firstapp/models/tea.dart';
+import 'package:firstapp/models/tea_collection.dart';
+import 'package:firstapp/models/teapot_collection.dart';
 import 'package:firstapp/stash/stash.dart';
 import 'package:firstapp/climate.dart' as climate;
 import 'package:firstapp/teasessions/teasessions.dart';
@@ -10,9 +14,20 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  List<Tea> userTeaCollection = getSampleTeaList();
+  Tea initiallySelectedTea = userTeaCollection.first;
+
+  List<BrewingVessel> userTeapotCollection = getSampleVesselList();
+  BrewingVessel initiallySelectedBrewingVessel = userTeapotCollection.first;
+
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider<StashModel>(create: (_) => StashModel()),
+      ChangeNotifierProvider<TeaCollectionModel>(
+          create: (_) => TeaCollectionModel(userTeaCollection)),
+      ChangeNotifierProvider<TeapotCollectionModel>(
+          create: (_) => TeapotCollectionModel(userTeapotCollection)),
+      ChangeNotifierProvider<ActiveTeaSessionModel>(
+          create: (_) => ActiveTeaSessionModel()),
     ],
     child: MyApp(),
   ));

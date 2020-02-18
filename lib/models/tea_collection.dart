@@ -3,8 +3,8 @@ import 'dart:collection';
 import 'package:firstapp/models/tea.dart';
 import 'package:flutter/cupertino.dart';
 
-class StashModel extends ChangeNotifier {
-  final List<Tea> _items = getSampleTeaList();
+class TeaCollectionModel extends ChangeNotifier {
+  final List<Tea> _items;
 
   UnmodifiableListView<Tea> get items => UnmodifiableListView(_items);
 
@@ -15,4 +15,6 @@ class StashModel extends ChangeNotifier {
     _items.addAll(getSampleTeaList());
     notifyListeners();
   }
+
+  TeaCollectionModel(this._items);
 }

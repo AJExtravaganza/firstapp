@@ -1,9 +1,11 @@
+import 'package:firstapp/models/active_tea_session.dart';
 import 'package:firstapp/models/brew_profile.dart';
 import 'package:firstapp/models/brewing_vessel.dart';
 import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/teasessions/steep_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
 class SessionsView extends StatefulWidget {
   @override
@@ -11,20 +13,6 @@ class SessionsView extends StatefulWidget {
 }
 
 class _SessionsView extends State<SessionsView> {
-  Tea selectedTea = getSampleTeaList()[0];
-  BrewingVessel selectedBrewingVessel = getSampleVesselList()[0];
-  List<BrewProfile> brewProfiles = getSampleBrewProfileList();
-
-  BrewProfile getCurrentBrewProfile() {
-    for (final brewProfile in brewProfiles) {
-      if (brewProfile.tea == selectedTea) {
-        return brewProfile;
-      }
-    }
-
-    throw Exception('No BrewProfile exists for tea ${selectedTea.asString()}');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -56,8 +44,7 @@ class _SessionsView extends State<SessionsView> {
 class BrewProfileInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Tea currentTea =
-        context.findAncestorStateOfType<_SessionsView>().selectedTea;
+    Tea currentTea = Provider.of<ActiveTeaSessionModel>(context).tea;
     if (currentTea == null) {
       return Center(
         child: SelectTeaButton(),
@@ -94,8 +81,7 @@ class SelectTeaButton extends StatelessWidget {
 class TeaNameRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Tea currentTea =
-        context.findAncestorStateOfType<_SessionsView>().selectedTea;
+    Tea currentTea = Provider.of<ActiveTeaSessionModel>(context).tea;
 
     return Row(
       children: <Widget>[
@@ -114,12 +100,8 @@ class TeaNameRow extends StatelessWidget {
 class BrewingParametersRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    _SessionsView sessionState =
-        context.findAncestorStateOfType<_SessionsView>();
-    BrewingVessel brewingVessel = sessionState.selectedBrewingVessel;
-    BrewProfile brewProfile = context
-        .findAncestorStateOfType<_SessionsView>()
-        .getCurrentBrewProfile();
+    BrewingVessel currentBrewingVessel = Provider.of<ActiveTeaSessionModel>(context).brewingVessel;
+    BrewProfile currentBrewProfile = Provider.of<ActiveTeaSessionModel>(context).brewProfile;
     return Row(children: <Widget>[
       Expanded(
         flex: 2,
@@ -128,21 +110,21 @@ class BrewingParametersRow extends StatelessWidget {
       Expanded(
         flex: 2,
         child: BrewingParameterRowElement(Icons.blur_circular,
-            '${brewProfile.getDose(brewingVessel).toStringAsFixed(1)}g'),
+            '${currentBrewProfile.getDose(currentBrewingVessel).toStringAsFixed(1)}g'),
       ),
       Expanded(
           flex: 2,
           child: BrewingParameterRowElement(
-              Icons.blur_off, '1:${brewProfile.nominalRatio}')),
+              Icons.blur_off, '1:${currentBrewProfile.nominalRatio}')),
       Expanded(
         flex: 2,
         child: BrewingParameterRowElement(
-            Icons.network_wifi, '${brewingVessel.volumeMilliliters}ml'),
+            Icons.network_wifi, '${currentBrewingVessel.volumeMilliliters}ml'),
       ),
       Expanded(
         flex: 2,
         child: BrewingParameterRowElement(
-            Icons.ac_unit, '${brewProfile.brewTemperature}°C'),
+            Icons.ac_unit, '${currentBrewProfile.brewTemperature}°C'),
       ),
       Expanded(
         flex: 2,
