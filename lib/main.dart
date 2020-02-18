@@ -2,20 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:firstapp/models/stash.dart';
 import 'package:firstapp/stash/stash.dart';
-import 'package:firstapp/teasessions/popup_content.dart';
-import 'package:firstapp/teasessions/popup_layout.dart';
-import 'package:firstapp/teasessions/teasessions.dart' as teasessions;
 import 'package:firstapp/climate.dart' as climate;
 import 'package:firstapp/teasessions/teasessions.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(ChangeNotifierProvider(
+    create: (context) => StashModel(),
+    child: MyApp(),
+  ));
+}
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
+    return MaterialApp(
       title: 'TeaVault',
       home: HomeView(),
     );
@@ -38,7 +42,6 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView>
     with SingleTickerProviderStateMixin {
-
   static final String sessionTabLabel = 'Session';
   static final String stashTabLabel = 'Stash';
   static final String climateTabLabel = 'Climate';
@@ -86,14 +89,14 @@ class _HomeViewState extends State<HomeView>
             children: homeTabs.map((Tab tab) {
               if (tab.text == sessionTabLabel) {
                 return SessionsView();
-              } else if (tab.text == stashTabLabel){
+              } else if (tab.text == stashTabLabel) {
                 return StashView();
               } else if (tab.text == climateTabLabel) {
                 return climate.DateTimeComboLinePointChart.withSampleData();
               } else {
-                return getStubContent('ERROR: INVALID TAB ${tab.text} SPECIFIED');
+                return getStubContent(
+                    'ERROR: INVALID TAB ${tab.text} SPECIFIED');
               }
-
             }).toList()),
       ),
     );
