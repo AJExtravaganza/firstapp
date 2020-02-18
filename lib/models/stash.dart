@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:firstapp/models.dart';
+import 'package:firstapp/models/tea.dart';
 import 'package:flutter/cupertino.dart';
 
 class StashModel extends ChangeNotifier {

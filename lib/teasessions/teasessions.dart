@@ -1,4 +1,6 @@
-import 'package:firstapp/models.dart';
+import 'package:firstapp/models/brew_profile.dart';
+import 'package:firstapp/models/brewing_vessel.dart';
+import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/teasessions/steep_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
