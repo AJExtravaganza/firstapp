@@ -27,6 +27,7 @@ dependencies:
   charts_flutter: ^0.8.1
   flutter_ringtone_player: ^2.0.0
   provider: ^4.0.4
+  font_awesome_flutter: ^8.7.0
 
 dev_dependencies:
   flutter_test:
