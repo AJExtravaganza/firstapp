@@ -20,6 +20,14 @@ class ActiveTeaSessionModel extends ChangeNotifier {
     }
   }
 
+  decrementSteep() {
+    currentSteep -= 1;
+  }
+
+  incrementSteep() {
+    currentSteep += 1;
+  }
+
   ActiveTeaSessionModel() {
 //    FAKE INITIALIZERS - REMOVE ONCE TEA/VESSEL/PROFILE SELECTION IS IMPLEMENTED
   tea = getSampleTeaList().first;

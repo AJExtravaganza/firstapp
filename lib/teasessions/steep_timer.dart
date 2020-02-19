@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:firstapp/models/brew_profile.dart';
+import 'package:firstapp/models/active_tea_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
+import 'package:provider/provider.dart';
 
 class SteepTimer extends StatefulWidget {
   @override
@@ -11,53 +12,60 @@ class SteepTimer extends StatefulWidget {
 }
 
 class _SteepTimer extends State<SteepTimer> {
-  int _currentSteep;
-  List<int> _brewProfileSteepTimings;
-
   @override
   void initState() {
     super.initState();
-    _currentSteep = 0;
-    _brewProfileSteepTimings = getSampleBrewProfileList()[0].steepTimings;
-    _resetTimer();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_timeRemaining == null) {
+      _resetTimer();
+    }
     return Column(
       children: <Widget>[SteepCountRow(), TimerDisplay(), SteepTimerControls()],
     );
   }
 
-  int getCurrentSteep() => _currentSteep;
 
   decrementSteep() {
-    if (! (_currentSteep == 0)) {
-      int newCurrentSteep = max(1, _currentSteep - 1);
-      setState(() {
-        if (_timer != null) {
-          _timer.cancel();
-        }
-        _currentSteep = newCurrentSteep;
-      });
+    try {
+      Provider.of<ActiveTeaSessionModel>(context, listen: false).decrementSteep();
+
+      if (_timer != null) {
+        _timer.cancel();
+      }
+
       _resetTimer();
+    } catch (err) {
+      //display a message
+      print(err.toString());
     }
   }
 
   incrementSteep() {
-    int newCurrentSteep = min(_brewProfileSteepTimings.length - 1, _currentSteep + 1);
-    setState(() {
+    try {
+      Provider.of<ActiveTeaSessionModel>(context, listen: false).incrementSteep();
+
       if (_timer != null) {
         _timer.cancel();
       }
-      _currentSteep = newCurrentSteep;
-    });
-    _resetTimer();
+
+      _resetTimer();
+    } catch (err) {
+      //display a message
+      print(err.toString());
+    }
   }
 
   _resetTimer() {
+    ActiveTeaSessionModel activeTeaSession =
+        Provider.of<ActiveTeaSessionModel>(context, listen: false);
+
     setState(() {
-      _timeRemaining = Duration(seconds: _brewProfileSteepTimings[_currentSteep]);
+      _timeRemaining = Duration(
+          seconds: activeTeaSession
+              .brewProfile.steepTimings[activeTeaSession.currentSteep]);
     });
   }
 
@@ -73,7 +81,7 @@ class _SteepTimer extends State<SteepTimer> {
         });
       }
 
-      if (!(_timeRemaining > Duration(seconds: 0))){
+      if (!(_timeRemaining > Duration(seconds: 0))) {
         timer.cancel();
         FlutterRingtonePlayer.playNotification();
         incrementSteep();
@@ -84,13 +92,13 @@ class _SteepTimer extends State<SteepTimer> {
 
 class SteepCountRow extends StatelessWidget {
   String getCurrentSteepText(BuildContext context) {
-    _SteepTimer parentTimerState =
-        context.findAncestorStateOfType<_SteepTimer>();
+    ActiveTeaSessionModel activeTeaSession =
+        Provider.of<ActiveTeaSessionModel>(context);
 
-    if (parentTimerState.getCurrentSteep() == 0) {
+    if (activeTeaSession.currentSteep == 0) {
       return 'Rinse';
     } else {
-      return 'Steep ${parentTimerState.getCurrentSteep()}';
+      return 'Steep ${activeTeaSession.currentSteep}';
     }
   }
 
