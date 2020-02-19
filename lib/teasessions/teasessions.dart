@@ -162,7 +162,7 @@ class BrewingParameterRowElement extends StatelessWidget {
       children: <Widget>[
         FaIcon(this.icon),
         Text(
-          this.valueText,
+          ' ' + this.valueText,
           style: TextStyle(fontSize: 18),
         )
       ],
