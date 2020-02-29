@@ -1,6 +1,6 @@
 
-import 'package:firstapp/teasessions/popup_content.dart';
-import 'package:firstapp/teasessions/popup_layout.dart';
+import 'package:firstapp/screens/teasessions/popup_content.dart';
+import 'package:firstapp/screens/teasessions/popup_layout.dart';
 import 'package:flutter/material.dart';
 
 showPopup(BuildContext context, Widget widget, String title,

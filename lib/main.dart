@@ -2,26 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firstapp/models/active_tea_session.dart';
 import 'package:firstapp/models/brewing_vessel.dart';
 import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/models/tea_collection.dart';
 import 'package:firstapp/models/teapot_collection.dart';
-import 'package:firstapp/stash/stash.dart';
+import 'package:firstapp/screens/authentication/authentication_wrapper.dart';
+import 'package:firstapp/screens/services/auth.dart';
+import 'package:firstapp/screens/stash/stash.dart';
 import 'package:firstapp/climate.dart' as climate;
-import 'package:firstapp/teasessions/teasessions.dart';
+import 'package:firstapp/screens/teasessions/teasessions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   List<Tea> userTeaCollection = getSampleTeaList();
-  Tea initiallySelectedTea = userTeaCollection.first;
-
   List<BrewingVessel> userTeapotCollection = getSampleVesselList();
-  BrewingVessel initiallySelectedBrewingVessel = userTeapotCollection.first;
 
   runApp(MultiProvider(
     providers: [
+      StreamProvider<FirebaseUser>(create: (_) => AuthService().activeUser),
       ChangeNotifierProvider<TeaCollectionModel>(
           create: (_) => TeaCollectionModel(userTeaCollection)),
       ChangeNotifierProvider<TeapotCollectionModel>(
@@ -36,9 +37,12 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    //  TODO: Remove this automatic test signout once signing out UI has been implemented
+//    AuthService().signOut();
+
     return MaterialApp(
       title: 'TeaVault',
-      home: HomeView(),
+      home: AuthenticationWrapper(HomeView()),
     );
   }
 }
