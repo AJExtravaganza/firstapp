@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firstapp/db.dart';
 import 'package:firstapp/models/active_tea_session.dart';
 import 'package:firstapp/models/brewing_vessel.dart';
 import 'package:firstapp/models/tea.dart';
