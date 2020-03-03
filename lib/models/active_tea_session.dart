@@ -1,6 +1,10 @@
+import 'package:provider/provider.dart';
+
+
 import 'package:firstapp/models/brew_profile.dart';
 import 'package:firstapp/models/brewing_vessel.dart';
 import 'package:firstapp/models/tea.dart';
+import 'package:firstapp/models/tea_collection.dart';
 import 'package:flutter/widgets.dart';
 
 class ActiveTeaSessionModel extends ChangeNotifier {
@@ -30,8 +34,8 @@ class ActiveTeaSessionModel extends ChangeNotifier {
 
   ActiveTeaSessionModel() {
 //    FAKE INITIALIZERS - REMOVE ONCE TEA/VESSEL/PROFILE SELECTION IS IMPLEMENTED
-  tea = getSampleTeaList().first;
-  brewProfile = getSampleBrewProfileList().first;
+//  tea = Provider.of<TeaCollectionModel>(context).items.first;
+//  brewProfile = getSampleBrewProfileList(context).first;
   assert (brewProfile.tea == tea);
   brewingVessel = getSampleVesselList().first;
   }

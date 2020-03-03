@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firstapp/db.dart';
 import 'package:firstapp/models/active_tea_session.dart';
 import 'package:firstapp/models/brewing_vessel.dart';
-import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/models/tea_collection.dart';
+import 'package:firstapp/models/tea_producer_collection.dart';
+import 'package:firstapp/models/tea_production_collection.dart';
 import 'package:firstapp/models/teapot_collection.dart';
 import 'package:firstapp/screens/authentication/authentication_wrapper.dart';
 import 'package:firstapp/screens/services/auth.dart';
@@ -18,14 +18,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  List<Tea> userTeaCollection = getSampleTeaList();
   List<BrewingVessel> userTeapotCollection = getSampleVesselList();
 
   runApp(MultiProvider(
     providers: [
       StreamProvider<FirebaseUser>(create: (_) => AuthService().activeUser),
+      ChangeNotifierProvider<TeaProducerCollectionModel>(
+          create: (_) => TeaProducerCollectionModel()),
+      ChangeNotifierProvider<TeaProductionCollectionModel>(
+          create: (_) => TeaProductionCollectionModel()),
       ChangeNotifierProvider<TeaCollectionModel>(
-          create: (_) => TeaCollectionModel(userTeaCollection)),
+          create: (_) => TeaCollectionModel()),
       ChangeNotifierProvider<TeapotCollectionModel>(
           create: (_) => TeapotCollectionModel(userTeapotCollection)),
       ChangeNotifierProvider<ActiveTeaSessionModel>(
