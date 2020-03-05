@@ -1,23 +1,26 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:provider/provider.dart';
 import 'package:firstapp/models/tea_production.dart';
 import 'package:firstapp/models/tea_production_collection.dart';
 
 enum TeaFormFactor { cake, brick, tuo, mushroomtuo, looseleaf }
 
 class Tea {
+  String id;
   int quantity;
   TeaProduction production;
 
   String asString() =>
       "${this.production.productionYear} ${this.production.producer.shortName} ${this.production.name}";
 
-//  Tea(this.year, this.producer, this.production);
+  Map<String, dynamic> asMap() =>
+      {'quantity': this.quantity, 'production': production.id};
 
-  Tea(DocumentSnapshot teaDocument) {
+  Tea(DocumentSnapshot teaDocument, TeaProductionCollectionModel productions) {
     final data = teaDocument.data;
-    this.quantity = data['year'];
-    this.production = TeaProduction(data['production']);
+
+    this.quantity = data['quantity'];
+    this.production = productions.getId(data['production'].documentID.trim());
+    this.id = teaDocument.documentID;
   }
 
   bool operator ==(dynamic other) {
@@ -26,10 +29,6 @@ class Tea {
         this.production.name == other.production.name;
   }
 }
-
-
-
-
 
 class Terroir {
   // Implement later

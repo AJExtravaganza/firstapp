@@ -23,12 +23,6 @@ void main() {
   runApp(MultiProvider(
     providers: [
       StreamProvider<FirebaseUser>(create: (_) => AuthService().activeUser),
-      ChangeNotifierProvider<TeaProducerCollectionModel>(
-          create: (_) => TeaProducerCollectionModel()),
-      ChangeNotifierProvider<TeaProductionCollectionModel>(
-          create: (_) => TeaProductionCollectionModel()),
-      ChangeNotifierProvider<TeaCollectionModel>(
-          create: (_) => TeaCollectionModel()),
       ChangeNotifierProvider<TeapotCollectionModel>(
           create: (_) => TeapotCollectionModel(userTeapotCollection)),
       ChangeNotifierProvider<ActiveTeaSessionModel>(
@@ -38,7 +32,31 @@ void main() {
   ));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => MyAppState();
+}
+
+class MyAppState extends State<MyApp> {
+  TeaProducerCollectionModel producers;
+  TeaProductionCollectionModel productions;
+  TeaCollectionModel teas;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTeaData();
+  }
+
+  void fetchTeaData() async {
+    this.producers = TeaProducerCollectionModel();
+    await producers.load();
+    this.productions = TeaProductionCollectionModel(producers);
+    await productions.load();
+    this.teas = await TeaCollectionModel(productions);
+    await teas.load();
+  }
+
   @override
   Widget build(BuildContext context) {
     //  TODO: Remove this automatic test signout once signing out UI has been implemented

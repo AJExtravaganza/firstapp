@@ -9,23 +9,7 @@ Future<DocumentSnapshot> fetchUser() async{
   return userDbRecord;
 }
 
-Future<List<DocumentSnapshot>> fetchUserStashContents() async {
-  final user = await fetchUser();
-  final teasInStash = await user.reference.collection('teas_in_stash').getDocuments();
-  return teasInStash.documents;
-}
-
-//void putInUserStash(Tea tea) async {
-//final user = await fetchUser();
-//user.reference.collection('teas_in_stash').add(tea);
-//}
-
-Future<List<DocumentSnapshot>> fetchTeaProducers() async {
-  final producers = await Firestore.instance.collection('tea_producers').getDocuments();
-  return producers.documents;
-}
-
-Future<List<DocumentSnapshot>> fetchTeaProductions() async{
-  final productions = await Firestore.instance.collection('tea_productions').getDocuments();
-  return productions.documents;
+void putInUserStash(Tea tea) async {
+final user = await fetchUser();
+user.reference.collection('teas_in_stash').add(tea.asMap());
 }

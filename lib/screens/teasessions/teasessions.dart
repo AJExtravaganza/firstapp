@@ -22,7 +22,7 @@ class _SessionsView extends State<SessionsView> {
         children: <Widget>[
           Expanded(
             flex: 2,
-            child: BrewProfileInfo(),
+            child: Text('BrewProfileInfoStub')//BrewProfileInfo(),
           ),
           Expanded(
             flex: 4,
@@ -37,7 +37,7 @@ class _SessionsView extends State<SessionsView> {
           ),
           Expanded(
             flex: 3,
-            child: SteepTimer(),
+            child: Text('SteepTimerStub')//SteepTimer(),
           )
         ]);
   }

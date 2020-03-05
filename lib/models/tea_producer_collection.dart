@@ -1,26 +1,28 @@
 import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firstapp/db.dart';
 import 'package:firstapp/models/tea_producer.dart';
-import 'package:flutter/cupertino.dart';
 
-class TeaProducerCollectionModel extends ChangeNotifier {
-  final List<DocumentSnapshot> _items = [];
+class TeaProducerCollectionModel {
+  final Map<String, TeaProducer> _items = {};
 
-//  UnmodifiableListView<TeaProducer> get items => UnmodifiableListView(
-//      _items.map((teaProducerDocument) => TeaProducer(teaProducerDocument)));
+  UnmodifiableListView<TeaProducer> get items =>
+      UnmodifiableListView(_items.values);
 
   int get length => _items.length;
 
+  TeaProducer getId(String id) => _items[id];
+
   void load() async {
     print('Loading tea producers');
-    final teaProducers = await fetchTeaProducers();
+    final producerQuery =
+        await Firestore.instance.collection('tea_producers').getDocuments();
+    final producers =
+        producerQuery.documents.map((document) => TeaProducer(document));
     print(
-        'Got ${teaProducers.length} producers from db, adding to TeaProducerCollectionModel');
-    this._items.addAll(teaProducers);
-    print('Added teas to TeaProducerCollectionModel, notifying listeners');
-    notifyListeners();
+        'Got ${producers.length} producers from db, adding to TeaProducerCollectionModel');
+    this._items.addAll(Map.fromIterable(producers,
+        key: (producer) => producer.id, value: (producer) => producer));
   }
 
   TeaProducerCollectionModel() {
