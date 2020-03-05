@@ -2,8 +2,9 @@ import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firstapp/models/tea_producer.dart';
+import 'package:flutter/widgets.dart';
 
-class TeaProducerCollectionModel {
+class TeaProducerCollectionModel extends ChangeNotifier {
   final Map<String, TeaProducer> _items = {};
 
   UnmodifiableListView<TeaProducer> get items =>
@@ -13,19 +14,21 @@ class TeaProducerCollectionModel {
 
   TeaProducer getId(String id) => _items[id];
 
-  void load() async {
-    print('Loading tea producers');
+  void update() async {
+    print('Updating tea producers');
     final producerQuery =
         await Firestore.instance.collection('tea_producers').getDocuments();
-    final producers =
-        producerQuery.documents.map((document) => TeaProducer(document));
+
+    final producers = producerQuery.documentChanges
+        .map((documentChange) => TeaProducer(documentChange.document));
     print(
-        'Got ${producers.length} producers from db, adding to TeaProducerCollectionModel');
+        'Got ${producers.length} updated producers from db, adding to TeaProducerCollectionModel');
     this._items.addAll(Map.fromIterable(producers,
         key: (producer) => producer.id, value: (producer) => producer));
+
+    notifyListeners();
   }
 
   TeaProducerCollectionModel() {
-    load();
   }
 }

@@ -1,16 +1,19 @@
 import 'package:firstapp/main.dart';
 import 'package:firstapp/models/tea.dart';
+import 'package:firstapp/models/tea_collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class StashView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final teas = context.findAncestorStateOfType<MyAppState>().teas;
-    return ListView.builder(
-        itemCount: teas.length,
-        itemBuilder: (BuildContext context, int index) =>
-            StashListItem(teas.items[index]));
+    updateTeaData(context);
+    return Consumer<TeaCollectionModel>(
+        builder: (context, teas, child) => ListView.builder(
+          itemCount: teas.length,
+          itemBuilder: (BuildContext context, int index) =>
+              StashListItem(teas.items[index])));
   }
 }
 

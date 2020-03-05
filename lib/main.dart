@@ -17,46 +17,43 @@ import 'package:firstapp/screens/teasessions/teasessions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+void updateTeaData(BuildContext context) async {
+  await Provider.of<TeaProducerCollectionModel>(context, listen: false).update();
+  await Provider.of<TeaProductionCollectionModel>(context, listen: false).update();
+  await Provider.of<TeaCollectionModel>(context, listen: false).update();
+}
+
 void main() {
   List<BrewingVessel> userTeapotCollection = getSampleVesselList();
+  final teaProducerCollectionModel = TeaProducerCollectionModel();
+  final teaProductionCollectionModel =
+      TeaProductionCollectionModel(teaProducerCollectionModel);
+  final teaCollectionModel = TeaCollectionModel(teaProductionCollectionModel);
 
-  runApp(MultiProvider(
-    providers: [
-      StreamProvider<FirebaseUser>(create: (_) => AuthService().activeUser),
-      ChangeNotifierProvider<TeapotCollectionModel>(
-          create: (_) => TeapotCollectionModel(userTeapotCollection)),
-      ChangeNotifierProvider<ActiveTeaSessionModel>(
-          create: (_) => ActiveTeaSessionModel()),
-    ],
-    child: MyApp(),
+  runApp(StreamProvider<FirebaseUser>(
+    create: (_) => AuthService().activeUser,
+    child: MultiProvider(
+      providers: [
+        ChangeNotifierProvider<TeaProducerCollectionModel>(
+          create: (_) => teaProducerCollectionModel,
+        ),
+        ChangeNotifierProvider<TeaProductionCollectionModel>(
+          create: (_) => teaProductionCollectionModel,
+        ),
+        ChangeNotifierProvider<TeaCollectionModel>(
+          create: (_) => teaCollectionModel,
+        ),
+        ChangeNotifierProvider<TeapotCollectionModel>(
+            create: (_) => TeapotCollectionModel(userTeapotCollection)),
+        ChangeNotifierProvider<ActiveTeaSessionModel>(
+            create: (_) => ActiveTeaSessionModel()),
+      ],
+      child: MyApp(),
+    ),
   ));
 }
 
-class MyApp extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => MyAppState();
-}
-
-class MyAppState extends State<MyApp> {
-  TeaProducerCollectionModel producers;
-  TeaProductionCollectionModel productions;
-  TeaCollectionModel teas;
-
-  @override
-  void initState() {
-    super.initState();
-    fetchTeaData();
-  }
-
-  void fetchTeaData() async {
-    this.producers = TeaProducerCollectionModel();
-    await producers.load();
-    this.productions = TeaProductionCollectionModel(producers);
-    await productions.load();
-    this.teas = await TeaCollectionModel(productions);
-    await teas.load();
-  }
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //  TODO: Remove this automatic test signout once signing out UI has been implemented
@@ -117,6 +114,9 @@ class _HomeViewState extends State<HomeView>
 
   @override
   Widget build(BuildContext context) {
+    //Provide initial trigger of update for tea dtaa
+    updateTeaData(context);
+
     return DefaultTabController(
       length: homeTabs.length,
       child: Scaffold(

@@ -7,7 +7,7 @@ import 'package:firstapp/models/tea_production.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 
-class TeaProductionCollectionModel {
+class TeaProductionCollectionModel extends ChangeNotifier {
   TeaProducerCollectionModel producers;
   Map<String, TeaProduction> _items = {};
 
@@ -18,20 +18,21 @@ class TeaProductionCollectionModel {
 
   TeaProduction getId(String id) => _items[id];
 
-  void load() async {
-    print('Loading tea productions');
+  void update() async {
+    print('Updating tea productions');
     final productionQuery =
         await Firestore.instance.collection('tea_productions').getDocuments();
-    final productions = productionQuery.documents
-        .map((document) => TeaProduction(document, producers));
+    final productions = productionQuery.documentChanges.map(
+        (documentChange) => TeaProduction(documentChange.document, producers));
     print(
-        'Got ${productions.length} productions from db, adding to TeaProductionCollectionModel');
+        'Got ${productions.length} updated productions from db, adding to TeaProductionCollectionModel');
     this._items.addAll(Map.fromIterable(productions,
         key: (production) => production.id, value: (production) => production));
+
+    notifyListeners();
   }
 
   TeaProductionCollectionModel(TeaProducerCollectionModel producers) {
     this.producers = producers;
-    load();
   }
 }
