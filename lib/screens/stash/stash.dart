@@ -26,7 +26,7 @@ class StashListItem extends StatelessWidget {
       child: ListTile(
         leading: FlutterLogo(size: 72.0),
         title: Text(tea.asString()),
-        subtitle: Text('Tea info goes here'),
+        subtitle: Text('${tea.quantity}x ${tea.production.nominalWeightGrams}g'),
         trailing: Icon(Icons.more_vert),
         isThreeLine: true,
       ),
