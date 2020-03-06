@@ -5,6 +5,7 @@ import 'package:firstapp/models/tea_producer.dart';
 import 'package:flutter/widgets.dart';
 
 class TeaProducerCollectionModel extends ChangeNotifier {
+  final String dbCollectionName = 'tea_producers';
   final Map<String, TeaProducer> _items = {};
 
   UnmodifiableListView<TeaProducer> get items =>
@@ -12,21 +13,28 @@ class TeaProducerCollectionModel extends ChangeNotifier {
 
   int get length => _items.length;
 
-  TeaProducer getId(String id) => _items[id];
+  TeaProducer getById(String id) => _items[id];
 
-  void update() async {
+  void fetch() async {
     print('Updating tea producers');
     final producerQuery =
-        await Firestore.instance.collection('tea_producers').getDocuments();
+        await Firestore.instance.collection(dbCollectionName).getDocuments();
 
     final producers = producerQuery.documentChanges
-        .map((documentChange) => TeaProducer(documentChange.document));
+        .map((documentChange) => TeaProducer.fromDocumentSnapshot(documentChange.document));
     print(
         'Got ${producers.length} updated producers from db, adding to TeaProducerCollectionModel');
     this._items.addAll(Map.fromIterable(producers,
         key: (producer) => producer.id, value: (producer) => producer));
 
     notifyListeners();
+  }
+
+  Future<DocumentReference> put(TeaProducer producer) async {
+    final newDocumentReference = await Firestore.instance.collection(dbCollectionName).add(producer.asMap());
+    producer.id = newDocumentReference.documentID;
+    _items[newDocumentReference.documentID] = producer;
+    return newDocumentReference;
   }
 
   TeaProducerCollectionModel() {

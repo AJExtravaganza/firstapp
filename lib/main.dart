@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firstapp/db.dart';
 import 'package:firstapp/models/active_tea_session.dart';
 import 'package:firstapp/models/brewing_vessel.dart';
+import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/models/tea_collection.dart';
+import 'package:firstapp/models/tea_producer.dart';
 import 'package:firstapp/models/tea_producer_collection.dart';
+import 'package:firstapp/models/tea_production.dart';
 import 'package:firstapp/models/tea_production_collection.dart';
 import 'package:firstapp/models/teapot_collection.dart';
 import 'package:firstapp/screens/authentication/authentication_wrapper.dart';
@@ -18,9 +23,61 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void updateTeaData(BuildContext context) async {
-  await Provider.of<TeaProducerCollectionModel>(context, listen: false).update();
-  await Provider.of<TeaProductionCollectionModel>(context, listen: false).update();
-  await Provider.of<TeaCollectionModel>(context, listen: false).update();
+  await Provider.of<TeaProducerCollectionModel>(context, listen: false).fetch();
+  await Provider.of<TeaProductionCollectionModel>(context, listen: false).fetch();
+  await Provider.of<TeaCollectionModel>(context, listen: false).fetch();
+}
+
+void resetTeaData(BuildContext context) async {
+  final producers = Provider.of<TeaProducerCollectionModel>(context, listen: false);
+  final productions = Provider.of<TeaProductionCollectionModel>(context, listen: false);
+  final teas = Provider.of<TeaCollectionModel>(context, listen: false);
+  final user = await fetchUser();
+
+  final old_producers = await Firestore.instance.collection(producers.dbCollectionName).getDocuments();
+  final old_productions = await Firestore.instance.collection(productions.dbCollectionName).getDocuments();
+  final old_teas = await user.reference.collection(teas.dbCollectionName).getDocuments();
+
+  print('Deleting all producers, productions and teas...');
+
+  old_teas.documents.forEach((doc) async {await doc.reference.delete();});
+  old_productions.documents.forEach((doc) async {await doc.reference.delete();});
+  old_producers.documents.forEach((doc) async { await doc.reference.delete();});
+  print('done.');
+  print('Repopulating database/local collections...');
+
+  final xizihaoRef = await producers.put(TeaProducer('Xizihao', 'XZH'));
+  final dayiRef = await producers.put(TeaProducer('Menghai Dayi Tea Factory', 'Dayi'));
+  final wistariaRef = await producers.put(TeaProducer('Wistaria', 'Wistaria'));
+
+  final dingjiRef = await productions.put(TeaProduction('Dingji Gushu', 400, producers.getById(xizihaoRef.documentID), 2007));
+  final seven542Ref = await productions.put(TeaProduction('502-7542', 357, producers.getById(dayiRef.documentID), 2005));
+  final ziyinNannuoRef = await productions.put(TeaProduction('Ziyin Nannuo', 357, producers.getById(wistariaRef.documentID), 2003));
+
+  await teas.put(Tea(3, productions.getById(dingjiRef.documentID)));
+  await teas.put(Tea(2, productions.getById(seven542Ref.documentID)));
+  await teas.put(Tea(1, productions.getById(ziyinNannuoRef.documentID)));
+
+  print('done.');
+
+  //List<Tea> getSampleTeaList() {
+//  return [
+//    Tea(2007, Producer('Xizihao', 'XZH'), Production("Dingji Gushu")),
+//    Tea(2005, Producer('Menghai Dayi Tea Factory', 'Dayi'),
+//        Production("502-7542")),
+//    Tea(2005, Producer('Menghai Dayi Tea Factory', 'Dayi'),
+//        Production("504-8542")),
+//    Tea(2009, Producer('Menghai Dayi Tea Factory', 'Dayi'),
+//        Production("901-7542")),
+//    Tea(2007, Producer('Wisteria'), Production("Honyin (Red Mark)")),
+//    Tea(2007, Producer('Wisteria'), Production("Lanyin (Blue Mark)")),
+//    Tea(2003, Producer('Wisteria'), Production("Ziyin Youle (Purple Mark)")),
+//    Tea(2003, Producer('Wisteria'), Production("Ziyin Nannuo (Blue Mark)")),
+//    Tea(2001, Producer('Xiaguan'), Production("8653 Tiebing")),
+//    Tea(2013, Producer('Xiaguan'), Production("Love Forever (Paper Tong)")),
+//    Tea(2004, Producer('Xiaguan'), Production("Jinsi")),
+//  ];
+//}
 }
 
 void main() {
@@ -114,8 +171,8 @@ class _HomeViewState extends State<HomeView>
 
   @override
   Widget build(BuildContext context) {
-    //Provide initial trigger of update for tea dtaa
-    updateTeaData(context);
+    //Provide initial trigger of update for tea
+    resetTeaData(context);
 
     return DefaultTabController(
       length: homeTabs.length,

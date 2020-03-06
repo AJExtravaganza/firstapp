@@ -5,11 +5,19 @@ class TeaProducer {
   String name;
   String shortName;
 
-  TeaProducer(DocumentSnapshot producerDocument) {
+  String asString() =>
+      "${this.name}";
+
+  Map<String, String> asMap() => {
+    'name': this.name,
+    'short_name': this.shortName
+  };
+
+  TeaProducer(this.name, this.shortName, [this.id]);
+
+  static TeaProducer fromDocumentSnapshot(DocumentSnapshot producerDocument) {
     final data = producerDocument.data;
-    this.name = data['name'];
-    this.shortName = data['short_name'];
-    this.id = producerDocument.documentID;
+    return TeaProducer(data['name'], data['short_name'], producerDocument.documentID);
   }
 
   bool operator ==(dynamic other) {
