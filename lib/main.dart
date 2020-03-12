@@ -23,9 +23,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void updateTeaData(BuildContext context) async {
-  await Provider.of<TeaProducerCollectionModel>(context, listen: false).fetch();
-  await Provider.of<TeaProductionCollectionModel>(context, listen: false).fetch();
-  await Provider.of<TeaCollectionModel>(context, listen: false).fetch();
+  final producers = Provider.of<TeaProducerCollectionModel>(context, listen: false);
+  final productions = Provider.of<TeaProductionCollectionModel>(context, listen: false);
+  final teas = Provider.of<TeaCollectionModel>(context, listen: false);
+
+  await producers.fetch();
+  await productions.fetch();
+  await teas.fetch();
 }
 
 void resetTeaData(BuildContext context) async {
@@ -194,7 +198,6 @@ class HomeViewState extends State<HomeView>
               if (tab.text == sessionTabLabel) {
                 return SessionsView();
               } else if (tab.text == stashTabLabel) {
-                updateTeaData(context);
                 return StashView();
               } else if (tab.text == climateTabLabel) {
                 return climate.DateTimeComboLinePointChart.withSampleData();

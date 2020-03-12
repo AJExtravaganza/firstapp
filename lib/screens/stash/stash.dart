@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 class StashView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    updateTeaData(context);
     return Consumer<TeaCollectionModel>(
         builder: (context, teas, child) => ListView.builder(
           itemCount: teas.length,
