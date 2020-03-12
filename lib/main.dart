@@ -164,16 +164,19 @@ class HomeViewState extends State<HomeView>
 
   void setActiveTab(int index) {
     setState(() {
-      if (_tabController.index != STASHTABIDX){
-        stashTeaSelectionMode = false;
-      }
       _tabController.index = index;
     });
   }
 
-  void activateTeaSelectionMode() {
+  void activateStashTeaSelectionMode() {
     setState(() {
       stashTeaSelectionMode = true;
+    });
+  }
+
+  void deactivateStashTeaSelectionMode() {
+    setState(() {
+      stashTeaSelectionMode = false;
     });
   }
 
@@ -181,6 +184,9 @@ class HomeViewState extends State<HomeView>
   void initState() {
     super.initState();
     _tabController = TabController(length: homeTabs.length, vsync: this);
+
+    //Prevents the mode flag being erroneously maintained if a user manually switches tabs during tea selection
+    _tabController.addListener(deactivateStashTeaSelectionMode);
 
     //Provide initial trigger of update for tea
     resetTeaData(context);

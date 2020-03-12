@@ -75,7 +75,7 @@ class BrewProfileInfo extends StatelessWidget {
 void selectTeaFromStash(BuildContext context) {
   final homeViewState = context.findAncestorStateOfType<HomeViewState>();
   homeViewState.setActiveTab(HomeViewState.STASHTABIDX);
-  homeViewState.activateTeaSelectionMode();
+  homeViewState.activateStashTeaSelectionMode();
 }
 
 class SelectTeaButton extends StatelessWidget {
@@ -94,20 +94,19 @@ class TeaNameRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Tea currentTea = Provider.of<ActiveTeaSessionModel>(context).tea;
-    //TODO Add clickable container for
-    // onPressed: () {
-    //   selectTeaFromStash(context);
-    // }
-    return Row(
-      children: <Widget>[
-        Expanded(
-            child: Center(
-                child: Text(
-          currentTea.asString(),
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 30),
-        )))
-      ],
+    return InkWell(
+      onTap: () {selectTeaFromStash(context);},
+      child: Row(
+        children: <Widget>[
+          Expanded(
+              child: Center(
+                  child: Text(
+                    currentTea.asString(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 30),
+                  )))
+        ],
+      ),
     );
   }
 }
