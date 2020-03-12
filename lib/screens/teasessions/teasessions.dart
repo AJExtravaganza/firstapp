@@ -39,7 +39,7 @@ class _SessionsView extends State<SessionsView> {
           ),
           Expanded(
             flex: 3,
-            child: Text('SteepTimerStub')//SteepTimer(),
+            child: SteepTimer(),
           )
         ]);
   }
@@ -72,11 +72,19 @@ class BrewProfileInfo extends StatelessWidget {
   }
 }
 
+void selectTeaFromStash(BuildContext context) {
+  final homeViewState = context.findAncestorStateOfType<HomeViewState>();
+  homeViewState.setActiveTab(HomeViewState.STASHTABIDX);
+  homeViewState.activateTeaSelectionMode();
+}
+
 class SelectTeaButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RaisedButton(
-      onPressed: () {context.findAncestorStateOfType<HomeViewState>().setActiveTab(1);},
+      onPressed: () {
+        selectTeaFromStash(context);
+      },
       child: Text('Select Tea'),
     );
   }
@@ -86,7 +94,10 @@ class TeaNameRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Tea currentTea = Provider.of<ActiveTeaSessionModel>(context).tea;
-
+    //TODO Add clickable container for
+    // onPressed: () {
+    //   selectTeaFromStash(context);
+    // }
     return Row(
       children: <Widget>[
         Expanded(

@@ -25,6 +25,12 @@ class StashListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final selectTeaAndGoToSessionTab = () {
+      Provider.of<ActiveTeaSessionModel>(context, listen: false).resetSession(tea);
+      context.findAncestorStateOfType<HomeViewState>().setActiveTab(HomeViewState.SESSIONTABIDX);
+    };
+
     return Card(
       child: ListTile(
         leading: FlutterLogo(size: 72.0),
@@ -33,8 +39,7 @@ class StashListItem extends StatelessWidget {
         trailing: PopupMenuButton<StashTileInteraction>(
           onSelected: (StashTileInteraction result) {
             if (result == StashTileInteraction.makeActiveSessionTea) {
-              context.findAncestorStateOfType<HomeViewState>().setActiveTab(0);
-              Provider.of<ActiveTeaSessionModel>(context, listen: false).tea = tea;
+              selectTeaAndGoToSessionTab();
             } else {
               throw Exception('You managed to select an invalid StashTileInteraction.  Good job, guy.');
             }
@@ -47,6 +52,11 @@ class StashListItem extends StatelessWidget {
           ],
         ),
         isThreeLine: true,
+        onTap: () {
+          if (context.findAncestorStateOfType<HomeViewState>().stashTeaSelectionMode) {
+            selectTeaAndGoToSessionTab();
+          }
+        },
       ),
     );
   }

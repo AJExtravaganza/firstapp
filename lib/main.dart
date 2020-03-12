@@ -143,6 +143,10 @@ class HomeViewState extends State<HomeView>
   static final String sessionTabLabel = 'Session';
   static final String stashTabLabel = 'Stash';
   static final String climateTabLabel = 'Climate';
+  static final SESSIONTABIDX = 0;
+  static final STASHTABIDX = 1;
+
+  bool stashTeaSelectionMode = false;
 
   final List<Tab> homeTabs = <Tab>[
     Tab(
@@ -160,7 +164,16 @@ class HomeViewState extends State<HomeView>
 
   void setActiveTab(int index) {
     setState(() {
+      if (_tabController.index != STASHTABIDX){
+        stashTeaSelectionMode = false;
+      }
       _tabController.index = index;
+    });
+  }
+
+  void activateTeaSelectionMode() {
+    setState(() {
+      stashTeaSelectionMode = true;
     });
   }
 

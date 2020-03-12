@@ -25,6 +25,13 @@ class ActiveTeaSessionModel extends ChangeNotifier {
     }
   }
 
+  resetSession([Tea tea]) {
+    if (tea != null) {
+      this.tea = tea;
+    }
+    _currentSteep = 0;
+  }
+
   decrementSteep() {
     currentSteep -= 1;
   }
