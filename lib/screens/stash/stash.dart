@@ -11,11 +11,34 @@ class StashView extends StatelessWidget {
   Widget build(BuildContext context) {
     updateTeaData(context);
     return Consumer<TeaCollectionModel>(
-        builder: (context, teas, child) => ListView.builder(
-          itemCount: teas.length,
-          itemBuilder: (BuildContext context, int index) =>
-              StashListItem(teas.items[index])));
+        builder: (context, teas, child) => Column(
+              children: <Widget>[
+                Expanded(
+                  child: ListView.builder(
+                      itemCount: teas.length,
+                      itemBuilder: (BuildContext context, int index) =>
+                          StashListItem(teas.items[index])),
+                ),
+                getAddTeaListItem()
+              ],
+            ));
   }
+}
+
+StatelessWidget getAddTeaListItem() {
+  return Card(
+      child: Row(
+    children: <Widget>[
+      Expanded(
+          child: Center(
+              child: RaisedButton(
+        child: Text("Add New Tea"),
+        onPressed: () {
+          print('ACTIVATED NEW TEA LIST ITEM');
+        },
+      )))
+    ],
+  ));
 }
 
 enum StashTileInteraction { makeActiveSessionTea }
@@ -25,26 +48,31 @@ class StashListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final selectTeaAndGoToSessionTab = () {
-      Provider.of<ActiveTeaSessionModel>(context, listen: false).resetSession(tea);
-      context.findAncestorStateOfType<HomeViewState>().setActiveTab(HomeViewState.SESSIONTABIDX);
+      Provider.of<ActiveTeaSessionModel>(context, listen: false)
+          .resetSession(tea);
+      context
+          .findAncestorStateOfType<HomeViewState>()
+          .setActiveTab(HomeViewState.SESSIONTABIDX);
     };
 
     return Card(
       child: ListTile(
         leading: FlutterLogo(size: 72.0),
         title: Text(tea.asString()),
-        subtitle: Text('${tea.quantity}x ${tea.production.nominalWeightGrams}g'),
+        subtitle:
+            Text('${tea.quantity}x ${tea.production.nominalWeightGrams}g'),
         trailing: PopupMenuButton<StashTileInteraction>(
           onSelected: (StashTileInteraction result) {
             if (result == StashTileInteraction.makeActiveSessionTea) {
               selectTeaAndGoToSessionTab();
             } else {
-              throw Exception('You managed to select an invalid StashTileInteraction.  Good job, guy.');
+              throw Exception(
+                  'You managed to select an invalid StashTileInteraction.  Good job, guy.');
             }
           },
-          itemBuilder: (BuildContext context) => <PopupMenuEntry<StashTileInteraction>>[
+          itemBuilder: (BuildContext context) =>
+              <PopupMenuEntry<StashTileInteraction>>[
             const PopupMenuItem<StashTileInteraction>(
               value: StashTileInteraction.makeActiveSessionTea,
               child: Text('Select Tea'),
@@ -53,7 +81,9 @@ class StashListItem extends StatelessWidget {
         ),
         isThreeLine: true,
         onTap: () {
-          if (context.findAncestorStateOfType<HomeViewState>().stashTeaSelectionMode) {
+          if (context
+              .findAncestorStateOfType<HomeViewState>()
+              .stashTeaSelectionMode) {
             selectTeaAndGoToSessionTab();
           }
         },
