@@ -103,7 +103,7 @@ void main() {
         ChangeNotifierProvider<TeapotCollectionModel>(
             create: (_) => TeapotCollectionModel(userTeapotCollection)),
         ChangeNotifierProvider<ActiveTeaSessionModel>(
-            create: (_) => ActiveTeaSessionModel()),
+            create: (_) => ActiveTeaSessionModel(teaCollectionModel)),
       ],
       child: MyApp(),
     ),
@@ -113,9 +113,6 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    //  TODO: Remove this automatic test signout once signing out UI has been implemented
-//    AuthService().signOut();
-
     return MaterialApp(
       title: 'TeaVault',
       home: AuthenticationWrapper(HomeView()),
@@ -134,10 +131,10 @@ Scaffold getStubContent([String textContent = 'STUBCONTENT']) {
 
 class HomeView extends StatefulWidget {
   @override
-  _HomeViewState createState() => _HomeViewState();
+  HomeViewState createState() => HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView>
+class HomeViewState extends State<HomeView>
     with SingleTickerProviderStateMixin {
   static final String sessionTabLabel = 'Session';
   static final String stashTabLabel = 'Stash';
@@ -157,10 +154,19 @@ class _HomeViewState extends State<HomeView>
 
   TabController _tabController;
 
+  void setActiveTab(int index) {
+    setState(() {
+      _tabController.index = index;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: homeTabs.length, vsync: this);
+
+    //Provide initial trigger of update for tea
+    resetTeaData(context);
   }
 
   @override
@@ -171,8 +177,6 @@ class _HomeViewState extends State<HomeView>
 
   @override
   Widget build(BuildContext context) {
-    //Provide initial trigger of update for tea
-    resetTeaData(context);
 
     return DefaultTabController(
       length: homeTabs.length,
@@ -190,6 +194,7 @@ class _HomeViewState extends State<HomeView>
               if (tab.text == sessionTabLabel) {
                 return SessionsView();
               } else if (tab.text == stashTabLabel) {
+                updateTeaData(context);
                 return StashView();
               } else if (tab.text == climateTabLabel) {
                 return climate.DateTimeComboLinePointChart.withSampleData();

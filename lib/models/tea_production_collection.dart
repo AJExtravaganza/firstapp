@@ -19,7 +19,7 @@ class TeaProductionCollectionModel extends ChangeNotifier {
 
   TeaProduction getById(String id) => _items[id];
 
-  void fetch() async {
+  Future<void> fetch() async {
     print('Updating tea productions');
     final productionQuery =
         await Firestore.instance.collection(dbCollectionName).getDocuments();

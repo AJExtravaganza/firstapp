@@ -15,7 +15,7 @@ class TeaCollectionModel extends ChangeNotifier {
 
   int get length => _items.length;
 
-  void fetch() async {
+  Future<void> fetch() async {
     print('Updating tea collection');
     final user = await fetchUser();
     final userStashQuery =

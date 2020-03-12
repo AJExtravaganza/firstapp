@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firstapp/models/brew_profile.dart';
 import 'package:firstapp/models/tea_production.dart';
 import 'package:firstapp/models/tea_production_collection.dart';
 
@@ -8,18 +9,26 @@ class Tea {
   String id;
   int quantity;
   TeaProduction production;
+  List<BrewProfile> brewProfiles;
 
   String asString() =>
       "${this.production.producer.shortName} ${this.production.productionYear} ${this.production.name}";
 
   Map<String, dynamic> asMap() =>
-      {'quantity': this.quantity, 'production': production.id};
+      {'quantity': this.quantity, 'production': production.id, 'brew_profiles': this.brewProfiles};
 
-  Tea(this.quantity, this.production, [this.id]);
+  Tea(this.quantity, this.production, [this.id, this.brewProfiles]);
 
   static Tea fromDocumentSnapshot(DocumentSnapshot teaDocument, TeaProductionCollectionModel productions) {
     final data = teaDocument.data;
-    return Tea(data['quantity'], productions.getById(data['production']), teaDocument.documentID);
+    List<BrewProfile> brewProfiles = [];
+    try {
+      brewProfiles = teaDocument.data['brew_profiles'].map((document) => BrewProfile.fromDocumentSnapshot(document));
+    } catch (err) {
+      brewProfiles = [BrewProfile.getDefault(),];
+    }
+
+    return Tea(data['quantity'], productions.getById(data['production']), teaDocument.documentID, brewProfiles);
   }
 
   bool operator ==(dynamic other) {

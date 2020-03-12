@@ -9,11 +9,12 @@ import 'package:flutter/widgets.dart';
 
 class ActiveTeaSessionModel extends ChangeNotifier {
   Tea tea;
-  BrewProfile brewProfile;
+  BrewProfile _brewProfile;
   BrewingVessel brewingVessel;
   int _currentSteep = 0;
 
   get currentSteep => _currentSteep;
+  get brewProfile => _brewProfile != null ? _brewProfile : BrewProfile.getDefault();
 
   set currentSteep(int value) {
     if (value > 0 && value < brewProfile.steepTimings.length) {
@@ -32,11 +33,15 @@ class ActiveTeaSessionModel extends ChangeNotifier {
     currentSteep += 1;
   }
 
-  ActiveTeaSessionModel() {
-//    FAKE INITIALIZERS - REMOVE ONCE TEA/VESSEL/PROFILE SELECTION IS IMPLEMENTED
-//  tea = Provider.of<TeaCollectionModel>(context).items.first;
-//  brewProfile = getSampleBrewProfileList(context).first;
-  assert (brewProfile.tea == tea);
-  brewingVessel = getSampleVesselList().first;
+  ActiveTeaSessionModel(TeaCollectionModel teaCollectionModel) {
+    try {
+      tea = teaCollectionModel.items.first;
+      _brewProfile = tea.brewProfiles.first;
+    } catch (err) {
+      tea = null;
+      _brewProfile = null;
+    }
+
+    brewingVessel = getSampleVesselList().first;
   }
 }

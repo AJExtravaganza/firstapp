@@ -9,6 +9,8 @@ import 'package:font_awesome_flutter/fa_icon.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
+import '../../main.dart';
+
 class SessionsView extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _SessionsView();
@@ -22,7 +24,7 @@ class _SessionsView extends State<SessionsView> {
         children: <Widget>[
           Expanded(
             flex: 2,
-            child: Text('BrewProfileInfoStub')//BrewProfileInfo(),
+            child: BrewProfileInfo(),
           ),
           Expanded(
             flex: 4,
@@ -74,7 +76,7 @@ class SelectTeaButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RaisedButton(
-      onPressed: () {},
+      onPressed: () {context.findAncestorStateOfType<HomeViewState>().setActiveTab(1);},
       child: Text('Select Tea'),
     );
   }
@@ -140,7 +142,7 @@ class BrewingParametersRow extends StatelessWidget {
       Expanded(
         flex: 4,
         child: BrewingParameterRowElement(FontAwesomeIcons.temperatureHigh,
-            '${currentBrewProfile.brewTemperature}°C'),
+            '${currentBrewProfile.brewTemperatureCelsius}°C'),
       ),
       Expanded(
         flex: 1,
