@@ -1,3 +1,5 @@
+import 'package:firstapp/models/tea.dart';
+import 'package:firstapp/models/tea_collection.dart';
 import 'package:firstapp/models/tea_producer.dart';
 import 'package:firstapp/models/tea_producer_collection.dart';
 import 'package:firstapp/models/tea_production.dart';
@@ -103,17 +105,16 @@ class _SignUpFormState extends State<SignUpForm> {
             color: Colors.blue,
             textColor: Colors.white,
             child: new Text('Add to Stash'),
-            onPressed: addNewTeaFormSubmit)
+            onPressed: () {addNewTeaFormSubmit(Provider.of<TeaCollectionModel>(context, listen: false));})
       ]),
     );
   }
 
-  void addNewTeaFormSubmit() {
+  void addNewTeaFormSubmit(TeaCollectionModel teaCollection) {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-
-      Scaffold.of(context)
-          .showSnackBar(SnackBar(content: Text('Form Submitted')));
+      teaCollection.put(Tea(_quantity, _production));
+      Navigator.pop(context);
     }
   }
 }

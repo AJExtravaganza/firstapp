@@ -2,7 +2,7 @@ import 'package:firstapp/main.dart';
 import 'package:firstapp/models/active_tea_session.dart';
 import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/models/tea_collection.dart';
-import 'package:firstapp/screens/stash/add_new_tea_to_stash.dart';
+import 'package:firstapp/screens/stash/add_new_tea_to_stash_form.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
