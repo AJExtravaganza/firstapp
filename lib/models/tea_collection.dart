@@ -58,8 +58,8 @@ class TeaCollectionModel extends ChangeNotifier {
 
   Future<DocumentReference> putBrewProfile(BrewProfile brewProfile, Tea tea) async {
     final userSnapshot = await fetchUser();
-    final teaReference = await userSnapshot.reference.collection(dbCollectionName).where('id', isEqualTo: tea.id).getDocuments();
-    final newDocumentReference = await teaReference.documents.first.reference.collection('brew_profiles').add(brewProfile.asMap());
+    final teaReference = await userSnapshot.reference.collection(dbCollectionName).document(tea.id);
+    final newDocumentReference = teaReference.collection('brew_profiles').add(brewProfile.asMap());
     return newDocumentReference;
   }
 

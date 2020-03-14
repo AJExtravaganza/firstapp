@@ -1,5 +1,6 @@
 import 'package:firstapp/models/brew_profile.dart';
 import 'package:firstapp/models/tea.dart';
+import 'package:firstapp/screens/stash/add_new_brew_profile_form.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +22,7 @@ class BrewProfilesScreen extends StatelessWidget {
   Widget getBrewProfilesListView(Tea tea, BuildContext context) {
     final brewProfiles = tea.brewProfiles;
     if (tea.brewProfiles.length == 0) {
-      return getAddBrewProfileWidget(context);
+      return getAddBrewProfileWidget(context, tea);
     }
 
     return Column(
@@ -32,12 +33,12 @@ class BrewProfilesScreen extends StatelessWidget {
               itemBuilder: (BuildContext context, int index) =>
                   BrewProfilesListItem(tea.brewProfiles[index])),
         ),
-        getAddBrewProfileWidget(context)
+        getAddBrewProfileWidget(context, tea)
       ],
     );
   }
 
-  Widget getAddBrewProfileWidget(BuildContext context) {
+  Widget getAddBrewProfileWidget(BuildContext context, Tea tea) {
     return Card(
         child: Row(
       children: <Widget>[
@@ -46,8 +47,8 @@ class BrewProfilesScreen extends StatelessWidget {
                 child: RaisedButton(
           child: Text("Add New Brew Profile"),
           onPressed: () {
-//                          Navigator.push(context, MaterialPageRoute(
-//                              builder: (context) => AddNewTeaToStash()));
+                          Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => AddNewBrewProfile(tea)));
           },
         )))
       ],

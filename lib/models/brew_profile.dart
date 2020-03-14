@@ -10,7 +10,7 @@ class BrewProfile {
 
   Map<String, dynamic> asMap() => {
         'name': name,
-        'nominal_ration': nominalRatio,
+        'nominal_ratio': nominalRatio,
         'brew_temperature_celsius': brewTemperatureCelsius,
         'steep_timings': steepTimings
       };
