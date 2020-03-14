@@ -188,31 +188,10 @@ class HomeViewState extends State<HomeView>
 
   TabController _tabController;
 
-  void setActiveTab(int index) {
-    setState(() {
-      _tabController.index = index;
-    });
-  }
-
-  void activateStashTeaSelectionMode() {
-    setState(() {
-      stashTeaSelectionMode = true;
-    });
-  }
-
-  void deactivateStashTeaSelectionMode() {
-    setState(() {
-      stashTeaSelectionMode = false;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: homeTabs.length, vsync: this);
-
-    //Prevents the mode flag being erroneously maintained if a user manually switches tabs during tea selection
-    _tabController.addListener(deactivateStashTeaSelectionMode);
 
     //Provide initial trigger of update for tea
 //    resetTeaData(context);

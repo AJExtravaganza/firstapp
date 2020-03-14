@@ -2,6 +2,7 @@ import 'package:firstapp/models/active_tea_session.dart';
 import 'package:firstapp/models/brew_profile.dart';
 import 'package:firstapp/models/brewing_vessel.dart';
 import 'package:firstapp/models/tea.dart';
+import 'package:firstapp/screens/stash/stash.dart';
 import 'package:firstapp/screens/teasessions/steep_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -73,9 +74,13 @@ class BrewProfileInfo extends StatelessWidget {
 }
 
 void selectTeaFromStash(BuildContext context) {
-  final homeViewState = context.findAncestorStateOfType<HomeViewState>();
-  homeViewState.setActiveTab(HomeViewState.STASHTABIDX);
-  homeViewState.activateStashTeaSelectionMode();
+  Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => Scaffold(
+                appBar: AppBar(title: Text("Select a Tea")),
+                body: StashView(true),
+              )));
 }
 
 class SelectTeaButton extends StatelessWidget {
@@ -95,16 +100,18 @@ class TeaNameRow extends StatelessWidget {
   Widget build(BuildContext context) {
     Tea currentTea = Provider.of<ActiveTeaSessionModel>(context).tea;
     return InkWell(
-      onTap: () {selectTeaFromStash(context);},
+      onTap: () {
+        selectTeaFromStash(context);
+      },
       child: Row(
         children: <Widget>[
           Expanded(
               child: Center(
                   child: Text(
-                    currentTea.asString(),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 30),
-                  )))
+            currentTea.asString(),
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 30),
+          )))
         ],
       ),
     );

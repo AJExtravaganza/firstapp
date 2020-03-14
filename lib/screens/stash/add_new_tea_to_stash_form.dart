@@ -15,17 +15,17 @@ class AddNewTeaToStash extends StatelessWidget {
       appBar: AppBar(
         title: Text('Add New Tea to Stash'),
       ),
-      body: SignUpForm(),
+      body: StashAddNewTeaForm(),
     );
   }
 }
 
-class SignUpForm extends StatefulWidget {
+class StashAddNewTeaForm extends StatefulWidget {
   @override
-  _SignUpFormState createState() => new _SignUpFormState();
+  _StashAddNewTeaFormState createState() => new _StashAddNewTeaFormState();
 }
 
-class _SignUpFormState extends State<SignUpForm> {
+class _StashAddNewTeaFormState extends State<StashAddNewTeaForm> {
   final _formKey = GlobalKey<FormState>();
 
   TeaProducer _producer;

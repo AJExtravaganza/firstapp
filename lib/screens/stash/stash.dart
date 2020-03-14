@@ -9,80 +9,74 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class StashView extends StatelessWidget {
+  bool _activeTeaSelectionMode = false;
+
+  StashView([this._activeTeaSelectionMode = false]);
+
   @override
   Widget build(BuildContext context) {
     updateTeaData(context);
+
+    Widget stashListWidget(TeaCollectionModel teas) => Expanded(
+          child: ListView.builder(
+              itemCount: teas.length,
+              itemBuilder: (BuildContext context, int index) =>
+                  StashListItem(teas.items[index], _activeTeaSelectionMode)),
+        );
+
     return Consumer<TeaCollectionModel>(
-        builder: (context, teas, child) =>
-            Column(
-              children: <Widget>[
-                Expanded(
-                  child: ListView.builder(
-                      itemCount: teas.length,
-                      itemBuilder: (BuildContext context, int index) =>
-                          StashListItem(teas.items[index])),
-                ),
-                getAddTeaListItem(context)
-              ],
-            ));
+        builder: (context, teas, child) => Column(
+            children: [
+              stashListWidget(teas),
+              getAddTeaListItem(context)]));
   }
 }
 
 StatelessWidget getAddTeaListItem(BuildContext context) {
   return Card(
       child: Row(
-        children: <Widget>[
-          Expanded(
-              child: Center(
-                  child: RaisedButton(
-                    child: Text("Add New Tea"),
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(
-                          builder: (context) => AddNewTeaToStash()));
-                    },
-                  )))
-        ],
-      ));
+    children: <Widget>[
+      Expanded(
+          child: Center(
+              child: RaisedButton(
+        child: Text("Add New Tea"),
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => AddNewTeaToStash()));
+        },
+      )))
+    ],
+  ));
 }
 
-enum StashTileInteraction { makeActiveSessionTea, brewProfiles }
+enum StashTileInteraction { brewProfiles }
 
 class StashListItem extends StatelessWidget {
   final Tea tea;
+  bool _activeTeaSelectionMode = false;
 
   @override
   Widget build(BuildContext context) {
-    final selectTeaAndGoToSessionTab = () {
-      Provider.of<ActiveTeaSessionModel>(context, listen: false)
-          .resetSession(tea);
-      context
-          .findAncestorStateOfType<HomeViewState>()
-          .setActiveTab(HomeViewState.SESSIONTABIDX);
-    };
-
     return Card(
       child: ListTile(
         leading: FlutterLogo(size: 72.0),
         title: Text(tea.asString()),
         subtitle:
-        Text('${tea.quantity}x ${tea.production.nominalWeightGrams}g'),
+            Text('${tea.quantity}x ${tea.production.nominalWeightGrams}g'),
         trailing: PopupMenuButton<StashTileInteraction>(
           onSelected: (StashTileInteraction result) {
-            if (result == StashTileInteraction.makeActiveSessionTea) {
-              selectTeaAndGoToSessionTab();
-            } else if (result == StashTileInteraction.brewProfiles){
-              Navigator.push(context, MaterialPageRoute(builder: (context) => BrewProfilesScreen(tea)));
-            }else {
-            throw Exception(
-            'You managed to select an invalid StashTileInteraction.  Good job, guy.');
+            if (result == StashTileInteraction.brewProfiles) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => BrewProfilesScreen(tea)));
+            } else {
+              throw Exception(
+                  'You managed to select an invalid StashTileInteraction.  Good job, guy.');
             }
-            },
+          },
           itemBuilder: (BuildContext context) =>
-          <PopupMenuEntry<StashTileInteraction>>[
-            const PopupMenuItem<StashTileInteraction>(
-              value: StashTileInteraction.makeActiveSessionTea,
-              child: Text('Select Tea'),
-            ),
+              <PopupMenuEntry<StashTileInteraction>>[
             const PopupMenuItem<StashTileInteraction>(
               value: StashTileInteraction.brewProfiles,
               child: Text('Brew Profiles'),
@@ -91,15 +85,15 @@ class StashListItem extends StatelessWidget {
         ),
         isThreeLine: true,
         onTap: () {
-          if (context
-              .findAncestorStateOfType<HomeViewState>()
-              .stashTeaSelectionMode) {
-            selectTeaAndGoToSessionTab();
+          if (_activeTeaSelectionMode) {
+            Provider.of<ActiveTeaSessionModel>(context, listen: false)
+                .resetSession(tea);
+            Navigator.pop(context);
           }
         },
       ),
     );
   }
 
-  StashListItem(this.tea);
+  StashListItem(this.tea, [this._activeTeaSelectionMode = false]);
 }
