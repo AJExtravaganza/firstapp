@@ -85,6 +85,7 @@ void resetTeaData(BuildContext context) async {
 
   await teas.put(Tea(3, productions.getById(dingjiRef.documentID)));
   await teas.put(Tea(2, productions.getById(seven542Ref.documentID)));
+  await teas.put(Tea(2, productions.getById(seven542Ref.documentID)));
   await teas.put(Tea(1, productions.getById(ziyinNannuoRef.documentID)));
 
   print('done.');

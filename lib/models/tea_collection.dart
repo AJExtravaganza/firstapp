@@ -38,10 +38,21 @@ class TeaCollectionModel extends ChangeNotifier {
 
   Future<DocumentReference> put(Tea tea) async {
     final userSnapshot = await fetchUser();
-    final newDocumentReference = await userSnapshot.reference.collection(dbCollectionName).add(tea.asMap());
-    tea.id = newDocumentReference.documentID;
-    _items[newDocumentReference.documentID] = tea;
-    return newDocumentReference;
+    
+    //Check for tea already in stash
+    final existingReferences = await userSnapshot.reference.collection(dbCollectionName).where('production', isEqualTo: tea.production.id).getDocuments();
+    if (existingReferences.documents.length > 0) {
+      //If tea already in stash, update the quantity
+      tea.quantity += existingReferences.documents.first.data['quantity'];
+      await existingReferences.documents.first.reference.setData(tea.asMap());
+      return existingReferences.documents.first.reference;
+    } else {
+      //Else create a new db entry
+      final newDocumentReference = await userSnapshot.reference.collection(dbCollectionName).add(tea.asMap());
+      tea.id = newDocumentReference.documentID;
+      _items[newDocumentReference.documentID] = tea;
+      return newDocumentReference;
+    }
   }
 
   TeaCollectionModel(TeaProductionCollectionModel productions) {
