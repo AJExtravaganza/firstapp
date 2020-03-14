@@ -215,7 +215,7 @@ class HomeViewState extends State<HomeView>
     _tabController.addListener(deactivateStashTeaSelectionMode);
 
     //Provide initial trigger of update for tea
-    resetTeaData(context);
+//    resetTeaData(context);
   }
 
   @override

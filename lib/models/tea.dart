@@ -25,7 +25,7 @@ class Tea {
     try {
       brewProfiles = teaDocument.data['brew_profiles'].map((document) => BrewProfile.fromDocumentSnapshot(document));
     } catch (err) {
-      brewProfiles = [BrewProfile.getDefault(),];
+      brewProfiles = [];
     }
 
     return Tea(data['quantity'], productions.getById(data['production']), teaDocument.documentID, brewProfiles);

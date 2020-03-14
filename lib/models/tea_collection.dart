@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firstapp/db.dart';
+import 'package:firstapp/models/brew_profile.dart';
 import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/models/tea_production_collection.dart';
 import 'package:flutter/cupertino.dart';
@@ -53,6 +54,13 @@ class TeaCollectionModel extends ChangeNotifier {
       _items[newDocumentReference.documentID] = tea;
       return newDocumentReference;
     }
+  }
+
+  Future<DocumentReference> putBrewProfile(BrewProfile brewProfile, Tea tea) async {
+    final userSnapshot = await fetchUser();
+    final teaReference = await userSnapshot.reference.collection(dbCollectionName).where('id', isEqualTo: tea.id).getDocuments();
+    final newDocumentReference = await teaReference.documents.first.reference.collection('brew_profiles').add(brewProfile.asMap());
+    return newDocumentReference;
   }
 
   TeaCollectionModel(TeaProductionCollectionModel productions) {

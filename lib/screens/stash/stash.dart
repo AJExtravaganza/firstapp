@@ -3,6 +3,7 @@ import 'package:firstapp/models/active_tea_session.dart';
 import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/models/tea_collection.dart';
 import 'package:firstapp/screens/stash/add_new_tea_to_stash_form.dart';
+import 'package:firstapp/screens/stash/brew_profiles_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -12,7 +13,8 @@ class StashView extends StatelessWidget {
   Widget build(BuildContext context) {
     updateTeaData(context);
     return Consumer<TeaCollectionModel>(
-        builder: (context, teas, child) => Column(
+        builder: (context, teas, child) =>
+            Column(
               children: <Widget>[
                 Expanded(
                   child: ListView.builder(
@@ -29,21 +31,21 @@ class StashView extends StatelessWidget {
 StatelessWidget getAddTeaListItem(BuildContext context) {
   return Card(
       child: Row(
-    children: <Widget>[
-      Expanded(
-          child: Center(
-              child: RaisedButton(
-        child: Text("Add New Tea"),
-        onPressed: () {
-          print('ACTIVATED NEW TEA LIST ITEM');
-          Navigator.push(context, MaterialPageRoute(builder: (context) => AddNewTeaToStash()));
-        },
-      )))
-    ],
-  ));
+        children: <Widget>[
+          Expanded(
+              child: Center(
+                  child: RaisedButton(
+                    child: Text("Add New Tea"),
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => AddNewTeaToStash()));
+                    },
+                  )))
+        ],
+      ));
 }
 
-enum StashTileInteraction { makeActiveSessionTea }
+enum StashTileInteraction { makeActiveSessionTea, brewProfiles }
 
 class StashListItem extends StatelessWidget {
   final Tea tea;
@@ -63,21 +65,27 @@ class StashListItem extends StatelessWidget {
         leading: FlutterLogo(size: 72.0),
         title: Text(tea.asString()),
         subtitle:
-            Text('${tea.quantity}x ${tea.production.nominalWeightGrams}g'),
+        Text('${tea.quantity}x ${tea.production.nominalWeightGrams}g'),
         trailing: PopupMenuButton<StashTileInteraction>(
           onSelected: (StashTileInteraction result) {
             if (result == StashTileInteraction.makeActiveSessionTea) {
               selectTeaAndGoToSessionTab();
-            } else {
-              throw Exception(
-                  'You managed to select an invalid StashTileInteraction.  Good job, guy.');
+            } else if (result == StashTileInteraction.brewProfiles){
+              Navigator.push(context, MaterialPageRoute(builder: (context) => BrewProfilesScreen(tea)));
+            }else {
+            throw Exception(
+            'You managed to select an invalid StashTileInteraction.  Good job, guy.');
             }
-          },
+            },
           itemBuilder: (BuildContext context) =>
-              <PopupMenuEntry<StashTileInteraction>>[
+          <PopupMenuEntry<StashTileInteraction>>[
             const PopupMenuItem<StashTileInteraction>(
               value: StashTileInteraction.makeActiveSessionTea,
               child: Text('Select Tea'),
+            ),
+            const PopupMenuItem<StashTileInteraction>(
+              value: StashTileInteraction.brewProfiles,
+              child: Text('Brew Profiles'),
             ),
           ],
         ),
