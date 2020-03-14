@@ -23,8 +23,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void updateTeaData(BuildContext context) async {
-  final producers = Provider.of<TeaProducerCollectionModel>(context, listen: false);
-  final productions = Provider.of<TeaProductionCollectionModel>(context, listen: false);
+  final producers =
+      Provider.of<TeaProducerCollectionModel>(context, listen: false);
+  final productions =
+      Provider.of<TeaProductionCollectionModel>(context, listen: false);
   final teas = Provider.of<TeaCollectionModel>(context, listen: false);
 
   await producers.fetch();
@@ -33,30 +35,47 @@ void updateTeaData(BuildContext context) async {
 }
 
 void resetTeaData(BuildContext context) async {
-  final producers = Provider.of<TeaProducerCollectionModel>(context, listen: false);
-  final productions = Provider.of<TeaProductionCollectionModel>(context, listen: false);
+  final producers =
+      Provider.of<TeaProducerCollectionModel>(context, listen: false);
+  final productions =
+      Provider.of<TeaProductionCollectionModel>(context, listen: false);
   final teas = Provider.of<TeaCollectionModel>(context, listen: false);
   final user = await fetchUser();
 
-  final old_producers = await Firestore.instance.collection(producers.dbCollectionName).getDocuments();
-  final old_productions = await Firestore.instance.collection(productions.dbCollectionName).getDocuments();
-  final old_teas = await user.reference.collection(teas.dbCollectionName).getDocuments();
+  final old_producers = await Firestore.instance
+      .collection(producers.dbCollectionName)
+      .getDocuments();
+  final old_productions = await Firestore.instance
+      .collection(productions.dbCollectionName)
+      .getDocuments();
+  final old_teas =
+      await user.reference.collection(teas.dbCollectionName).getDocuments();
 
   print('Deleting all producers, productions and teas...');
 
-  old_teas.documents.forEach((doc) async {await doc.reference.delete();});
-  old_productions.documents.forEach((doc) async {await doc.reference.delete();});
-  old_producers.documents.forEach((doc) async { await doc.reference.delete();});
+  old_teas.documents.forEach((doc) async {
+    await doc.reference.delete();
+  });
+  old_productions.documents.forEach((doc) async {
+    await doc.reference.delete();
+  });
+  old_producers.documents.forEach((doc) async {
+    await doc.reference.delete();
+  });
   print('done.');
   print('Repopulating database/local collections...');
 
   final xizihaoRef = await producers.put(TeaProducer('Xizihao', 'XZH'));
-  final dayiRef = await producers.put(TeaProducer('Menghai Dayi Tea Factory', 'Dayi'));
+  final dayiRef =
+      await producers.put(TeaProducer('Menghai Dayi Tea Factory', 'Dayi'));
   final wistariaRef = await producers.put(TeaProducer('Wistaria', 'Wistaria'));
 
-  final dingjiRef = await productions.put(TeaProduction('Dingji Gushu', 400, producers.getById(xizihaoRef.documentID), 2007));
-  final seven542Ref = await productions.put(TeaProduction('502-7542', 357, producers.getById(dayiRef.documentID), 2005));
-  final ziyinNannuoRef = await productions.put(TeaProduction('Ziyin Nannuo', 357, producers.getById(wistariaRef.documentID), 2003));
+  final dingjiRef = await productions.put(TeaProduction(
+      'Dingji Gushu', 400, producers.getById(xizihaoRef.documentID), 2007));
+  final seven542Ref = await productions.put(TeaProduction(
+      '502-7542', 357, producers.getById(dayiRef.documentID), 2005));
+  final ziyinNannuoRef = await productions.put(TeaProduction(
+      'Ziyin Nannuo', 357, producers.getById(wistariaRef.documentID), 2003));
 
   await teas.put(Tea(3, productions.getById(dingjiRef.documentID)));
   await teas.put(Tea(2, productions.getById(seven542Ref.documentID)));
@@ -200,16 +219,17 @@ class HomeViewState extends State<HomeView>
 
   @override
   Widget build(BuildContext context) {
-
     return DefaultTabController(
       length: homeTabs.length,
       child: Scaffold(
         appBar: AppBar(
 //          title: Text('TeaVault v0.1'),
-          title: TabBar(
-            controller: _tabController,
-            tabs: homeTabs,
-          ),
+          title: stashTeaSelectionMode
+              ? Text("Select a Tea")
+              : TabBar(
+                  controller: _tabController,
+                  tabs: homeTabs,
+                ),
         ),
         body: TabBarView(
             controller: _tabController,

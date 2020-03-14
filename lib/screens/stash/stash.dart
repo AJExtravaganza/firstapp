@@ -2,6 +2,7 @@ import 'package:firstapp/main.dart';
 import 'package:firstapp/models/active_tea_session.dart';
 import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/models/tea_collection.dart';
+import 'package:firstapp/screens/stash/add_new_tea_to_stash.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,13 +20,13 @@ class StashView extends StatelessWidget {
                       itemBuilder: (BuildContext context, int index) =>
                           StashListItem(teas.items[index])),
                 ),
-                getAddTeaListItem()
+                getAddTeaListItem(context)
               ],
             ));
   }
 }
 
-StatelessWidget getAddTeaListItem() {
+StatelessWidget getAddTeaListItem(BuildContext context) {
   return Card(
       child: Row(
     children: <Widget>[
@@ -35,6 +36,7 @@ StatelessWidget getAddTeaListItem() {
         child: Text("Add New Tea"),
         onPressed: () {
           print('ACTIVATED NEW TEA LIST ITEM');
+          Navigator.push(context, MaterialPageRoute(builder: (context) => AddNewTeaToStash()));
         },
       )))
     ],
