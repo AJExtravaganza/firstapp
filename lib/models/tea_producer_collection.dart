@@ -9,8 +9,11 @@ class TeaProducerCollectionModel extends ChangeNotifier {
   final String dbCollectionName = 'tea_producers';
   final Map<String, TeaProducer> _items = {};
 
-  UnmodifiableListView<TeaProducer> get items =>
-      UnmodifiableListView(_items.values);
+  UnmodifiableListView<TeaProducer> get items {
+    List<TeaProducer> list = _items.values.toList();
+    list.sort((TeaProducer a, TeaProducer b) => a.asString().compareTo(b.asString()));
+    return UnmodifiableListView(list);
+  }
 
   int get length => _items.length;
 
