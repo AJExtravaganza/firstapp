@@ -72,10 +72,16 @@ void resetTeaData(BuildContext context) async {
 
   final dingjiRef = await productions.put(TeaProduction(
       'Dingji Gushu', 400, producers.getById(xizihaoRef.documentID), 2007));
+  final lmeRef = await productions.put(TeaProduction(
+      "Laoman'e Gushu", 500, producers.getById(xizihaoRef.documentID), 2006));
   final seven542Ref = await productions.put(TeaProduction(
       '502-7542', 357, producers.getById(dayiRef.documentID), 2005));
+  final purpleDayiRef = await productions.put(TeaProduction(
+      'Purple Dayi', 357, producers.getById(dayiRef.documentID), 2003));
   final ziyinNannuoRef = await productions.put(TeaProduction(
       'Ziyin Nannuo', 357, producers.getById(wistariaRef.documentID), 2003));
+  final zipinRef = await productions.put(TeaProduction(
+      'Zipin', 357, producers.getById(wistariaRef.documentID), 2003));
 
   await teas.put(Tea(3, productions.getById(dingjiRef.documentID)));
   await teas.put(Tea(2, productions.getById(seven542Ref.documentID)));
