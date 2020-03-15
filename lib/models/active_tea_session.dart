@@ -34,7 +34,7 @@ class ActiveTeaSessionModel extends ChangeNotifier {
 
   set brewProfile(BrewProfile brewProfile) {
     _brewProfile = brewProfile;
-    _currentSteep = 0;
+    _currentSteep = brewProfile.steepTimings[0] > 0 ? 0 : 1;
     notifyListeners();
   }
 
