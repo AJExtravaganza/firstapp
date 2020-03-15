@@ -19,12 +19,24 @@ class _SteepTimer extends State<SteepTimer> {
     super.initState();
   }
 
+
+  void _resetTimerListener () {
+    _resetTimer();
+  }
+
+  @override
+  void dispose() {
+    _activeTeaSession.removeListener(_resetTimerListener);
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     if (_activeTeaSession == null) {
       print("Linking _SteepTimer to ActiveTeaSession");
       _activeTeaSession = Provider.of<ActiveTeaSessionModel>(context);
-      _activeTeaSession.addListener(() {_resetTimer();});
+      _activeTeaSession.addListener(_resetTimerListener);
     }
 
     if (_timeRemaining == null) {
@@ -68,6 +80,7 @@ class _SteepTimer extends State<SteepTimer> {
   }
 
   _resetTimer() {
+    _stopBrewTimer();
     setState(() {
       _timeRemaining = Duration(
           seconds: _activeTeaSession
@@ -78,21 +91,30 @@ class _SteepTimer extends State<SteepTimer> {
   Timer _timer;
   Duration _timeRemaining;
 
-  void startBrewTimer() {
-    const oneSecond = Duration(seconds: 1);
-    _timer = new Timer.periodic(oneSecond, (Timer timer) {
-      if (_timeRemaining > Duration(seconds: 0)) {
-        setState(() {
-          _timeRemaining -= Duration(seconds: 1);
-        });
-      }
+  void _stopBrewTimer() {
+    if (_timer != null && _timer.isActive) {
+      _timer.cancel();
+      _timer = null;
+    }
+  }
 
-      if (!(_timeRemaining > Duration(seconds: 0))) {
-        timer.cancel();
-        FlutterRingtonePlayer.playNotification();
-        incrementSteep();
-      }
-    });
+  void startBrewTimer() {
+    if (_timer == null || !_timer.isActive) {
+      const oneSecond = Duration(seconds: 1);
+      _timer = new Timer.periodic(oneSecond, (Timer timer) {
+        if (_timeRemaining > Duration(seconds: 0)) {
+          setState(() {
+            _timeRemaining -= Duration(seconds: 1);
+          });
+        }
+
+        if (!(_timeRemaining > Duration(seconds: 0))) {
+          timer.cancel();
+          FlutterRingtonePlayer.playNotification();
+          incrementSteep();
+        }
+      });
+    }
   }
 }
 
