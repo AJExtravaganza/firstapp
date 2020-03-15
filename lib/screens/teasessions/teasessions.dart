@@ -52,8 +52,10 @@ class BrewProfileInfo extends StatelessWidget {
     Tea currentTea = Provider.of<ActiveTeaSessionModel>(context).tea;
     if (currentTea == null) {
       return Center(
-        child: SelectTeaButton(),
-      );
+          child: Column(children: <Widget>[
+        Text('\nWelcome to TeaVault!', style: TextStyle(fontSize: 24),),
+        Text('  Add some tea to your stash to get started...')
+      ]));
     } else {
       return Column(
         children: <Widget>[
@@ -81,18 +83,6 @@ void selectTeaFromStash(BuildContext context) {
                 appBar: AppBar(title: Text("Select a Tea")),
                 body: StashView(true),
               )));
-}
-
-class SelectTeaButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return RaisedButton(
-      onPressed: () {
-        selectTeaFromStash(context);
-      },
-      child: Text('Select Tea'),
-    );
-  }
 }
 
 class TeaNameRow extends StatelessWidget {

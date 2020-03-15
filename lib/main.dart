@@ -22,7 +22,7 @@ import 'package:firstapp/screens/teasessions/teasessions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-void updateTeaData(BuildContext context) async {
+Future<void> updateTeaData(BuildContext context) async {
   final producers =
       Provider.of<TeaProducerCollectionModel>(context, listen: false);
   final productions =
@@ -32,6 +32,7 @@ void updateTeaData(BuildContext context) async {
   await producers.fetch();
   await productions.fetch();
   await teas.fetch();
+  
 }
 
 void resetTeaData(BuildContext context) async {
@@ -89,25 +90,6 @@ void resetTeaData(BuildContext context) async {
   await teas.put(Tea(1, productions.getById(ziyinNannuoRef.documentID)));
 
   print('done.');
-
-  //List<Tea> getSampleTeaList() {
-//  return [
-//    Tea(2007, Producer('Xizihao', 'XZH'), Production("Dingji Gushu")),
-//    Tea(2005, Producer('Menghai Dayi Tea Factory', 'Dayi'),
-//        Production("502-7542")),
-//    Tea(2005, Producer('Menghai Dayi Tea Factory', 'Dayi'),
-//        Production("504-8542")),
-//    Tea(2009, Producer('Menghai Dayi Tea Factory', 'Dayi'),
-//        Production("901-7542")),
-//    Tea(2007, Producer('Wisteria'), Production("Honyin (Red Mark)")),
-//    Tea(2007, Producer('Wisteria'), Production("Lanyin (Blue Mark)")),
-//    Tea(2003, Producer('Wisteria'), Production("Ziyin Youle (Purple Mark)")),
-//    Tea(2003, Producer('Wisteria'), Production("Ziyin Nannuo (Blue Mark)")),
-//    Tea(2001, Producer('Xiaguan'), Production("8653 Tiebing")),
-//    Tea(2013, Producer('Xiaguan'), Production("Love Forever (Paper Tong)")),
-//    Tea(2004, Producer('Xiaguan'), Production("Jinsi")),
-//  ];
-//}
 }
 
 void main() {
@@ -143,6 +125,17 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final teaCollection = Provider.of<TeaCollectionModel>(context, listen: false);
+    final activeTeaSession = Provider.of<ActiveTeaSessionModel>(context, listen: false);
+
+    if (teaCollection.needsInitialisation) {
+      activeTeaSession.initialLoad(context);
+    } else {
+      activeTeaSession.refresh(context);
+    }
+
+
+
     return MaterialApp(
       title: 'TeaVault',
       home: AuthenticationWrapper(HomeView()),

@@ -12,6 +12,8 @@ class Tea {
 
   String get id => production.id;
 
+  BrewProfile get defaultBrewProfile => brewProfiles.length > 0 ? brewProfiles.first : BrewProfile.getDefault();
+
   String asString() =>
       "${this.production.producer.shortName} ${this.production.productionYear} ${this.production.name}";
 

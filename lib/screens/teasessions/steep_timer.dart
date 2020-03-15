@@ -27,10 +27,13 @@ class _SteepTimer extends State<SteepTimer> {
     );
   }
 
-
   decrementSteep() {
     try {
-      Provider.of<ActiveTeaSessionModel>(context, listen: false).decrementSteep();
+      final activeTeaSession =
+          Provider.of<ActiveTeaSessionModel>(context, listen: false);
+      if (activeTeaSession.currentSteep > 1) {
+        activeTeaSession.decrementSteep();
+      }
 
       if (_timer != null) {
         _timer.cancel();
@@ -45,7 +48,8 @@ class _SteepTimer extends State<SteepTimer> {
 
   incrementSteep() {
     try {
-      Provider.of<ActiveTeaSessionModel>(context, listen: false).incrementSteep();
+      Provider.of<ActiveTeaSessionModel>(context, listen: false)
+          .incrementSteep();
 
       if (_timer != null) {
         _timer.cancel();

@@ -29,9 +29,6 @@ class TeaProductionCollectionModel extends ChangeNotifier {
         TeaProduction.fromDocumentSnapshot(documentChange.document, producers));
     print(
         'Got ${productions.length} updated productions from db, adding to TeaProductionCollectionModel');
-    productions.forEach((production) {
-      print(production.asString());
-    });
     this._items.addAll(Map.fromIterable(productions,
         key: (production) => production.id, value: (production) => production));
 

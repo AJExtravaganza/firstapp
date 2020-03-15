@@ -13,17 +13,17 @@ class AuthenticationWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final activeUser = Provider.of<FirebaseUser>(context);
-    if (activeUser != null) {
-      print('Got activeUser "${activeUser.uid}" from auth stream');
-    } else {
-      print('No activeUser');
-    }
+//    if (activeUser != null) {
+//      print('Got activeUser "${activeUser.uid}" from auth stream');
+//    } else {
+//      print('No activeUser');
+//    }
 
     if (activeUser != null) {
-      print('Displaying home screen');
+//      print('Displaying home screen');
       return this.child;
     } else {
-      print('Displaying sign-in screen');
+//      print('Displaying sign-in screen');
       return Authenticate();
     }
   }

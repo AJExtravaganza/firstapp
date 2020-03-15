@@ -11,6 +11,7 @@ class TeaCollectionModel extends ChangeNotifier {
   final String dbFieldName = 'teas_in_stash';
   TeaProductionCollectionModel productions;
   Map<String, Tea> _items = {};
+  bool _needsInitialisation = true;
 
   UnmodifiableListView<Tea> get items {
     List<Tea> list = _items.values.toList();
@@ -20,7 +21,9 @@ class TeaCollectionModel extends ChangeNotifier {
 
   int get length => _items.length;
 
-  Tea getUpdated(Tea tea) => _items[tea.id];
+  bool get needsInitialisation => _needsInitialisation;
+
+  Tea getUpdated(Tea tea) => (tea != null && _items.containsKey(tea.id)) ? _items[tea.id] : null;
 
   Future<void> sync() async {
     await push();
@@ -34,14 +37,19 @@ class TeaCollectionModel extends ChangeNotifier {
 
     if (userStashContents != null && userStashContents.length > 0) {
       this._items = Map.fromIterable(userStashContents.values,
-        key: (teaJson) => teaJson['production'], value: (teaJson) => Tea.fromJson(teaJson, productions));
-  }
+          key: (teaJson) => teaJson['production'],
+          value: (teaJson) => Tea.fromJson(teaJson, productions));
+    } else {
+      this._items = {};
+    }
+    print('Got ${_items.length} stashed teas from db, adding to TeaCollectionModel');
 
+
+    _needsInitialisation = false;
     notifyListeners();
   }
 
   Future<void> put(Tea tea) async {
-
     if (_items.containsKey(tea.id)) {
       _items[tea.id].quantity += tea.quantity;
     } else {
@@ -63,7 +71,9 @@ class TeaCollectionModel extends ChangeNotifier {
     final userSnapshot = await fetchUser();
     Map<String, dynamic> userData = userSnapshot.data;
     userData[dbFieldName] = {};
-    _items.values.forEach((tea) {userData[dbFieldName][tea.id] = tea.asMap();});
+    _items.values.forEach((tea) {
+      userData[dbFieldName][tea.id] = tea.asMap();
+    });
 
     notifyListeners();
     await userSnapshot.reference.setData(userData);
