@@ -51,11 +51,18 @@ class BrewProfileInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     Tea currentTea = Provider.of<ActiveTeaSessionModel>(context).tea;
     if (currentTea == null) {
-      return Center(
-          child: Column(children: <Widget>[
-        Text('\nWelcome to TeaVault!', style: TextStyle(fontSize: 24),),
-        Text('  Add some tea to your stash to get started...')
-      ]));
+      return InkWell(
+          onTap: () {
+            selectTeaFromStash(context);
+          },
+          child: Center(
+              child: Column(children: <Widget>[
+            Text(
+              '\nWelcome to TeaVault!',
+              style: TextStyle(fontSize: 24),
+            ),
+            Text('  Add some tea to your stash to get started...')
+          ])));
     } else {
       return Column(
         children: <Widget>[
