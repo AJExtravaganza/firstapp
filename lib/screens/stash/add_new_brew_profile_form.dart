@@ -33,10 +33,24 @@ class AddNewBrewProfileForm extends StatefulWidget {
   AddNewBrewProfileForm(this._tea);
 
   @override
-  _AddNewBrewProfileFormState createState() => new _AddNewBrewProfileFormState(_tea);
+  _BrewProfileFormState createState() => new _BrewProfileFormState(_tea);
 }
 
-class _AddNewBrewProfileFormState extends State<AddNewBrewProfileForm> {
+class EditBrewProfileForm extends StatefulWidget {
+  final Tea _tea;
+
+  EditBrewProfileForm(this._tea, this._name, this._nominalRatio, this._brewTemperatureCelsius, this._steepTimings);
+
+  String _name;
+  int _nominalRatio;
+  int _brewTemperatureCelsius;
+  List<int> _steepTimings = [];
+
+  @override
+  _BrewProfileFormState createState() => new _BrewProfileFormState(_tea, _name, _nominalRatio, _brewTemperatureCelsius, _steepTimings);
+}
+
+class _BrewProfileFormState extends State<AddNewBrewProfileForm> {
   final _formKey = GlobalKey<FormState>();
 
   final Tea _tea;
@@ -46,7 +60,7 @@ class _AddNewBrewProfileFormState extends State<AddNewBrewProfileForm> {
   int _brewTemperatureCelsius;
   List<int> _steepTimings = [];
 
-  _AddNewBrewProfileFormState(this._tea);
+  _BrewProfileFormState(this._tea, [this._name = '', this._nominalRatio = 15, this._brewTemperatureCelsius = 100, this._steepTimings]);
 
   @override
   Widget build(BuildContext context) {
@@ -58,22 +72,25 @@ class _AddNewBrewProfileFormState extends State<AddNewBrewProfileForm> {
                 labelText: 'Enter Profile Name', hintText: ''),
             initialValue: '',
             validator: (value) {
+              value = value.trim();
               if (value.isEmpty) {
                 return 'Please enter a name for this profile';
+              } else if (_tea.brewProfiles.where((brewProfile) => brewProfile.name == value).length > 0) {
+                return 'A brew profile named ${value} already exists for this tea';
               }
 
               return null;
             },
             onSaved: (value) {
               setState(() {
-                _name = value;
+                _name = value.trim();
               });
             },
             keyboardType: TextInputType.text),
         TextFormField(
             decoration: InputDecoration(
                 labelText: 'Enter Ratio', hintText: 'Enter x to represent 1:x leaf:water'),
-            initialValue: '15',
+            initialValue: this._nominalRatio.toString(),
             validator: (value) {
               if (int.tryParse(value) == null || int.parse(value) < 5 || int.parse(value) >200 ) {
                 return 'Please enter a valid value (5-200)';
@@ -90,7 +107,7 @@ class _AddNewBrewProfileFormState extends State<AddNewBrewProfileForm> {
         TextFormField(
             decoration: InputDecoration(
                 labelText: 'Enter Brew Temperature (°C)', hintText: ''),
-            initialValue: '100',
+            initialValue: this._brewTemperatureCelsius.toString(),
             validator: (value) {
               if (int.tryParse(value) == null || int.parse(value) < 1 || int.parse(value) >100 ) {
                 return 'Please enter a valid value (1-100)';
@@ -105,14 +122,14 @@ class _AddNewBrewProfileFormState extends State<AddNewBrewProfileForm> {
         TextFormField(
             decoration: InputDecoration(
                 labelText: 'Enter Steep Timings', hintText: 'Enter in seconds, comma-separated.  First value is rinse.'),
-            initialValue: '10,5,10,30',
+            initialValue: _steepTimings != null && _steepTimings.length > 0 ? _steepTimings.join(',') : '',
             validator: (value) {
               if (value.split(',').length < 2  ) {
                 return 'Please enter a valid set of comma-separated integers.';
               }
 
               try {
-                value.replaceAll(' ', '').split(',').map((str) => int.parse(str));
+                value.replaceAll(' ', '').split(',').where((str) => str != '').map((str) => int.parse(str));
               } on FormatException catch (err) {
                 return 'Please enter a valid set of comma-separated integers.';
               }

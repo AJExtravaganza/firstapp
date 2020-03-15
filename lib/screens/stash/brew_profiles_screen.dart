@@ -59,7 +59,7 @@ class BrewProfilesScreen extends StatelessWidget {
   }
 }
 
-enum BrewProfilesTileInteraction { edit, delete }
+enum BrewProfilesTileInteraction { edit, setDefault, delete }
 
 class BrewProfilesListItem extends StatelessWidget {
   final BrewProfile _brewProfile;

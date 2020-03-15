@@ -61,10 +61,19 @@ class TeaCollectionModel extends ChangeNotifier {
   }
 
   Future<void> putBrewProfile(BrewProfile brewProfile, Tea tea) async {
+    if (_items[tea.id].brewProfiles.where((existingBrewProfile) => existingBrewProfile.name == brewProfile.name).length > 0) {
+      throw Exception('A brew profile named ${brewProfile.name} already exists for this tea');
+    }
+
     _items[tea.id].brewProfiles.add(brewProfile);
 
     notifyListeners();
     await push();
+  }
+
+  Future<void> updateBrewProfile(BrewProfile brewProfile, Tea tea) async {
+    _items.remove(_items[tea.id].brewProfiles.singleWhere((existingBrewProfile) => existingBrewProfile.name == brewProfile.name));
+    putBrewProfile(brewProfile, tea);
   }
 
   Future<void> push() async {
