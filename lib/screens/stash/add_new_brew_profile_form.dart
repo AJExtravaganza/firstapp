@@ -128,16 +128,18 @@ class _AddNewBrewProfileFormState extends State<AddNewBrewProfileForm> {
         RaisedButton(
             color: Colors.blue,
             textColor: Colors.white,
-            child: new Text('Add to Stash'),
-            onPressed: () {addNewBrewProfileFormSubmit(Provider.of<TeaCollectionModel>(context, listen: false));})
+            child: new Text('Add Brew Profile'),
+            onPressed: () async {await addNewBrewProfileFormSubmit(Provider.of<TeaCollectionModel>(context, listen: false));})
       ]),
     );
   }
 
-  void addNewBrewProfileFormSubmit(TeaCollectionModel teaCollection) {
+  void addNewBrewProfileFormSubmit(TeaCollectionModel teaCollection) async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      teaCollection.putBrewProfile(BrewProfile(_name, _nominalRatio, _brewTemperatureCelsius, _steepTimings), _tea);
+      FocusScope.of(context).unfocus(); //Dismiss the keyboard
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text('Adding new brew profile...')));
+      await teaCollection.putBrewProfile(BrewProfile(_name, _nominalRatio, _brewTemperatureCelsius, _steepTimings), _tea);
       Navigator.pop(context);
     }
   }

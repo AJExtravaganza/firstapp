@@ -1,8 +1,10 @@
 import 'package:firstapp/models/brew_profile.dart';
 import 'package:firstapp/models/tea.dart';
+import 'package:firstapp/models/tea_collection.dart';
 import 'package:firstapp/screens/stash/add_new_brew_profile_form.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class BrewProfilesScreen extends StatelessWidget {
   final Tea _tea;
@@ -19,23 +21,21 @@ class BrewProfilesScreen extends StatelessWidget {
     );
   }
 
-  Widget getBrewProfilesListView(Tea tea, BuildContext context) {
-    final brewProfiles = tea.brewProfiles;
+  Widget getBrewProfilesListView(Tea _tea, BuildContext context) {
+    final tea = Provider.of<TeaCollectionModel>(context).getUpdated(_tea);
     if (tea.brewProfiles.length == 0) {
       return getAddBrewProfileWidget(context, tea);
     }
 
-    return Column(
-      children: <Widget>[
-        Expanded(
-          child: ListView.builder(
-              itemCount: tea.brewProfiles.length,
-              itemBuilder: (BuildContext context, int index) =>
-                  BrewProfilesListItem(tea.brewProfiles[index])),
-        ),
-        getAddBrewProfileWidget(context, tea)
-      ],
-    );
+    return Column(children: <Widget>[
+      Expanded(
+        child: ListView.builder(
+            itemCount: tea.brewProfiles.length,
+            itemBuilder: (BuildContext context, int index) =>
+                BrewProfilesListItem(tea.brewProfiles[index])),
+      ),
+      getAddBrewProfileWidget(context, tea)
+    ]);
   }
 
   Widget getAddBrewProfileWidget(BuildContext context, Tea tea) {
@@ -47,8 +47,10 @@ class BrewProfilesScreen extends StatelessWidget {
                 child: RaisedButton(
           child: Text("Add New Brew Profile"),
           onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(
-                              builder: (context) => AddNewBrewProfile(tea)));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => AddNewBrewProfile(tea)));
           },
         )))
       ],

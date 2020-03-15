@@ -49,7 +49,7 @@ void resetTeaData(BuildContext context) async {
       .collection(productions.dbCollectionName)
       .getDocuments();
   final old_teas =
-      await user.reference.collection(teas.dbCollectionName).getDocuments();
+      await user.reference.collection(teas.dbFieldName).getDocuments();
 
   print('Deleting all producers, productions and teas...');
 

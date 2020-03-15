@@ -105,15 +105,17 @@ class _StashAddNewTeaFormState extends State<StashAddNewTeaForm> {
             color: Colors.blue,
             textColor: Colors.white,
             child: new Text('Add to Stash'),
-            onPressed: () {addNewTeaFormSubmit(Provider.of<TeaCollectionModel>(context, listen: false));})
+            onPressed: () async {await addNewTeaFormSubmit(Provider.of<TeaCollectionModel>(context, listen: false));})
       ]),
     );
   }
 
-  void addNewTeaFormSubmit(TeaCollectionModel teaCollection) {
+  void addNewTeaFormSubmit(TeaCollectionModel teaCollection) async {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
-      teaCollection.put(Tea(_quantity, _production));
+      FocusScope.of(context).unfocus(); //Dismiss the keyboard
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text('Adding new tea to stash...')));
+      await teaCollection.put(Tea(_quantity, _production));
       Navigator.pop(context);
     }
   }

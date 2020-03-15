@@ -6,6 +6,7 @@ class BrewProfile {
   int nominalRatio; // expressed as integer n for ratio n:1 water:leaf
   int brewTemperatureCelsius; // expressed in degrees Celsius
   List<int> steepTimings;
+
   int get steeps => steepTimings.length;
 
   Map<String, dynamic> asMap() => {
@@ -18,13 +19,10 @@ class BrewProfile {
   BrewProfile(this.name, this.nominalRatio, this.brewTemperatureCelsius,
       this.steepTimings);
 
-  static BrewProfile fromDocumentSnapshot(DocumentSnapshot documentSnapshot) {
-    try{
-      final data = documentSnapshot.data;
-      return BrewProfile(data['name'], data['nominal_ratio'], data['brew_temperature_celsuis'], data['steep_timings']);
-    } catch (err) {
-      return getDefault();
-    }
+  static BrewProfile fromJson(Map<String, dynamic> json) {
+    List<int> intList = List<int>.from(json['steep_timings']);
+    return BrewProfile(json['name'], json['nominal_ratio'],
+        json['brew_temperature_celsius'], intList);
   }
 
   static BrewProfile getDefault() {

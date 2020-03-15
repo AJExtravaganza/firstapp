@@ -8,9 +8,9 @@ import 'package:firstapp/models/tea_production_collection.dart';
 import 'package:flutter/cupertino.dart';
 
 class TeaCollectionModel extends ChangeNotifier {
-  final String dbCollectionName = 'teas_in_stash';
+  final String dbFieldName = 'teas_in_stash';
   TeaProductionCollectionModel productions;
-  final Map<String, Tea> _items = {};
+  Map<String, Tea> _items = {};
 
   UnmodifiableListView<Tea> get items {
     List<Tea> list = _items.values.toList();
@@ -20,47 +20,54 @@ class TeaCollectionModel extends ChangeNotifier {
 
   int get length => _items.length;
 
+  Tea getUpdated(Tea tea) => _items[tea.id];
+
+  Future<void> sync() async {
+    await push();
+    await fetch();
+  }
+
   Future<void> fetch() async {
     print('Updating tea collection');
     final user = await fetchUser();
-    final userStashQuery =
-        await user.reference.collection(dbCollectionName).getDocuments();
-    //TODO: try collection().snapshots for live updates
-    final userStashContents = userStashQuery.documentChanges.map(
-        (documentChange) => Tea.fromDocumentSnapshot(documentChange.document, this.productions));
-    print(
-        'Got ${userStashContents.length} updated teas from db, adding to TeaCollectionModel');
-    userStashContents.forEach((tea) {print(tea.asString());});
-    this._items.addAll(Map.fromIterable(userStashContents,
-        key: (tea) => tea.id, value: (tea) => tea));
+    final userStashContents = user.data[dbFieldName];
+
+    if (userStashContents != null && userStashContents.length > 0) {
+      this._items = Map.fromIterable(userStashContents.values,
+        key: (teaJson) => teaJson['production'], value: (teaJson) => Tea.fromJson(teaJson, productions));
+  }
 
     notifyListeners();
   }
 
-  Future<DocumentReference> put(Tea tea) async {
-    final userSnapshot = await fetchUser();
-    
-    //Check for tea already in stash
-    final existingReferences = await userSnapshot.reference.collection(dbCollectionName).where('production', isEqualTo: tea.production.id).getDocuments();
-    if (existingReferences.documents.length > 0) {
-      //If tea already in stash, update the quantity
-      tea.quantity += existingReferences.documents.first.data['quantity'];
-      await existingReferences.documents.first.reference.setData(tea.asMap());
-      return existingReferences.documents.first.reference;
+  Future<void> put(Tea tea) async {
+
+    if (_items.containsKey(tea.id)) {
+      _items[tea.id].quantity += tea.quantity;
     } else {
-      //Else create a new db entry
-      final newDocumentReference = await userSnapshot.reference.collection(dbCollectionName).add(tea.asMap());
-      tea.id = newDocumentReference.documentID;
-      _items[newDocumentReference.documentID] = tea;
-      return newDocumentReference;
+      _items[tea.id] = tea;
     }
+
+    notifyListeners();
+    await push();
   }
 
-  Future<DocumentReference> putBrewProfile(BrewProfile brewProfile, Tea tea) async {
+  Future<void> putBrewProfile(BrewProfile brewProfile, Tea tea) async {
+    _items[tea.id].brewProfiles.add(brewProfile);
+
+    notifyListeners();
+    await push();
+  }
+
+  Future<void> push() async {
     final userSnapshot = await fetchUser();
-    final teaReference = await userSnapshot.reference.collection(dbCollectionName).document(tea.id);
-    final newDocumentReference = teaReference.collection('brew_profiles').add(brewProfile.asMap());
-    return newDocumentReference;
+    Map<String, dynamic> userData = userSnapshot.data;
+    userData[dbFieldName] = {};
+    _items.values.forEach((tea) {userData[dbFieldName][tea.id] = tea.asMap();});
+
+    notifyListeners();
+    await userSnapshot.reference.setData(userData);
+    final us2 = await fetchUser();
   }
 
   TeaCollectionModel(TeaProductionCollectionModel productions) {
