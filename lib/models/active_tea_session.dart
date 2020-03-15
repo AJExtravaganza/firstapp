@@ -51,24 +51,24 @@ class ActiveTeaSessionModel extends ChangeNotifier {
 
   Future<void> initialLoad(BuildContext context) async {
     await updateTeaData(context);
-    refresh(context);
+//    refresh(context);
   }
 
-  //Updates the ActiveTeaSession for change from no teas in stash to some teas in stash or vice versa
-  void refresh(BuildContext context) {
-    print("Checking for necessary changes to ActiveTeaSession...");
-    final teasInStash = Provider.of<TeaCollectionModel>(context, listen: false);
-    if (teasInStash.items.length > 0 && teasInStash.getUpdated(this._tea) == null) {
-      resetSession(teasInStash.items.first);
-      print('Active tea is now ${_tea.asString()}');
-
-    } else {
-      print('Active tea is now null');
-      tea = null;
-      _brewProfile = null;
-      notifyListeners();
-    }
-  }
+//  //Updates the ActiveTeaSession for change from no teas in stash to some teas in stash or vice versa
+//  void refresh(BuildContext context) {
+//    print("Checking for necessary changes to ActiveTeaSession...");
+//    final teasInStash = Provider.of<TeaCollectionModel>(context, listen: false);
+//    if (teasInStash.items.length > 0 && teasInStash.getUpdated(this._tea) == null) {
+//      resetSession(teasInStash.items.first);
+//      print('Active tea is now ${_tea.asString()}');
+//
+//    } else {
+//      print('Active tea is now null');
+//      tea = null;
+//      _brewProfile = null;
+//      notifyListeners();
+//    }
+//  }
 
   ActiveTeaSessionModel(TeaCollectionModel teaCollectionModel) {
     try {

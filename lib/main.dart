@@ -130,8 +130,6 @@ class MyApp extends StatelessWidget {
 
     if (teaCollection.needsInitialisation) {
       activeTeaSession.initialLoad(context);
-    } else {
-      activeTeaSession.refresh(context);
     }
 
 
