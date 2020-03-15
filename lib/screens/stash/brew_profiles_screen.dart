@@ -65,13 +65,29 @@ class BrewProfilesListItem extends StatelessWidget {
 
   BrewProfilesListItem(this._brewProfile);
 
+  String steepTimeAsHMS(int seconds) {
+    if (seconds < 60) {
+      return '${seconds}s';
+    } else if (seconds < 60 * 60) {
+      int minutes = (seconds / 60).toInt();
+      seconds %= 60;
+      return '${minutes}m${seconds}s';
+    } else {
+      int hours = (seconds / 3600).toInt();
+      int minutes = (seconds % 3600 / 60).toInt();
+      return minutes > 0 ? '${hours}h${minutes}m' : '${hours}h';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
         leading: FlutterLogo(size: 72.0),
         title: Text(_brewProfile.name),
-        subtitle: Text('details go here later'),
+        subtitle: Text('1:${_brewProfile.nominalRatio}, ${_brewProfile.brewTemperatureCelsius}°C' +
+            '\n'
+                '${_brewProfile.steepTimings.map(steepTimeAsHMS).join('/')}'),
         trailing: PopupMenuButton<BrewProfilesTileInteraction>(
           onSelected: (BrewProfilesTileInteraction result) {
             if (result == BrewProfilesTileInteraction.edit) {

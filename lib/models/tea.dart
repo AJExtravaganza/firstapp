@@ -8,30 +8,46 @@ enum TeaFormFactor { cake, brick, tuo, mushroomtuo, looseleaf }
 class Tea {
   int quantity;
   TeaProduction production;
+  String defaultBrewProfileName;
   List<BrewProfile> brewProfiles = [];
 
   String get id => production.id;
 
-  BrewProfile get defaultBrewProfile => brewProfiles.length > 0 ? brewProfiles.first : BrewProfile.getDefault();
+  BrewProfile get defaultBrewProfile {
+    if (brewProfiles.length == 0 || defaultBrewProfileName == null) {
+      return BrewProfile.getDefault();
+    } else {
+      return brewProfiles.where((brewProfile) => (brewProfile.name == defaultBrewProfileName)).first;
+    }
+  }
 
   String asString() =>
       "${this.production.producer.shortName} ${this.production.productionYear} ${this.production.name}";
 
   Map<String, dynamic> asMap() {
-    final brewProfileList = this.brewProfiles != null ? this.brewProfiles.map((brewProfile) => brewProfile.asMap()).toList() : [];
-    return    {'quantity': this.quantity, 'production': production.id, 'brew_profiles': brewProfileList};
-
+    final brewProfileList = this.brewProfiles != null
+        ? this.brewProfiles.map((brewProfile) => brewProfile.asMap()).toList()
+        : [];
+    return {
+      'quantity': this.quantity,
+      'production': production.id,
+      'brew_profiles': brewProfileList,
+      'default_brew_profile_name': defaultBrewProfileName
+    };
   }
 
-  Tea(this.quantity, this.production, [this.brewProfiles = const [] ]) {
+  Tea(this.quantity, this.production, [this.brewProfiles = const []]) {
     if (this.brewProfiles.isEmpty) {
       this.brewProfiles = [];
     }
   }
 
-  static Tea fromJson(Map<String, dynamic> json, TeaProductionCollectionModel productions) {
-    List<BrewProfile> brewProfiles = List<BrewProfile>.from(json['brew_profiles'].map((json) => BrewProfile.fromJson(json)));
-    return Tea(json['quantity'], productions.getById(json['production']), brewProfiles);
+  static Tea fromJson(
+      Map<String, dynamic> json, TeaProductionCollectionModel productions) {
+    List<BrewProfile> brewProfiles = List<BrewProfile>.from(
+        json['brew_profiles'].map((json) => BrewProfile.fromJson(json)));
+    return Tea(json['quantity'], productions.getById(json['production']),
+        brewProfiles);
   }
 
   bool operator ==(dynamic other) {
@@ -44,5 +60,3 @@ class Tea {
 class Terroir {
   // Implement later
 }
-
-

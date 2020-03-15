@@ -53,7 +53,7 @@ enum StashTileInteraction { brewProfiles }
 
 class StashListItem extends StatelessWidget {
   final Tea tea;
-  bool _activeTeaSelectionMode = false;
+  bool _isPushedPageRoute = false;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +62,8 @@ class StashListItem extends StatelessWidget {
         leading: FlutterLogo(size: 72.0),
         title: Text(tea.asString()),
         subtitle:
-            Text('${tea.quantity}x ${tea.production.nominalWeightGrams}g'),
+            Text('${tea.quantity}x ${tea.production.nominalWeightGrams}g' + '\n'
+                'Brew Profile: ${tea.defaultBrewProfile.name}'),
         trailing: PopupMenuButton<StashTileInteraction>(
           onSelected: (StashTileInteraction result) {
             if (result == StashTileInteraction.brewProfiles) {
@@ -85,15 +86,16 @@ class StashListItem extends StatelessWidget {
         ),
         isThreeLine: true,
         onTap: () {
-          if (_activeTeaSelectionMode) {
-            Provider.of<ActiveTeaSessionModel>(context, listen: false)
-                .resetSession(tea);
+          Provider.of<ActiveTeaSessionModel>(context, listen: false).resetSession(tea);
+          if (_isPushedPageRoute) {
             Navigator.pop(context);
+          } else {
+            context.findAncestorStateOfType<HomeViewState>().switchToTab(HomeViewState.SESSIONTABIDX);
           }
         },
       ),
     );
   }
 
-  StashListItem(this.tea, [this._activeTeaSelectionMode = false]);
+  StashListItem(this.tea, [this._isPushedPageRoute = false]);
 }

@@ -163,8 +163,6 @@ class HomeViewState extends State<HomeView>
   static final SESSIONTABIDX = 0;
   static final STASHTABIDX = 1;
 
-  bool stashTeaSelectionMode = false;
-
   final List<Tab> homeTabs = <Tab>[
     Tab(
       text: sessionTabLabel,
@@ -179,13 +177,14 @@ class HomeViewState extends State<HomeView>
 
   TabController _tabController;
 
+  void switchToTab(int tabId) {
+    _tabController.index = tabId;
+  }
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: homeTabs.length, vsync: this);
-
-    //Provide initial trigger of update for tea
-//    resetTeaData(context);
   }
 
   @override
@@ -201,9 +200,7 @@ class HomeViewState extends State<HomeView>
       child: Scaffold(
         appBar: AppBar(
 //          title: Text('TeaVault v0.1'),
-          title: stashTeaSelectionMode
-              ? Text("Select a Tea")
-              : TabBar(
+          title: TabBar(
                   controller: _tabController,
                   tabs: homeTabs,
                 ),
