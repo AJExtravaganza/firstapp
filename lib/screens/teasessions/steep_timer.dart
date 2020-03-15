@@ -12,6 +12,8 @@ class SteepTimer extends StatefulWidget {
 }
 
 class _SteepTimer extends State<SteepTimer> {
+  ActiveTeaSessionModel _activeTeaSession;
+
   @override
   void initState() {
     super.initState();
@@ -19,6 +21,12 @@ class _SteepTimer extends State<SteepTimer> {
 
   @override
   Widget build(BuildContext context) {
+    if (_activeTeaSession == null) {
+      print("Linking _SteepTimer to ActiveTeaSession");
+      _activeTeaSession = Provider.of<ActiveTeaSessionModel>(context);
+      _activeTeaSession.addListener(() {_resetTimer();});
+    }
+
     if (_timeRemaining == null) {
       _resetTimer();
     }
@@ -29,10 +37,8 @@ class _SteepTimer extends State<SteepTimer> {
 
   decrementSteep() {
     try {
-      final activeTeaSession =
-          Provider.of<ActiveTeaSessionModel>(context, listen: false);
-      if (activeTeaSession.currentSteep > 1) {
-        activeTeaSession.decrementSteep();
+      if (_activeTeaSession.currentSteep > 1) {
+        _activeTeaSession.decrementSteep();
       }
 
       if (_timer != null) {
@@ -48,8 +54,7 @@ class _SteepTimer extends State<SteepTimer> {
 
   incrementSteep() {
     try {
-      Provider.of<ActiveTeaSessionModel>(context, listen: false)
-          .incrementSteep();
+      _activeTeaSession.incrementSteep();
 
       if (_timer != null) {
         _timer.cancel();
@@ -63,13 +68,10 @@ class _SteepTimer extends State<SteepTimer> {
   }
 
   _resetTimer() {
-    ActiveTeaSessionModel activeTeaSession =
-        Provider.of<ActiveTeaSessionModel>(context, listen: false);
-
     setState(() {
       _timeRemaining = Duration(
-          seconds: activeTeaSession
-              .brewProfile.steepTimings[activeTeaSession.currentSteep]);
+          seconds: _activeTeaSession
+              .brewProfile.steepTimings[_activeTeaSession.currentSteep]);
     });
   }
 
@@ -95,30 +97,24 @@ class _SteepTimer extends State<SteepTimer> {
 }
 
 class SteepCountRow extends StatelessWidget {
-  String getCurrentSteepText(BuildContext context) {
-    ActiveTeaSessionModel activeTeaSession =
-        Provider.of<ActiveTeaSessionModel>(context);
-
-    if (activeTeaSession.currentSteep == 0) {
-      return 'Rinse';
-    } else {
-      return 'Steep ${activeTeaSession.currentSteep}';
-    }
+  String getSteepText(int steep) {
+    return steep == 0 ? 'Rinse' : 'Steep ${steep}';
   }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          flex: 10,
-          child: Text(
-            getCurrentSteepText(context),
-            textAlign: TextAlign.center,
-          ),
-        )
-      ],
-    );
+    return Consumer<ActiveTeaSessionModel>(
+        builder: (context, activeTeaSession, child) => Row(
+              children: <Widget>[
+                Expanded(
+                  flex: 10,
+                  child: Text(
+                    getSteepText(activeTeaSession.currentSteep),
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              ],
+            ));
   }
 }
 
@@ -132,31 +128,33 @@ class TimerDisplay extends StatelessWidget {
         .split('.')
         .first
         .substring(2);
-    return Row(
-      children: <Widget>[
-        Expanded(
-          flex: 1,
-          child: Container(),
-        ),
-        Expanded(
-          flex: 1,
-          child: TimerIconButton(),
-        ),
-        Expanded(
-            flex: 6,
-            child: FlatButton(
-              child: Text(
-                currentValueStr,
-                style: TextStyle(fontSize: 72, fontFamily: 'RobotoMono'),
-              ),
-              onPressed: () {},
-            )),
-        Expanded(
-          flex: 2,
-          child: Container(),
-        ),
-      ],
-    );
+    return Consumer<ActiveTeaSessionModel>(
+        builder: (context, activeTeaSession, child) => Row(
+              children: <Widget>[
+                Expanded(
+                  flex: 1,
+                  child: Container(),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: TimerIconButton(),
+                ),
+                Expanded(
+                    flex: 6,
+                    child: FlatButton(
+                      child: Text(
+                        currentValueStr,
+                        style:
+                            TextStyle(fontSize: 72, fontFamily: 'RobotoMono'),
+                      ),
+                      onPressed: () {},
+                    )),
+                Expanded(
+                  flex: 2,
+                  child: Container(),
+                ),
+              ],
+            ));
   }
 }
 

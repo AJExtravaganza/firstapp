@@ -86,7 +86,7 @@ class StashListItem extends StatelessWidget {
         ),
         isThreeLine: true,
         onTap: () {
-          Provider.of<ActiveTeaSessionModel>(context, listen: false).resetSession(tea);
+          Provider.of<ActiveTeaSessionModel>(context, listen: false).tea = tea;
           if (_isPushedPageRoute) {
             Navigator.pop(context);
           } else {
