@@ -2,6 +2,7 @@ import 'package:firstapp/models/active_tea_session.dart';
 import 'package:firstapp/models/brew_profile.dart';
 import 'package:firstapp/models/brewing_vessel.dart';
 import 'package:firstapp/models/tea.dart';
+import 'package:firstapp/screens/stash/brew_profiles_screen.dart';
 import 'package:firstapp/screens/stash/stash.dart';
 import 'package:firstapp/screens/teasessions/steep_timer.dart';
 import 'package:flutter/material.dart';
@@ -52,13 +53,15 @@ class BrewProfileInfo extends StatelessWidget {
     Tea currentTea = Provider.of<ActiveTeaSessionModel>(context).tea;
     if (currentTea == null) {
       return Material(
-            borderRadius: (BorderRadius.only(bottomLeft: Radius.circular(40.0), bottomRight: Radius.circular(40.0))),
-            clipBehavior: Clip.antiAlias,
-            child: InkWell(
-              onTap: () {
-                selectTeaFromStash(context);
-              },
-              child: Center(
+          borderRadius: (BorderRadius.only(
+              bottomLeft: Radius.circular(40.0),
+              bottomRight: Radius.circular(40.0))),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () {
+              selectTeaFromStash(context);
+            },
+            child: Center(
                 child: Column(children: <Widget>[
               Text(
                 '\n\nWelcome to TeaVault!',
@@ -75,9 +78,13 @@ class BrewProfileInfo extends StatelessWidget {
             child: Container(),
           ),
           Expanded(flex: 6, child: TeaNameRow()),
-          Expanded(flex: 3, child: BrewingParametersRow()),
           Expanded(
-            flex: 3,
+            flex: 6,
+            child: Column(children: [BrewingParametersRow(), BrewProfileNameRow()],
+          )),
+//          Expanded(flex: 3, child: BrewingParametersRow()),
+          Expanded(
+            flex: 1,
             child: Container(),
           ),
         ],
@@ -87,13 +94,36 @@ class BrewProfileInfo extends StatelessWidget {
 }
 
 void selectTeaFromStash(BuildContext context) {
+
+//  //TODO: Implement select pot
+//  Navigator.push(
+//      context,
+//      MaterialPageRoute(
+//          builder: (context) => Scaffold(
+//            appBar: AppBar(title: Text("Select a Tea")),
+//            body: StashView(true),
+//          )));
+
+
+  final selectTeaRoute = MaterialPageRoute(
+      builder: (context) => Scaffold(
+        appBar: AppBar(title: Text("Select a Tea")),
+        body: StashView(true),
+      )
+  );
+
   Navigator.push(
       context,
-      MaterialPageRoute(
-          builder: (context) => Scaffold(
-                appBar: AppBar(title: Text("Select a Tea")),
-                body: StashView(true),
-              )));
+      selectTeaRoute
+  );
+
+  selectTeaRoute.popped.then((_) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => BrewProfilesScreen(Provider.of<ActiveTeaSessionModel>(context).tea)
+            ));
+  });
 }
 
 class TeaNameRow extends StatelessWidget {
@@ -119,6 +149,20 @@ class TeaNameRow extends StatelessWidget {
   }
 }
 
+class BrewProfileNameRow extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ActiveTeaSessionModel>(
+        builder: (context, activeTeaSession, child) => Row(children: <Widget>[
+              Expanded(
+                  child: Center(
+                child:
+                    Text('Brew Profile: ${activeTeaSession.brewProfile.name}'),
+              ))
+            ]));
+  }
+}
+
 class BrewingParametersRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -128,42 +172,42 @@ class BrewingParametersRow extends StatelessWidget {
         Provider.of<ActiveTeaSessionModel>(context).brewProfile;
     return Row(children: <Widget>[
       Expanded(
-        flex: 1,
+        flex: 10,
         child: Container(),
       ),
       Expanded(
-        flex: 4,
+        flex: 40,
         child: BrewingParameterRowElement(FontAwesomeIcons.leaf,
             '${currentBrewProfile.getDose(currentBrewingVessel).toStringAsFixed(1)}g'),
       ),
       Expanded(
-        flex: 1,
+        flex: 10,
         child: Container(),
       ),
       Expanded(
-          flex: 4,
+          flex: 42,
           child: BrewingParameterRowElement(FontAwesomeIcons.balanceScale,
               '1:${currentBrewProfile.nominalRatio}')),
       Expanded(
-        flex: 1,
+        flex: 8,
         child: Container(),
       ),
       Expanded(
-        flex: 4,
+        flex: 40,
         child: BrewingParameterRowElement(FontAwesomeIcons.tint,
             '${currentBrewingVessel.volumeMilliliters}ml'),
       ),
       Expanded(
-        flex: 1,
+        flex: 10,
         child: Container(),
       ),
       Expanded(
-        flex: 4,
+        flex: 40,
         child: BrewingParameterRowElement(FontAwesomeIcons.temperatureHigh,
             '${currentBrewProfile.brewTemperatureCelsius}°C'),
       ),
       Expanded(
-        flex: 1,
+        flex: 10,
         child: Container(),
       ),
     ]);

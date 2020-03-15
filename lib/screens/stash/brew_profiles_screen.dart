@@ -1,3 +1,4 @@
+import 'package:firstapp/models/active_tea_session.dart';
 import 'package:firstapp/models/brew_profile.dart';
 import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/models/tea_collection.dart';
@@ -15,7 +16,7 @@ class BrewProfilesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Brew Profiles'),
+        title: Text('Select a Brew Profile'),
       ),
       body: getBrewProfilesListView(_tea, context),
     );
@@ -113,11 +114,8 @@ class BrewProfilesListItem extends StatelessWidget {
         ),
         isThreeLine: true,
         onTap: () {
-//          if (context
-//              .findAncestorStateOfType<HomeViewState>()
-//              .stashTeaSelectionMode) {
-//            selectTeaAndGoToSessionTab();
-//          }
+        Provider.of<ActiveTeaSessionModel>(context, listen: false).brewProfile = _brewProfile;
+        Navigator.pop(context);
         },
       ),
     );

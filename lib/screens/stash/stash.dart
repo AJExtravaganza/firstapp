@@ -63,7 +63,7 @@ class StashListItem extends StatelessWidget {
         title: Text(tea.asString()),
         subtitle:
             Text('${tea.quantity}x ${tea.production.nominalWeightGrams}g' + '\n'
-                'Brew Profile: ${tea.defaultBrewProfile.name}'),
+                'Default Profile: ${tea.defaultBrewProfile.name}'),
         trailing: PopupMenuButton<StashTileInteraction>(
           onSelected: (StashTileInteraction result) {
             if (result == StashTileInteraction.brewProfiles) {

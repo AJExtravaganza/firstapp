@@ -14,15 +14,19 @@ class ActiveTeaSessionModel extends ChangeNotifier {
   BrewingVessel brewingVessel;
   int _currentSteep = 0;
 
-  get currentSteep => _currentSteep;
+  get tea => _tea;
   get brewProfile => _brewProfile != null ? _brewProfile : BrewProfile.getDefault();
+  get currentSteep => _currentSteep;
 
   set tea(Tea newTea) {
     _tea = newTea;
     notifyListeners();
   }
 
-  Tea get tea => _tea;
+  set brewProfile(BrewProfile brewProfile) {
+    _brewProfile = brewProfile;
+    notifyListeners();
+  }
 
   set currentSteep(int value) {
     if (value >= 0 && value < brewProfile.steepTimings.length) {

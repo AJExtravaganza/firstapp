@@ -8,16 +8,15 @@ enum TeaFormFactor { cake, brick, tuo, mushroomtuo, looseleaf }
 class Tea {
   int quantity;
   TeaProduction production;
-  String defaultBrewProfileName;
   List<BrewProfile> brewProfiles = [];
 
   String get id => production.id;
 
   BrewProfile get defaultBrewProfile {
-    if (brewProfiles.length == 0 || defaultBrewProfileName == null) {
+    if (brewProfiles.length == 0) {
       return BrewProfile.getDefault();
     } else {
-      return brewProfiles.where((brewProfile) => (brewProfile.name == defaultBrewProfileName)).first;
+      return brewProfiles.firstWhere((brewProfile) => (brewProfile.isFavorite == true));
     }
   }
 
@@ -32,7 +31,6 @@ class Tea {
       'quantity': this.quantity,
       'production': production.id,
       'brew_profiles': brewProfileList,
-      'default_brew_profile_name': defaultBrewProfileName
     };
   }
 

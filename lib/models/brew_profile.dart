@@ -6,6 +6,7 @@ class BrewProfile {
   int nominalRatio; // expressed as integer n for ratio n:1 water:leaf
   int brewTemperatureCelsius; // expressed in degrees Celsius
   List<int> steepTimings;
+  bool isFavorite;
 
   int get steeps => steepTimings.length;
 
@@ -13,16 +14,17 @@ class BrewProfile {
         'name': name,
         'nominal_ratio': nominalRatio,
         'brew_temperature_celsius': brewTemperatureCelsius,
-        'steep_timings': steepTimings
+        'steep_timings': steepTimings,
+        'is_favorite': isFavorite
       };
 
   BrewProfile(this.name, this.nominalRatio, this.brewTemperatureCelsius,
-      this.steepTimings);
+      this.steepTimings, [this.isFavorite = false]);
 
   static BrewProfile fromJson(Map<String, dynamic> json) {
-    List<int> intList = List<int>.from(json['steep_timings']);
+    List<int> steepTimings = List<int>.from(json['steep_timings']);
     return BrewProfile(json['name'], json['nominal_ratio'],
-        json['brew_temperature_celsius'], intList);
+        json['brew_temperature_celsius'], steepTimings, json['is_favorite']);
   }
 
   static BrewProfile getDefault() {

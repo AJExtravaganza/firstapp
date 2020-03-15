@@ -135,11 +135,12 @@ class _AddNewBrewProfileFormState extends State<AddNewBrewProfileForm> {
   }
 
   void addNewBrewProfileFormSubmit(TeaCollectionModel teaCollection) async {
+    bool defaultToFavorite =_tea.brewProfiles.length == 0;
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       FocusScope.of(context).unfocus(); //Dismiss the keyboard
       Scaffold.of(context).showSnackBar(SnackBar(content: Text('Adding new brew profile...')));
-      await teaCollection.putBrewProfile(BrewProfile(_name, _nominalRatio, _brewTemperatureCelsius, _steepTimings), _tea);
+      await teaCollection.putBrewProfile(BrewProfile(_name, _nominalRatio, _brewTemperatureCelsius, _steepTimings, defaultToFavorite), _tea);
       Navigator.pop(context);
     }
   }
