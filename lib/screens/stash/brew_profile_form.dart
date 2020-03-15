@@ -20,38 +20,67 @@ class AddNewBrewProfile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add New Tea to Stash'),
+        title: Text('Add New Brew Profile'),
       ),
       body: AddNewBrewProfileForm(this._tea),
     );
   }
 }
 
-class AddNewBrewProfileForm extends StatefulWidget {
+class EditBrewProfile extends StatelessWidget {
+  final Tea _tea;
+  final BrewProfile _brewProfile;
+
+  EditBrewProfile(this._tea, this._brewProfile);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Edit Existing Brew Profile'),
+      ),
+      body: EditBrewProfileForm(this._tea, this._brewProfile),
+    );
+  }
+}
+
+abstract class BrewProfileForm extends StatefulWidget {
+
+}
+
+class AddNewBrewProfileForm extends BrewProfileForm {
   final Tea _tea;
 
   AddNewBrewProfileForm(this._tea);
 
   @override
-  _BrewProfileFormState createState() => new _BrewProfileFormState(_tea);
+  _BrewProfileFormState createState() => new _AddBrewProfileFormState(_tea);
 }
 
-class EditBrewProfileForm extends StatefulWidget {
+class EditBrewProfileForm extends BrewProfileForm {
   final Tea _tea;
+  final BrewProfile _brewProfile;
 
-  EditBrewProfileForm(this._tea, this._name, this._nominalRatio, this._brewTemperatureCelsius, this._steepTimings);
+  EditBrewProfileForm(this._tea, this._brewProfile);
 
-  String _name;
-  int _nominalRatio;
-  int _brewTemperatureCelsius;
-  List<int> _steepTimings = [];
 
   @override
-  _BrewProfileFormState createState() => new _BrewProfileFormState(_tea, _name, _nominalRatio, _brewTemperatureCelsius, _steepTimings);
+  _BrewProfileFormState createState() => new _EditBrewProfileFormState(_tea, _brewProfile);
 }
 
-class _BrewProfileFormState extends State<AddNewBrewProfileForm> {
+class _AddBrewProfileFormState extends _BrewProfileFormState {
+  bool editExisting = false;
+  _AddBrewProfileFormState(Tea tea) : super(tea);
+}
+
+class _EditBrewProfileFormState extends _BrewProfileFormState {
+  bool editExisting = true;
+  _EditBrewProfileFormState(Tea tea, BrewProfile brewProfile) : super(tea, brewProfile.name, brewProfile.nominalRatio, brewProfile.brewTemperatureCelsius, brewProfile.steepTimings);
+}
+
+class _BrewProfileFormState extends State<BrewProfileForm> {
   final _formKey = GlobalKey<FormState>();
+  bool editExisting;
 
   final Tea _tea;
 
@@ -68,21 +97,23 @@ class _BrewProfileFormState extends State<AddNewBrewProfileForm> {
       key: _formKey,
       child: new ListView(children: <Widget>[
         TextFormField(
+            enabled: !this.editExisting,
             decoration: InputDecoration(
                 labelText: 'Enter Profile Name', hintText: ''),
-            initialValue: '',
+            initialValue: this._name,
             validator: (value) {
               value = value.trim();
               if (value.isEmpty) {
                 return 'Please enter a name for this profile';
-              } else if (_tea.brewProfiles.where((brewProfile) => brewProfile.name == value).length > 0) {
-                return 'A brew profile named ${value} already exists for this tea';
+              } else if (!this.editExisting && _tea.brewProfiles.where((brewProfile) => brewProfile.name == value).length > 0) {
+                return 'A brew profile named $value already exists for this tea';
               }
 
               return null;
             },
             onSaved: (value) {
               setState(() {
+                value = value.trim();
                 _name = value.trim();
               });
             },
@@ -112,6 +143,8 @@ class _BrewProfileFormState extends State<AddNewBrewProfileForm> {
               if (int.tryParse(value) == null || int.parse(value) < 1 || int.parse(value) >100 ) {
                 return 'Please enter a valid value (1-100)';
               }
+
+              return null;
             },
             onSaved: (value) {
               setState(() {
@@ -145,20 +178,31 @@ class _BrewProfileFormState extends State<AddNewBrewProfileForm> {
         RaisedButton(
             color: Colors.blue,
             textColor: Colors.white,
-            child: new Text('Add Brew Profile'),
-            onPressed: () async {await addNewBrewProfileFormSubmit(Provider.of<TeaCollectionModel>(context, listen: false));})
+            child: new Text('Save Brew Profile'),
+            onPressed: () async {await brewProfileFormSubmit(Provider.of<TeaCollectionModel>(context, listen: false), edit: this.editExisting);})
       ]),
     );
   }
 
-  void addNewBrewProfileFormSubmit(TeaCollectionModel teaCollection) async {
-    bool defaultToFavorite =_tea.brewProfiles.length == 0;
+  void brewProfileFormSubmit(TeaCollectionModel teaCollection, {edit = false}) async {
+    bool defaultToFavorite =_tea.defaultBrewProfile.name == _name;
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       FocusScope.of(context).unfocus(); //Dismiss the keyboard
       Scaffold.of(context).showSnackBar(SnackBar(content: Text('Adding new brew profile...')));
-      await teaCollection.putBrewProfile(BrewProfile(_name, _nominalRatio, _brewTemperatureCelsius, _steepTimings, defaultToFavorite), _tea);
+      await teaCollection.updateBrewProfile(BrewProfile(_name, _nominalRatio, _brewTemperatureCelsius, _steepTimings, defaultToFavorite), _tea);
       Navigator.pop(context);
     }
   }
+
+//  void editBrewProfileFormSubmit(TeaCollectionModel teaCollection) async {
+//    bool isFavorite = _tea.defaultBrewProfile.name == _name;
+//    if (_formKey.currentState.validate()) {
+//      _formKey.currentState.save();
+//      FocusScope.of(context).unfocus(); //Dismiss the keyboard
+//      Scaffold.of(context).showSnackBar(SnackBar(content: Text('Saving brew profile...')));
+//      await teaCollection.updateBrewProfile(BrewProfile(_name, _nominalRatio, _brewTemperatureCelsius, _steepTimings, isFavorite), _tea);
+//      Navigator.pop(context);
+//    }
+//  }
 }

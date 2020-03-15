@@ -72,7 +72,11 @@ class TeaCollectionModel extends ChangeNotifier {
   }
 
   Future<void> updateBrewProfile(BrewProfile brewProfile, Tea tea) async {
-    _items.remove(_items[tea.id].brewProfiles.singleWhere((existingBrewProfile) => existingBrewProfile.name == brewProfile.name));
+    try{
+      _items[tea.id].brewProfiles.remove(_items[tea.id].brewProfiles.singleWhere((existingBrewProfile) => existingBrewProfile.name == brewProfile.name));
+    } catch (err) {
+      //ignore if not present
+    }
     putBrewProfile(brewProfile, tea);
   }
 
@@ -86,7 +90,6 @@ class TeaCollectionModel extends ChangeNotifier {
 
     notifyListeners();
     await userSnapshot.reference.setData(userData);
-    final us2 = await fetchUser();
   }
 
   TeaCollectionModel(TeaProductionCollectionModel productions) {

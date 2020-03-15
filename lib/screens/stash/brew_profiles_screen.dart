@@ -2,7 +2,7 @@ import 'package:firstapp/models/active_tea_session.dart';
 import 'package:firstapp/models/brew_profile.dart';
 import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/models/tea_collection.dart';
-import 'package:firstapp/screens/stash/add_new_brew_profile_form.dart';
+import 'package:firstapp/screens/stash/brew_profile_form.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,7 +33,7 @@ class BrewProfilesScreen extends StatelessWidget {
         child: ListView.builder(
             itemCount: tea.brewProfiles.length,
             itemBuilder: (BuildContext context, int index) =>
-                BrewProfilesListItem(tea.brewProfiles[index])),
+                BrewProfilesListItem(tea.brewProfiles[index], tea)),
       ),
       getAddBrewProfileWidget(context, tea)
     ]);
@@ -63,8 +63,9 @@ enum BrewProfilesTileInteraction { edit, setDefault, delete }
 
 class BrewProfilesListItem extends StatelessWidget {
   final BrewProfile _brewProfile;
+  final Tea _tea;
 
-  BrewProfilesListItem(this._brewProfile);
+  BrewProfilesListItem(this._brewProfile, this._tea);
 
   String steepTimeAsHMS(int seconds) {
     if (seconds < 60) {
@@ -92,7 +93,10 @@ class BrewProfilesListItem extends StatelessWidget {
         trailing: PopupMenuButton<BrewProfilesTileInteraction>(
           onSelected: (BrewProfilesTileInteraction result) {
             if (result == BrewProfilesTileInteraction.edit) {
-//              edit();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => EditBrewProfile(_tea, _brewProfile)));
             } else if (result == BrewProfilesTileInteraction.delete) {
 //              delete();
             } else {
