@@ -32,7 +32,6 @@ Future<void> updateTeaData(BuildContext context) async {
   await producers.fetch();
   await productions.fetch();
   await teas.fetch();
-  
 }
 
 void resetTeaData(BuildContext context) async {
@@ -99,44 +98,48 @@ void main() {
       TeaProductionCollectionModel(teaProducerCollectionModel);
   final teaCollectionModel = TeaCollectionModel(teaProductionCollectionModel);
 
-  runApp(StreamProvider<FirebaseUser>(
-    create: (_) => AuthService().activeUser,
-    child: MultiProvider(
-      providers: [
-        ChangeNotifierProvider<TeaProducerCollectionModel>(
-          create: (_) => teaProducerCollectionModel,
-        ),
-        ChangeNotifierProvider<TeaProductionCollectionModel>(
-          create: (_) => teaProductionCollectionModel,
-        ),
-        ChangeNotifierProvider<TeaCollectionModel>(
-          create: (_) => teaCollectionModel,
-        ),
-        ChangeNotifierProvider<TeapotCollectionModel>(
-            create: (_) => TeapotCollectionModel(userTeapotCollection)),
-        ChangeNotifierProvider<ActiveTeaSessionModel>(
-            create: (_) => ActiveTeaSessionModel(teaCollectionModel)),
-      ],
-      child: MyApp(),
-    ),
-  ));
+  runApp(MaterialApp(
+      title: 'TeaVault',
+      home: AuthenticationWrapper(MultiProvider(
+        providers: [
+          ChangeNotifierProvider<TeaProducerCollectionModel>(
+            create: (_) => teaProducerCollectionModel,
+          ),
+          ChangeNotifierProvider<TeaProductionCollectionModel>(
+            create: (_) => teaProductionCollectionModel,
+          ),
+          ChangeNotifierProvider<TeaCollectionModel>(
+            create: (_) => teaCollectionModel,
+          ),
+          ChangeNotifierProvider<TeapotCollectionModel>(
+              create: (_) => TeapotCollectionModel(userTeapotCollection)),
+          ChangeNotifierProvider<ActiveTeaSessionModel>(
+              create: (_) => ActiveTeaSessionModel(teaCollectionModel)),
+        ],
+        child: MyApp(),
+      ))));
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final teaCollection = Provider.of<TeaCollectionModel>(context, listen: false);
-    final activeTeaSession = Provider.of<ActiveTeaSessionModel>(context, listen: false);
+    try {
+      final teaCollection =
+          Provider.of<TeaCollectionModel>(context, listen: false);
+      final activeTeaSession =
+          Provider.of<ActiveTeaSessionModel>(context, listen: false);
 
-    if (teaCollection.needsInitialisation) {
-      activeTeaSession.initialLoad(context);
+      if (teaCollection.needsInitialisation) {
+        activeTeaSession.initialLoad(context);
+      }
+    } catch (err) {
+      print(
+          "Failed to load initial app state.  User probably isn't logged in yet"); //TODO fix this block so it makes more sense once auth/sign-up/login work is complete
     }
-
-
 
     return MaterialApp(
       title: 'TeaVault',
-      home: AuthenticationWrapper(HomeView()),
+      home: HomeView(),
     );
   }
 }
@@ -201,9 +204,9 @@ class HomeViewState extends State<HomeView>
         appBar: AppBar(
 //          title: Text('TeaVault v0.1'),
           title: TabBar(
-                  controller: _tabController,
-                  tabs: homeTabs,
-                ),
+            controller: _tabController,
+            tabs: homeTabs,
+          ),
         ),
         body: TabBarView(
             controller: _tabController,

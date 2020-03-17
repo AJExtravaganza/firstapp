@@ -1,32 +1,55 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firstapp/main.dart';
+import 'package:firstapp/screens/authentication/sign_in.dart';
+import 'package:firstapp/screens/services/auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:provider/provider.dart';
 
-import 'authenticate.dart';
 
 //Serves sign-in screen when not logged in, and listens to changes in authentication state
-class AuthenticationWrapper extends StatelessWidget {
+class AuthenticationWrapper extends StatefulWidget {
   final Widget child;
+
+  AuthenticationWrapper(this.child);
+
+  @override
+  State<StatefulWidget> createState() => AuthenticationWrapperState(this.child);
+}
+
+class AuthenticationWrapperState extends State<AuthenticationWrapper> {
+  final Widget child;
+  final AuthService _authService = AuthService();
+  FirebaseUser _currentUser;
+
+  FirebaseUser get currentUser => _currentUser;
+
+  Future signInAnonymously() async {
+    final user = await _authService.signInAnonymously();
+     setState(() {
+      _currentUser = user;
+    });
+  }
+
+  AuthenticationWrapperState(this.child);
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final activeUser = Provider.of<FirebaseUser>(context);
-//    if (activeUser != null) {
-//      print('Got activeUser "${activeUser.uid}" from auth stream');
-//    } else {
-//      print('No activeUser');
-//    }
+    if (currentUser != null) {
+      print('Got activeUser "${currentUser.uid}" from auth stream');
+    } else {
+      print('No activeUser');
+    }
 
-    if (activeUser != null) {
+    if (currentUser != null) {
 //      print('Displaying home screen');
       return this.child;
     } else {
 //      print('Displaying sign-in screen');
-      return Authenticate();
+      return SignIn();
     }
   }
 
-  AuthenticationWrapper(this.child);
 }

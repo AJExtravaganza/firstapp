@@ -1,20 +1,32 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firstapp/db.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  Stream<FirebaseUser> get activeUser {
-    return _auth.onAuthStateChanged;
+  Future<FirebaseUser> get currentUser {
+    return _auth.currentUser();
   }
 
-  Future signInAnonymously() async {
+  Future<FirebaseUser> signInAnonymously() async {
     try {
       AuthResult result = await _auth.signInAnonymously();
       FirebaseUser user = result.user;
+      print('Attempting to load user profile for uid "${result.user.uid}"');
+
+      //Attempt to load existing user profile
+      await fetchUser();
       print('Signed in anonymously as user "${result.user.uid}"');
+
       return user;
-    } catch (e) {
+    } on RangeError catch (err){
+      print('Could not find existing profile for user.\nCreating new profile...');
+      await initialiseNewUser();
+      print('Success.');
+    }catch (e) {
       throw AuthException(null, "Anonymous authentication failed: ${e.toString()}");
     }
+
+    return currentUser;
   }
 
 //  email signin

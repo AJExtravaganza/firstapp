@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firstapp/screens/authentication/authentication_wrapper.dart';
 import 'package:firstapp/screens/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,7 +11,7 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
 
-  final AuthService _authService = AuthService();
+//  final AuthService _authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +29,10 @@ class _SignInState extends State<SignIn> {
           onPressed: () async {
             try {
               print('Attempting anonymous sign-in');
-              FirebaseUser user = await _authService.signInAnonymously();
+              context.findAncestorStateOfType<AuthenticationWrapperState>().signInAnonymously().then((_) {print('Anonymous sign-in successful');});
             } catch(err) {
               print(err);
             }
-
-            print('Anonymous sign-in successful');
           },
         )
       ),
