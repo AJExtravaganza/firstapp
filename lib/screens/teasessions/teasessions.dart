@@ -21,6 +21,12 @@ class SessionsView extends StatefulWidget {
 class _SessionsView extends State<SessionsView> {
   @override
   Widget build(BuildContext context) {
+    return MediaQuery.of(context).orientation == Orientation.portrait
+        ? _portraitSessionsView(context)
+        : _landscapeSessionsView(context);
+  }
+
+  Widget _portraitSessionsView(BuildContext context) {
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -38,6 +44,21 @@ class _SessionsView extends State<SessionsView> {
                 )
               ],
             ),
+          ),
+          Expanded(
+            flex: 3,
+            child: SteepTimer(),
+          )
+        ]);
+  }
+
+  Widget _landscapeSessionsView(BuildContext context) {
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Expanded(
+            flex: 3,
+            child: BrewProfileInfo(),
           ),
           Expanded(
             flex: 3,
@@ -79,9 +100,10 @@ class BrewProfileInfo extends StatelessWidget {
           ),
           Expanded(flex: 6, child: TeaNameRow()),
           Expanded(
-            flex: 6,
-            child: Column(children: [BrewingParametersRow(), BrewProfileNameRow()],
-          )),
+              flex: 6,
+              child: Column(
+                children: [BrewingParametersRow(), BrewProfileNameRow()],
+              )),
 //          Expanded(flex: 3, child: BrewingParametersRow()),
           Expanded(
             flex: 1,
@@ -94,7 +116,6 @@ class BrewProfileInfo extends StatelessWidget {
 }
 
 void selectTeaFromStash(BuildContext context) {
-
 //  //TODO: Implement select pot
 //  Navigator.push(
 //      context,
@@ -104,25 +125,22 @@ void selectTeaFromStash(BuildContext context) {
 //            body: StashView(true),
 //          )));
 
-
   final selectTeaRoute = MaterialPageRoute(
       builder: (context) => Scaffold(
-        appBar: AppBar(title: Text("Select a Tea")),
-        body: StashView(suppressTileMenu: true),
-      )
-  );
+            appBar: AppBar(title: Text("Select a Tea")),
+            body: StashView(suppressTileMenu: true),
+          ));
 
-  Navigator.push(
-      context,
-      selectTeaRoute
-  );
+  Navigator.push(context, selectTeaRoute);
 
   selectTeaRoute.popped.then((_) {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => BrewProfilesScreen(Provider.of<ActiveTeaSessionModel>(context).tea, suppressTileMenu: true,)
-            ));
+            builder: (context) => BrewProfilesScreen(
+                  Provider.of<ActiveTeaSessionModel>(context).tea,
+                  suppressTileMenu: true,
+                )));
   });
 }
 
