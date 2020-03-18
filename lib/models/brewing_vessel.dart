@@ -41,8 +41,8 @@ extension ClayTypeExtension on ClayType {
 
 List<BrewingVessel> getSampleVesselList() {
   return [
-    BrewingVessel(80, ClayType.thinlazeware, VesselForm.gaiwan),
     BrewingVessel(90, ClayType.yixing, VesselForm.shuiping),
+    BrewingVessel(80, ClayType.thinlazeware, VesselForm.gaiwan),
     BrewingVessel(150, ClayType.yixing, VesselForm.shuiping)
   ];
 }

@@ -20,6 +20,8 @@ class Tea {
     }
   }
 
+  bool get hasCustomBrewProfiles => brewProfiles.length > 0;
+
   String asString() =>
       "${this.production.producer.shortName} ${this.production.productionYear} ${this.production.name}";
 

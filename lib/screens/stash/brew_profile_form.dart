@@ -3,10 +3,6 @@ import 'dart:math';
 import 'package:firstapp/models/brew_profile.dart';
 import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/models/tea_collection.dart';
-import 'package:firstapp/models/tea_producer.dart';
-import 'package:firstapp/models/tea_producer_collection.dart';
-import 'package:firstapp/models/tea_production.dart';
-import 'package:firstapp/models/tea_production_collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -185,7 +181,7 @@ class _BrewProfileFormState extends State<BrewProfileForm> {
   }
 
   void brewProfileFormSubmit(TeaCollectionModel teaCollection, {edit = false}) async {
-    bool defaultToFavorite =_tea.defaultBrewProfile.name == _name;
+    bool defaultToFavorite = !_tea.hasCustomBrewProfiles || _tea.defaultBrewProfile.name == _name;
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       FocusScope.of(context).unfocus(); //Dismiss the keyboard
@@ -194,15 +190,4 @@ class _BrewProfileFormState extends State<BrewProfileForm> {
       Navigator.pop(context);
     }
   }
-
-//  void editBrewProfileFormSubmit(TeaCollectionModel teaCollection) async {
-//    bool isFavorite = _tea.defaultBrewProfile.name == _name;
-//    if (_formKey.currentState.validate()) {
-//      _formKey.currentState.save();
-//      FocusScope.of(context).unfocus(); //Dismiss the keyboard
-//      Scaffold.of(context).showSnackBar(SnackBar(content: Text('Saving brew profile...')));
-//      await teaCollection.updateBrewProfile(BrewProfile(_name, _nominalRatio, _brewTemperatureCelsius, _steepTimings, isFavorite), _tea);
-//      Navigator.pop(context);
-//    }
-//  }
 }

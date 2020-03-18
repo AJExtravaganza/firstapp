@@ -47,8 +47,11 @@ class AuthenticationWrapperState extends State<AuthenticationWrapper> {
 //      print('Displaying home screen');
       return this.child;
     } else {
+      //TODO: Remove this auto-sign-in when proper sign-in and login persistence is implemented
+      signInAnonymously();
+      return Container();
 //      print('Displaying sign-in screen');
-      return SignIn();
+//      return SignIn();
     }
   }
 

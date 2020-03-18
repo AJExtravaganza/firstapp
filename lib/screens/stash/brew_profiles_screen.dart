@@ -73,7 +73,7 @@ class BrewProfilesListItem extends StatelessWidget {
     } else if (seconds < 60 * 60) {
       int minutes = (seconds / 60).toInt();
       seconds %= 60;
-      return '${minutes}m${seconds}s';
+      return seconds > 0 ? '${minutes}m${seconds}s' : '${minutes}m';
     } else {
       int hours = (seconds / 3600).toInt();
       int minutes = (seconds % 3600 / 60).toInt();
