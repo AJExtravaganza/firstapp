@@ -9,8 +9,9 @@ import 'package:provider/provider.dart';
 
 class BrewProfilesScreen extends StatelessWidget {
   final Tea _tea;
+  final bool suppressTileMenu;
 
-  BrewProfilesScreen(this._tea);
+  BrewProfilesScreen(this._tea, {this.suppressTileMenu=false});
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +19,11 @@ class BrewProfilesScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Select a Brew Profile'),
       ),
-      body: getBrewProfilesListView(_tea, context),
+      body: getBrewProfilesListView(_tea, context, suppressTileMenu: this.suppressTileMenu),
     );
   }
 
-  Widget getBrewProfilesListView(Tea _tea, BuildContext context) {
+  Widget getBrewProfilesListView(Tea _tea, BuildContext context, {suppressTileMenu=false}) {
     final tea = Provider.of<TeaCollectionModel>(context).getUpdated(_tea);
     if (tea.brewProfiles.length == 0) {
       return getAddBrewProfileWidget(context, tea);
@@ -33,7 +34,7 @@ class BrewProfilesScreen extends StatelessWidget {
         child: ListView.builder(
             itemCount: tea.brewProfiles.length,
             itemBuilder: (BuildContext context, int index) =>
-                BrewProfilesListItem(tea.brewProfiles[index], tea)),
+                BrewProfilesListItem(tea.brewProfiles[index], tea, suppressTileMenu: suppressTileMenu)),
       ),
       getAddBrewProfileWidget(context, tea)
     ]);
@@ -64,8 +65,9 @@ enum BrewProfilesTileInteraction { edit, setDefault, delete }
 class BrewProfilesListItem extends StatelessWidget {
   final BrewProfile _brewProfile;
   final Tea _tea;
+  final bool suppressTileMenu;
 
-  BrewProfilesListItem(this._brewProfile, this._tea);
+  BrewProfilesListItem(this._brewProfile, this._tea, {this.suppressTileMenu=false});
 
   String steepTimeAsHMS(int seconds) {
     if (seconds < 60) {
@@ -90,7 +92,7 @@ class BrewProfilesListItem extends StatelessWidget {
         subtitle: Text('1:${_brewProfile.nominalRatio}, ${_brewProfile.brewTemperatureCelsius}°C' +
             '\n'
                 '${_brewProfile.steepTimings.map(steepTimeAsHMS).join('/')}'),
-        trailing: PopupMenuButton<BrewProfilesTileInteraction>(
+        trailing: this.suppressTileMenu ? Container(width: 1, height: 1) : PopupMenuButton<BrewProfilesTileInteraction>(
           onSelected: (BrewProfilesTileInteraction result) {
             if (result == BrewProfilesTileInteraction.edit) {
               Navigator.push(

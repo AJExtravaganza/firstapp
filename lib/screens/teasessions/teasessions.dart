@@ -108,7 +108,7 @@ void selectTeaFromStash(BuildContext context) {
   final selectTeaRoute = MaterialPageRoute(
       builder: (context) => Scaffold(
         appBar: AppBar(title: Text("Select a Tea")),
-        body: StashView(true),
+        body: StashView(suppressTileMenu: true),
       )
   );
 
@@ -121,7 +121,7 @@ void selectTeaFromStash(BuildContext context) {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => BrewProfilesScreen(Provider.of<ActiveTeaSessionModel>(context).tea)
+            builder: (context) => BrewProfilesScreen(Provider.of<ActiveTeaSessionModel>(context).tea, suppressTileMenu: true,)
             ));
   });
 }

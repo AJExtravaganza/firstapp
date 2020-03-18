@@ -9,9 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class StashView extends StatelessWidget {
-  bool _activeTeaSelectionMode = false;
+  bool suppressTileMenu = false;
 
-  StashView([this._activeTeaSelectionMode = false]);
+  StashView({this.suppressTileMenu = false});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class StashView extends StatelessWidget {
           child: ListView.builder(
               itemCount: teas.length,
               itemBuilder: (BuildContext context, int index) =>
-                  StashListItem(teas.items[index], _activeTeaSelectionMode)),
+                  StashListItem(teas.items[index], suppressTileMenu: this.suppressTileMenu)),
         );
 
     return Consumer<TeaCollectionModel>(
@@ -53,7 +53,8 @@ enum StashTileInteraction { brewProfiles }
 
 class StashListItem extends StatelessWidget {
   final Tea tea;
-  bool _isPushedPageRoute = false;
+  final bool suppressTileMenu;
+  bool popAfterSelection;
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +65,7 @@ class StashListItem extends StatelessWidget {
         subtitle:
             Text('${tea.quantity}x ${tea.production.nominalWeightGrams}g' + '\n'
                 'Default Profile: ${tea.defaultBrewProfile.name}'),
-        trailing: PopupMenuButton<StashTileInteraction>(
+        trailing: this.suppressTileMenu ? Container(width: 1, height: 1,) : PopupMenuButton<StashTileInteraction>(
           onSelected: (StashTileInteraction result) {
             if (result == StashTileInteraction.brewProfiles) {
               Navigator.push(
@@ -87,7 +88,7 @@ class StashListItem extends StatelessWidget {
         isThreeLine: true,
         onTap: () {
           Provider.of<ActiveTeaSessionModel>(context, listen: false).tea = tea;
-          if (_isPushedPageRoute) {
+          if (this.popAfterSelection) {
             Navigator.pop(context);
           } else {
             context.findAncestorStateOfType<HomeViewState>().switchToTab(HomeViewState.SESSIONTABIDX);
@@ -97,5 +98,5 @@ class StashListItem extends StatelessWidget {
     );
   }
 
-  StashListItem(this.tea, [this._isPushedPageRoute = false]);
+  StashListItem(this.tea, {this.suppressTileMenu = false}) {this.popAfterSelection = this.suppressTileMenu;}
 }
