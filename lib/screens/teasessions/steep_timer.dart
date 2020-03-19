@@ -1,63 +1,13 @@
-import 'dart:async';
-import 'dart:math';
-
 import 'package:firstapp/models/active_tea_session.dart';
+import 'package:firstapp/screens/teasessions/session_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:provider/provider.dart';
-import 'package:vibration/vibration.dart';
 
-class SteepTimer extends StatefulWidget {
-  @override
-  State<SteepTimer> createState() => _SteepTimerState();
-}
-
-class _SteepTimerState extends State<SteepTimer> {
-  ActiveTeaSessionModel _activeTeaSession;
-  bool _deviceHasVibrator = false;
-  bool _muted = false;
-
-  bool get active => _timer != null && _timer.isActive;
-
-  bool get muted => _muted;
-
-  set muted(bool state) {
-    setState(() {
-      _muted = state;
-    });
-  }
-
-  @override
-  void initState() {
-    Vibration.hasVibrator().then((hasVibration) {
-      _deviceHasVibrator = hasVibration;
-    });
-    super.initState();
-  }
-
-  void _resetTimerListener() {
-    _resetTimer();
-  }
-
-  @override
-  void dispose() {
-    _activeTeaSession.removeListener(_resetTimerListener);
-    super.dispose();
-  }
-
+class SteepTimer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    if (_activeTeaSession == null) {
-      print("Linking _SteepTimer to ActiveTeaSession");
-      _activeTeaSession = Provider.of<ActiveTeaSessionModel>(context);
-      _activeTeaSession.addListener(_resetTimerListener);
-    }
-
-    if (_timeRemaining == null) {
-      _resetTimer();
-    }
     return Column(
       children: <Widget>[
         TimerDisplayRow(),
@@ -65,97 +15,6 @@ class _SteepTimerState extends State<SteepTimer> {
         SteepTimerControls()
       ],
     );
-  }
-
-  decrementSteep() {
-    try {
-      if (_activeTeaSession.currentSteep > 1) {
-        _activeTeaSession.decrementSteep();
-      }
-
-      if (_timer != null) {
-        _timer.cancel();
-      }
-
-      _resetTimer();
-    } catch (err) {
-      //display a message
-      print(err.toString());
-    }
-  }
-
-  incrementSteep() {
-    try {
-      _activeTeaSession.incrementSteep();
-
-      if (_timer != null) {
-        _timer.cancel();
-      }
-
-      _resetTimer();
-    } catch (err) {
-      //display a message
-      print(err.toString());
-    }
-  }
-
-  _resetTimer() {
-    _cancelBrewTimer();
-    setState(() {
-      _timeRemaining = Duration(
-          seconds: _activeTeaSession
-              .brewProfile.steepTimings[_activeTeaSession.currentSteep]);
-    });
-  }
-
-  Timer _timer;
-  Duration _timeRemaining;
-
-  Duration get timeRemaining => _timeRemaining;
-
-  set timeRemaining(Duration newTimeRemaining) {
-    setState(() {
-      _timeRemaining = newTimeRemaining;
-    });
-  }
-
-  void _cancelBrewTimer() {
-    if (_timer != null && _timer.isActive) {
-      _timer.cancel();
-      _timer = null;
-    }
-  }
-
-  void startBrewTimer() {
-    if (_timer == null || !_timer.isActive) {
-      const oneSecond = Duration(seconds: 1);
-      setState(() {
-        _timer = new Timer.periodic(oneSecond, (Timer timer) {
-          if (_timeRemaining > Duration(seconds: 0)) {
-            setState(() {
-              _timeRemaining -= Duration(seconds: 1);
-            });
-          }
-
-          if (!(_timeRemaining > Duration(seconds: 0))) {
-            timer.cancel();
-            if (_deviceHasVibrator) {
-              Vibration.vibrate(duration: 1000, amplitude: 255);
-            }
-            if (!_muted || !_deviceHasVibrator) {
-              FlutterRingtonePlayer.playNotification();
-            }
-            incrementSteep();
-          }
-        });
-      });
-    }
-  }
-
-  void stopBrewTimer() {
-    setState(() {
-      _timer.cancel();
-    });
   }
 }
 
@@ -212,7 +71,8 @@ class TimerDisplayRow extends StatelessWidget {
 class TimerDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final timerState = context.findAncestorStateOfType<_SteepTimerState>();
+    final timerState =
+        context.findAncestorStateOfType<SessionControllerState>();
     final currentMinutes = (timerState.timeRemaining.inMinutes % 60).toInt();
     final currentSeconds = (timerState.timeRemaining.inSeconds % 60).toInt();
     String currentValueStr =
@@ -229,8 +89,7 @@ class TimerDisplay extends StatelessWidget {
         showModalBottomSheet(
             context: context,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0)
-            ),
+                borderRadius: BorderRadius.circular(10.0)),
             backgroundColor: Colors.white,
             builder: (context) => TimerPickerSheetContents(timerState));
       },
@@ -239,7 +98,7 @@ class TimerDisplay extends StatelessWidget {
 }
 
 class TimerPickerSheetContents extends StatelessWidget {
-  final _SteepTimerState _timerState;
+  final SessionControllerState _timerState;
 
   TimerPickerSheetContents(this._timerState);
 
@@ -259,7 +118,7 @@ class TimerPickerSheetContents extends StatelessWidget {
 }
 
 class BrewTimerPicker extends StatelessWidget {
-  final _SteepTimerState timerState;
+  final SessionControllerState timerState;
 
   BrewTimerPicker(this.timerState);
 
@@ -267,7 +126,7 @@ class BrewTimerPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     return CupertinoTimerPicker(
         mode: CupertinoTimerPickerMode.ms,
-        initialTimerDuration: timerState._timeRemaining,
+        initialTimerDuration: timerState.timeRemaining,
         onTimerDurationChanged: (Duration newDuration) {
           timerState.timeRemaining = newDuration;
         });
@@ -288,7 +147,8 @@ class TimerIconButton extends StatelessWidget {
 class TimerMuteIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final timerState = context.findAncestorStateOfType<_SteepTimerState>();
+    final timerState =
+        context.findAncestorStateOfType<SessionControllerState>();
 
     return IconButton(
       onPressed: () {
@@ -343,7 +203,8 @@ class SteepTimerControls extends StatelessWidget {
 class PreviousSteepButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final timerState = context.findAncestorStateOfType<_SteepTimerState>();
+    final timerState =
+        context.findAncestorStateOfType<SessionControllerState>();
     return IconButton(
       onPressed: timerState.decrementSteep,
       icon: Icon(Icons.arrow_back_ios),
@@ -355,7 +216,8 @@ class PreviousSteepButton extends StatelessWidget {
 class BrewButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final timerState = context.findAncestorStateOfType<_SteepTimerState>();
+    final timerState =
+        context.findAncestorStateOfType<SessionControllerState>();
 
     if (timerState.active) {
       return IconButton(
@@ -376,7 +238,8 @@ class BrewButton extends StatelessWidget {
 class NextSteepButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final timerState = context.findAncestorStateOfType<_SteepTimerState>();
+    final timerState =
+        context.findAncestorStateOfType<SessionControllerState>();
     return IconButton(
         onPressed: timerState.incrementSteep,
         icon: Icon(Icons.arrow_forward_ios));

@@ -4,6 +4,7 @@ import 'package:firstapp/models/brewing_vessel.dart';
 import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/screens/stash/brew_profiles_screen.dart';
 import 'package:firstapp/screens/stash/stash.dart';
+import 'package:firstapp/screens/teasessions/session_controller.dart';
 import 'package:firstapp/screens/teasessions/steep_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -21,9 +22,10 @@ class SessionsView extends StatefulWidget {
 class _SessionsView extends State<SessionsView> {
   @override
   Widget build(BuildContext context) {
-    return MediaQuery.of(context).orientation == Orientation.portrait
-        ? _portraitSessionsView(context)
-        : _landscapeSessionsView(context);
+    return SessionController(
+        child: MediaQuery.of(context).orientation == Orientation.portrait
+            ? _portraitSessionsView
+            : _landscapeSessionsView);
   }
 
   Widget _portraitSessionsView(BuildContext context) {
