@@ -23,9 +23,10 @@ class _SessionsView extends State<SessionsView> {
   @override
   Widget build(BuildContext context) {
     return SessionController(
-        child: MediaQuery.of(context).orientation == Orientation.portrait
-            ? _portraitSessionsView
-            : _landscapeSessionsView);
+        child: (context) => OrientationBuilder(builder: (context, orientation) => orientation == Orientation.portrait
+            ? _portraitSessionsView(context)
+            : _landscapeSessionsView(context)
+        ));
   }
 
   Widget _portraitSessionsView(BuildContext context) {
