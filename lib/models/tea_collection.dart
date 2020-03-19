@@ -8,10 +8,9 @@ import 'package:firstapp/models/tea_production_collection.dart';
 import 'package:flutter/cupertino.dart';
 
 class TeaCollectionModel extends ChangeNotifier {
-  final String dbFieldName = 'teas_in_stash';
+  final String dbCollectionName = 'teas_in_stash';
   TeaProductionCollectionModel productions;
   Map<String, Tea> _items = {};
-  bool _needsInitialisation = true;
 
   UnmodifiableListView<Tea> get items {
     List<Tea> list = _items.values.toList();
@@ -21,33 +20,8 @@ class TeaCollectionModel extends ChangeNotifier {
 
   int get length => _items.length;
 
-  bool get needsInitialisation => _needsInitialisation;
-
-  Tea getUpdated(Tea tea) => (tea != null && _items.containsKey(tea.id)) ? _items[tea.id] : null;
-
-  Future<void> sync() async {
-    await push();
-    await fetch();
-  }
-
-  Future<void> fetch() async {
-    print('Updating tea collection');
-    final user = await fetchUser();
-    final userStashContents = user.data[dbFieldName];
-
-    if (userStashContents != null && userStashContents.length > 0) {
-      this._items = Map.fromIterable(userStashContents.values,
-          key: (teaJson) => teaJson['production'],
-          value: (teaJson) => Tea.fromJson(teaJson, productions));
-    } else {
-      this._items = {};
-    }
-    print('Got ${_items.length} stashed teas from db, adding to TeaCollectionModel');
-
-
-    _needsInitialisation = false;
-    notifyListeners();
-  }
+  Tea getUpdated(Tea tea) =>
+      (tea != null && _items.containsKey(tea.id)) ? _items[tea.id] : null;
 
   Future<void> put(Tea tea) async {
     if (_items.containsKey(tea.id)) {
@@ -57,42 +31,62 @@ class TeaCollectionModel extends ChangeNotifier {
     }
 
     notifyListeners();
-    await push();
+    await push(tea);
   }
 
   Future<void> putBrewProfile(BrewProfile brewProfile, Tea tea) async {
-    if (_items[tea.id].brewProfiles.where((existingBrewProfile) => existingBrewProfile.name == brewProfile.name).length > 0) {
-      throw Exception('A brew profile named ${brewProfile.name} already exists for this tea');
+    if (_items[tea.id]
+            .brewProfiles
+            .where((existingBrewProfile) =>
+                existingBrewProfile.name == brewProfile.name)
+            .length >
+        0) {
+      throw Exception(
+          'A brew profile named ${brewProfile.name} already exists for this tea');
     }
 
     _items[tea.id].brewProfiles.add(brewProfile);
-
+    await push(tea);
     notifyListeners();
-    await push();
   }
 
   Future<void> updateBrewProfile(BrewProfile brewProfile, Tea tea) async {
-    try{
-      _items[tea.id].brewProfiles.remove(_items[tea.id].brewProfiles.singleWhere((existingBrewProfile) => existingBrewProfile.name == brewProfile.name));
+    try {
+      _items[tea.id].brewProfiles.remove(_items[tea.id]
+          .brewProfiles
+          .singleWhere((existingBrewProfile) =>
+              existingBrewProfile.name == brewProfile.name));
     } catch (err) {
       //ignore if not present
     }
     putBrewProfile(brewProfile, tea);
   }
 
-  Future<void> push() async {
-    final userSnapshot = await fetchUser();
-    Map<String, dynamic> userData = userSnapshot.data;
-    userData[dbFieldName] = {};
-    _items.values.forEach((tea) {
-      userData[dbFieldName][tea.id] = tea.asMap();
-    });
-
+  Future<void> push(Tea tea) async {
+    final userSnapshot =
+        await fetchUser(); //TODO start using static state from enclosing auth class
+    final teasCollection = await userSnapshot.reference.collection(dbCollectionName);
+    await teasCollection.document(tea.id).setData(tea.asMap());
     notifyListeners();
-    await userSnapshot.reference.setData(userData);
+  }
+
+  Future subscribeToUpdates() async {
+    final userSnapshot = await fetchUser();
+    print('Subscribing to Tea updates');
+    final updateStream = userSnapshot.reference.collection(dbCollectionName).snapshots();
+    updateStream.listen((querySnapshot) {
+      querySnapshot.documentChanges.forEach((documentChange) {
+        final document = documentChange.document;
+        this._items[document.documentID] =
+            Tea.fromDocumentSnapshot(document, productions);
+        print('Got change to Tea ${document.documentID}');
+        notifyListeners();
+      });
+    });
   }
 
   TeaCollectionModel(TeaProductionCollectionModel productions) {
     this.productions = productions;
+    subscribeToUpdates();
   }
 }

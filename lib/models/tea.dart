@@ -42,12 +42,10 @@ class Tea {
     }
   }
 
-  static Tea fromJson(
-      Map<String, dynamic> json, TeaProductionCollectionModel productions) {
-    List<BrewProfile> brewProfiles = List<BrewProfile>.from(
-        json['brew_profiles'].map((json) => BrewProfile.fromJson(json)));
-    return Tea(json['quantity'], productions.getById(json['production']),
-        brewProfiles);
+  static Tea fromDocumentSnapshot(DocumentSnapshot producerDocument, TeaProductionCollectionModel productions) {
+    final data = producerDocument.data;
+    List<BrewProfile> brewProfiles = List.from(data['brew_profiles'].map((json) => BrewProfile.fromJson(json))); //TODO: Implement
+    return Tea(data['quantity'], productions.getById(data['production']), brewProfiles);
   }
 
   bool operator ==(dynamic other) {

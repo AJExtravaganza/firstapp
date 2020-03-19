@@ -15,24 +15,12 @@ import 'package:firstapp/models/tea_production.dart';
 import 'package:firstapp/models/tea_production_collection.dart';
 import 'package:firstapp/models/teapot_collection.dart';
 import 'package:firstapp/screens/authentication/authentication_wrapper.dart';
-import 'package:firstapp/screens/services/auth.dart';
 import 'package:firstapp/screens/stash/stash.dart';
 import 'package:firstapp/climate.dart' as climate;
 import 'package:firstapp/screens/teasessions/teasessions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-Future<void> updateTeaData(BuildContext context) async {
-  final producers =
-      Provider.of<TeaProducerCollectionModel>(context, listen: false);
-  final productions =
-      Provider.of<TeaProductionCollectionModel>(context, listen: false);
-  final teas = Provider.of<TeaCollectionModel>(context, listen: false);
-
-  await producers.fetch();
-  await productions.fetch();
-  await teas.fetch();
-}
 
 void resetTeaData(BuildContext context) async {
   final producers =
@@ -49,7 +37,7 @@ void resetTeaData(BuildContext context) async {
       .collection(productions.dbCollectionName)
       .getDocuments();
   final old_teas =
-      await user.reference.collection(teas.dbFieldName).getDocuments();
+      await user.reference.collection(teas.dbCollectionName).getDocuments();
 
   print('Deleting all producers, productions and teas...');
 
@@ -92,6 +80,10 @@ void resetTeaData(BuildContext context) async {
 }
 
 void main() {
+
+  //This is necessary to allow subscription to the db snapshots prior to calling runApp()
+  WidgetsFlutterBinding.ensureInitialized();
+
   List<BrewingVessel> userTeapotCollection = getSampleVesselList();
   final teaProducerCollectionModel = TeaProducerCollectionModel();
   final teaProductionCollectionModel =
@@ -129,9 +121,6 @@ class MyApp extends StatelessWidget {
       final activeTeaSession =
           Provider.of<ActiveTeaSessionModel>(context, listen: false);
 
-      if (teaCollection.needsInitialisation) {
-        activeTeaSession.initialLoad(context);
-      }
     } catch (err) {
       print(
           "Failed to load initial app state.  User probably isn't logged in yet"); //TODO fix this block so it makes more sense once auth/sign-up/login work is complete

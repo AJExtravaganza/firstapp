@@ -15,7 +15,6 @@ class StashView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    updateTeaData(context);
 
     Widget stashListWidget(TeaCollectionModel teas) => Expanded(
           child: ListView.builder(

@@ -21,20 +21,6 @@ class TeaProductionCollectionModel extends ChangeNotifier {
 
   TeaProduction getById(String id) => _items[id];
 
-  Future<void> fetch() async {
-    print('Updating tea productions');
-    final productionQuery =
-        await Firestore.instance.collection(dbCollectionName).getDocuments();
-    final productions = productionQuery.documentChanges.map((documentChange) =>
-        TeaProduction.fromDocumentSnapshot(documentChange.document, producers));
-    print(
-        'Got ${productions.length} updated productions from db, adding to TeaProductionCollectionModel');
-    this._items.addAll(Map.fromIterable(productions,
-        key: (production) => production.id, value: (production) => production));
-
-    notifyListeners();
-  }
-
   Future<DocumentReference> put(TeaProduction production) async {
     final newDocumentReference = await Firestore.instance
         .collection(dbCollectionName)
@@ -46,5 +32,16 @@ class TeaProductionCollectionModel extends ChangeNotifier {
 
   TeaProductionCollectionModel(TeaProducerCollectionModel producers) {
     this.producers = producers;
+
+    print('Subscribing to TeaProduction updates');
+    final updateStream = Firestore.instance.collection(dbCollectionName).snapshots();
+    updateStream.listen((querySnapshot) {
+      querySnapshot.documentChanges.forEach((documentChange) {
+        final document = documentChange.document;
+        this._items[document.documentID] = TeaProduction.fromDocumentSnapshot(document, producers);
+        print('Got change to TeaProduction ${document.documentID}');
+        notifyListeners();
+      });
+    });
   }
 }
