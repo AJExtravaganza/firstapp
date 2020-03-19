@@ -139,6 +139,9 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       title: 'TeaVault',
+      theme: ThemeData(
+        primarySwatch: Colors.lightGreen,
+      ),
       home: HomeView(),
     );
   }
