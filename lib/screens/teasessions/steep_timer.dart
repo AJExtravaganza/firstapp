@@ -71,6 +71,7 @@ class TimerDisplayRow extends StatelessWidget {
 class TimerDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final _context = context;
     final timerState =
         context.findAncestorStateOfType<SessionControllerState>();
     final currentMinutes = (timerState.timeRemaining.inMinutes % 60).toInt();
@@ -91,7 +92,7 @@ class TimerDisplay extends StatelessWidget {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
             backgroundColor: Colors.white,
-            builder: (context) => TimerPickerSheetContents(timerState));
+            builder: (context) => TimerPickerSheetContents(_context, timerState));
       },
     );
   }
@@ -99,12 +100,19 @@ class TimerDisplay extends StatelessWidget {
 
 class TimerPickerSheetContents extends StatelessWidget {
   final SessionControllerState _timerState;
+  final BuildContext _parentContext;
 
-  TimerPickerSheetContents(this._timerState);
+  TimerPickerSheetContents(this._parentContext, this._timerState);
 
   @override
   Widget build(BuildContext context) {
+    final orientation = MediaQuery.of(context).orientation;
+    final portrait = Orientation.portrait;
+    int buttonFlex = orientation == portrait ? 15 : 20;
+    int timerPickerFlex = orientation == portrait ? 50 : 40;
+
     return Container(
+        height: 200,
         color: Colors.transparent,
         child: Container(
             decoration: BoxDecoration(
@@ -113,7 +121,38 @@ class TimerPickerSheetContents extends StatelessWidget {
                   topLeft: const Radius.circular(10.0),
                   topRight: const Radius.circular(10.0),
                 )),
-            child: BrewTimerPicker(this._timerState)));
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  flex: buttonFlex,
+                  child: _timerState.activeTeaSession.currentTea != null
+                      ? IconButton(
+                          onPressed: () async {
+                            Navigator.pop(context);
+                            Scaffold.of(_parentContext).showSnackBar(SnackBar(content: Text("Saving change to brew profile...")));
+                            await _timerState.saveSteepTimeToBrewProfile();
+                          },
+                          icon: Icon(Icons.save_alt),
+                          iconSize: 48,
+                        )
+                      : Container(),
+                ),
+                Expanded(
+                  flex: timerPickerFlex,
+                  child: BrewTimerPicker(this._timerState),
+                ),
+                Expanded(
+                  flex: buttonFlex,
+                  child: IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Icon(Icons.check_box),
+                    iconSize: 48,
+                  ),
+                ),
+              ],
+            )));
   }
 }
 
@@ -241,7 +280,10 @@ class NextSteepButton extends StatelessWidget {
     final timerState =
         context.findAncestorStateOfType<SessionControllerState>();
     return IconButton(
-        onPressed: timerState.incrementSteep,
+        onPressed: () {
+          if (timerState.steepsRemainingInProfile > 1)
+            timerState.incrementSteep();
+        },
         icon: Icon(Icons.arrow_forward_ios));
   }
 }

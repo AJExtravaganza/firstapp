@@ -29,7 +29,6 @@ class BrewProfile {
 
   static BrewProfile getDefault() {
     List<int> sampleTimingList = [10, 5, 8, 10, 20, 30, 60];
-    print('GENERATED DUMMY BREW PROFILE');
     return BrewProfile('Default', 15, 100, sampleTimingList);
   }
 

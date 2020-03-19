@@ -37,11 +37,11 @@ class AuthenticationWrapperState extends State<AuthenticationWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    if (currentUser != null) {
-      print('Got activeUser "${currentUser.uid}" from auth stream');
-    } else {
-      print('No activeUser');
-    }
+//    if (currentUser != null) {
+//      print('Got activeUser "${currentUser.uid}" from auth stream');
+//    } else {
+//      print('No activeUser');
+//    }
 
     if (currentUser != null) {
 //      print('Displaying home screen');

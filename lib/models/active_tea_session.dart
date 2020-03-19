@@ -8,20 +8,21 @@ import 'package:firstapp/models/tea_collection.dart';
 import 'package:flutter/widgets.dart';
 
 class ActiveTeaSessionModel extends ChangeNotifier {
-  Tea _tea;
+  TeaCollectionModel _teaCollectionModel;
+  Tea _currentTea;
   BrewProfile _brewProfile;
   BrewingVessel brewingVessel;
   int _currentSteep = 0;
 
-  get tea => _tea;
+  get currentTea => _currentTea;
 
   get brewProfile =>
       _brewProfile != null ? _brewProfile : BrewProfile.getDefault();
 
   get currentSteep => _currentSteep;
 
-  set tea(Tea newTea) {
-    _tea = newTea;
+  set currentTea(Tea newTea) {
+    _currentTea = newTea;
     if (newTea != null) {
       _brewProfile = newTea.defaultBrewProfile;
       _currentSteep = _brewProfile.steepTimings[0] > 0 ? 0 : 1;
@@ -36,6 +37,11 @@ class ActiveTeaSessionModel extends ChangeNotifier {
     _brewProfile = brewProfile;
     _currentSteep = brewProfile.steepTimings[0] > 0 ? 0 : 1;
     notifyListeners();
+  }
+
+  saveSteepTimeToBrewProfile(int currentSteep, Duration timeRemaining) async {
+    brewProfile.steepTimings[currentSteep] = timeRemaining.inSeconds.floor();
+    await _teaCollectionModel.push(currentTea);
   }
 
   set currentSteep(int value) {
@@ -57,29 +63,25 @@ class ActiveTeaSessionModel extends ChangeNotifier {
   }
 
   //Updates the ActiveTeaSession for change from no teas in stash to some teas in stash or vice versa
-  void refresh(BuildContext context) {
-    print("Checking for necessary changes to ActiveTeaSession...");
-    final teasInStash = Provider.of<TeaCollectionModel>(context, listen: false);
-    if (teasInStash.items.length > 0 &&
-        teasInStash.getUpdated(this._tea) == null) {
-      this.tea = teasInStash.items.first;
-      print('Active tea is now ${_tea.asString()}');
-    } else {
-      _tea = null;
-      _brewProfile = null;
-      notifyListeners();
-      print('Active tea is now null');
-    }
-  }
+//  void refresh(BuildContext context) {
+//    print("Checking for necessary changes to ActiveTeaSession...");
+//    final teasInStash = Provider.of<TeaCollectionModel>(context, listen: false);
+//    if (teasInStash.items.length > 0 &&
+//        teasInStash.getUpdated(this._tea) == null) {
+//      this.tea = teasInStash.items.first;
+//      print('Active tea is now ${_tea.asString()}');
+//    } else {
+//      _tea = null;
+//      _brewProfile = null;
+//      notifyListeners();
+//      print('Active tea is now null');
+//    }
+//  }
 
   ActiveTeaSessionModel(TeaCollectionModel teaCollectionModel) {
-    try {
-      tea = teaCollectionModel.items.first;
-      _brewProfile = tea.defaultBrewProfile;
-    } catch (err) {
-      tea = null;
-      _brewProfile = null;
-    }
+    _teaCollectionModel = teaCollectionModel;
+    currentTea = null;
+    _brewProfile = null;
     brewingVessel = getSampleVesselList().first;
   }
 }

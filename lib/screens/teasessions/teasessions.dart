@@ -74,7 +74,7 @@ class _SessionsView extends State<SessionsView> {
 class BrewProfileInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Tea currentTea = Provider.of<ActiveTeaSessionModel>(context).tea;
+    Tea currentTea = Provider.of<ActiveTeaSessionModel>(context).currentTea;
     if (currentTea == null) {
       return Material(
           borderRadius: (BorderRadius.only(
@@ -91,7 +91,7 @@ class BrewProfileInfo extends StatelessWidget {
                 '\n\nWelcome to TeaVault!',
                 style: TextStyle(fontSize: 24),
               ),
-              Text('  Add some tea to your stash to get started...')
+              Text('  Select a tea to get started...')
             ])),
           ));
     } else {
@@ -141,7 +141,7 @@ void selectTeaFromStash(BuildContext context) {
         context,
         MaterialPageRoute(
             builder: (context) => BrewProfilesScreen(
-                  Provider.of<ActiveTeaSessionModel>(context).tea,
+                  Provider.of<ActiveTeaSessionModel>(context).currentTea,
                   suppressTileMenu: true,
                 )));
   });
@@ -150,7 +150,7 @@ void selectTeaFromStash(BuildContext context) {
 class TeaNameRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Tea currentTea = Provider.of<ActiveTeaSessionModel>(context).tea;
+    Tea currentTea = Provider.of<ActiveTeaSessionModel>(context).currentTea;
     return InkWell(
       onTap: () {
         selectTeaFromStash(context);

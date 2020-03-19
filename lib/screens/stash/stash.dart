@@ -86,7 +86,7 @@ class StashListItem extends StatelessWidget {
         ),
         isThreeLine: true,
         onTap: () {
-          Provider.of<ActiveTeaSessionModel>(context, listen: false).tea = tea;
+          Provider.of<ActiveTeaSessionModel>(context, listen: false).currentTea = tea;
           if (this.popAfterSelection) {
             Navigator.pop(context);
           } else {

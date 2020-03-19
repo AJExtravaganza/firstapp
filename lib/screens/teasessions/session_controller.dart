@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firstapp/models/active_tea_session.dart';
+import 'package:firstapp/models/brew_profile.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
@@ -20,13 +21,21 @@ class SessionController extends StatefulWidget {
 class SessionControllerState extends State<SessionController> {
   final Function(BuildContext) childWidget;
 
-  ActiveTeaSessionModel _activeTeaSession;
+  ActiveTeaSessionModel activeTeaSession;
   bool _deviceHasVibrator = false;
   bool _muted = false;
+
+  Timer _timer;
+  Duration _timeRemaining;
+
+  Duration get timeRemaining => _timeRemaining;
 
   bool get active => _timer != null && _timer.isActive;
 
   bool get muted => _muted;
+
+  int get currentSteep => activeTeaSession.currentSteep;
+  int get steepsRemainingInProfile => activeTeaSession.brewProfile.steepTimings.length - currentSteep;
 
   set muted(bool state) {
     setState(() {
@@ -50,16 +59,16 @@ class SessionControllerState extends State<SessionController> {
 
   @override
   void dispose() {
-    _activeTeaSession.removeListener(_resetTimerListener);
+    activeTeaSession.removeListener(_resetTimerListener);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_activeTeaSession == null) {
+    if (activeTeaSession == null) {
       print("Linking _SteepTimer to ActiveTeaSession");
-      _activeTeaSession = Provider.of<ActiveTeaSessionModel>(context);
-      _activeTeaSession.addListener(_resetTimerListener);
+      activeTeaSession = Provider.of<ActiveTeaSessionModel>(context);
+      activeTeaSession.addListener(_resetTimerListener);
     }
 
     if (_timeRemaining == null) {
@@ -70,8 +79,8 @@ class SessionControllerState extends State<SessionController> {
 
   decrementSteep() {
     try {
-      if (_activeTeaSession.currentSteep > 1) {
-        _activeTeaSession.decrementSteep();
+      if (activeTeaSession.currentSteep > 1) {
+        activeTeaSession.decrementSteep();
       }
 
       if (_timer != null) {
@@ -87,7 +96,7 @@ class SessionControllerState extends State<SessionController> {
 
   incrementSteep() {
     try {
-      _activeTeaSession.incrementSteep();
+      activeTeaSession.incrementSteep();
 
       if (_timer != null) {
         _timer.cancel();
@@ -104,15 +113,10 @@ class SessionControllerState extends State<SessionController> {
     _cancelBrewTimer();
     setState(() {
       _timeRemaining = Duration(
-          seconds: _activeTeaSession
-              .brewProfile.steepTimings[_activeTeaSession.currentSteep]);
+          seconds: activeTeaSession
+              .brewProfile.steepTimings[activeTeaSession.currentSteep]);
     });
   }
-
-  Timer _timer;
-  Duration _timeRemaining;
-
-  Duration get timeRemaining => _timeRemaining;
 
   set timeRemaining(Duration newTimeRemaining) {
     setState(() {
@@ -159,5 +163,9 @@ class SessionControllerState extends State<SessionController> {
         _timer.cancel();
       }
     });
+  }
+
+  saveSteepTimeToBrewProfile() async {
+    await activeTeaSession.saveSteepTimeToBrewProfile(currentSteep, timeRemaining);
   }
 }
