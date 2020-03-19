@@ -16,10 +16,21 @@ class SteepTimer extends StatefulWidget {
 class _SteepTimerState extends State<SteepTimer> {
   ActiveTeaSessionModel _activeTeaSession;
   bool _deviceHasVibrator = false;
+  bool _muted = false;
+
+  bool get muted => _muted;
+
+  set muted(bool state) {
+    setState(() {
+      _muted = state;
+    });
+  }
 
   @override
   void initState() {
-    Vibration.hasVibrator().then((hasVibration) {_deviceHasVibrator = hasVibration;});
+    Vibration.hasVibrator().then((hasVibration) {
+      _deviceHasVibrator = hasVibration;
+    });
     super.initState();
   }
 
@@ -123,9 +134,11 @@ class _SteepTimerState extends State<SteepTimer> {
         if (!(_timeRemaining > Duration(seconds: 0))) {
           timer.cancel();
           if (_deviceHasVibrator) {
-            Vibration.vibrate(duration: 1000, amplitude: 128);
+            Vibration.vibrate(duration: 1000, amplitude: 255);
           }
-          FlutterRingtonePlayer.playNotification();
+          if (!_muted || !_deviceHasVibrator) {
+            FlutterRingtonePlayer.playNotification();
+          }
           incrementSteep();
         }
       });
@@ -162,16 +175,20 @@ class TimerDisplayRow extends StatelessWidget {
         builder: (context, activeTeaSession, child) => Row(
               children: <Widget>[
                 Expanded(
-                  flex: 1,
+                  flex: 3,
                   child: Container(),
                 ),
                 Expanded(
-                  flex: 1,
+                  flex: 2,
                   child: TimerIconButton(),
                 ),
-                Expanded(flex: 6, child: TimerDisplay()),
+                Expanded(flex: 12, child: TimerDisplay()),
                 Expanded(
                   flex: 2,
+                  child: TimerMuteIconButton(),
+                ),
+                Expanded(
+                  flex: 3,
                   child: Container(),
                 ),
               ],
@@ -219,6 +236,23 @@ class TimerIconButton extends StatelessWidget {
       onPressed: () {},
       alignment: Alignment.centerLeft,
       icon: Icon(Icons.timelapse),
+    );
+  }
+}
+
+class TimerMuteIconButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final timerState = context.findAncestorStateOfType<_SteepTimerState>();
+
+    return IconButton(
+      onPressed: () {
+        timerState.muted = !timerState.muted;
+      },
+      alignment: Alignment.centerLeft,
+      icon: Icon(timerState.muted
+          ? Icons.notifications_off
+          : Icons.notifications_active),
     );
   }
 }
