@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ringtone_player/flutter_ringtone_player.dart';
 import 'package:provider/provider.dart';
+import 'package:vibration/vibration.dart';
 
 class SteepTimer extends StatefulWidget {
   @override
@@ -14,9 +15,11 @@ class SteepTimer extends StatefulWidget {
 
 class _SteepTimerState extends State<SteepTimer> {
   ActiveTeaSessionModel _activeTeaSession;
+  bool _deviceHasVibrator = false;
 
   @override
   void initState() {
+    Vibration.hasVibrator().then((hasVibration) {_deviceHasVibrator = hasVibration;});
     super.initState();
   }
 
@@ -119,6 +122,9 @@ class _SteepTimerState extends State<SteepTimer> {
 
         if (!(_timeRemaining > Duration(seconds: 0))) {
           timer.cancel();
+          if (_deviceHasVibrator) {
+            Vibration.vibrate(duration: 1000, amplitude: 128);
+          }
           FlutterRingtonePlayer.playNotification();
           incrementSteep();
         }

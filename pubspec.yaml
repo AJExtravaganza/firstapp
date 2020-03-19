@@ -34,7 +34,7 @@ dependencies:
 #  firebase_database: ^3.1.1
   cloud_firestore: ^0.13.4
   google_sign_in: ^4.1.4
-
+  vibration: ^1.2.4
 
 dev_dependencies:
   flutter_test:
