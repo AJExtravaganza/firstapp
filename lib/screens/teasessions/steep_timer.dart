@@ -78,16 +78,23 @@ class TimerDisplay extends StatelessWidget {
         timerState.timeRemaining.toString().split('.').first.substring(2);
 
     Text timerTextContent;
-    if (timerState.timeRemaining.inSeconds != 0 || timerState.finished) {
+    if (timerState.timeRemaining.inSeconds == 0 && !timerState.finished) {
+      if (timerState.currentSteep == 0) {
+        timerTextContent = Text(
+          'FLASH',
+          style: TextStyle(
+              height: 1.4, fontSize: 60, fontFamily: 'RobotoMonoCondensed'),
+        );
+      } else {
+        timerTextContent = Text(
+          '--:--',
+          style: TextStyle(fontSize: 72, fontFamily: 'RobotoMono'),
+        );
+      }
+    } else {
       timerTextContent = Text(
         currentValueStr,
         style: TextStyle(fontSize: 72, fontFamily: 'RobotoMono'),
-      );
-    } else {
-      timerTextContent = Text(
-        'FLASH',
-        style: TextStyle(
-            height: 1.4, fontSize: 60, fontFamily: 'RobotoMonoCondensed'),
       );
     }
 
