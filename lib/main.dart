@@ -64,11 +64,12 @@ Future rebuildTeaData(BuildContext context) async {
   final producersPopList = [
     'Wistaria',
     'Xiaguan',
-    'Dayi',
+    'Menghai Dayi',
     'Nanqiao',
     'Changtai',
     'Xizihao',
-    'Yangqinghao'
+    'Yangqinghao',
+    "Sean's Oolongs"
   ];
 
   final productionPopList = {
@@ -81,13 +82,18 @@ Future rebuildTeaData(BuildContext context) async {
     ],
     'Xiaguan': [
         [2001, '8653 Tiebing'],
-        [2007, 'Jinsi Tuo', 100]
+        [2007, 'Jinsi Tuo', 100],
+        [2013, 'Love Forever (Paper Tong)'],
+        [2012, '8653'],
+        [2007, 'Green G']
     ],
-    'Dayi': [
+    'Menghai Dayi': [
       [2005, '502-7542'],
       [2003, 'Purple Dayi'],
     ],
-    'Nanqiao': [],
+    'Nanqiao': [
+      [2004, 'Nanqiaowang'],
+    ],
     'Changtai': [],
     'Xizihao': [
       [2006, "Laoman'e Gushu", 500],
@@ -108,6 +114,10 @@ Future rebuildTeaData(BuildContext context) async {
       [2004, 'Zhencang Chawang', 400],
       [2007, 'Lingya', 400],
       [2007, 'Jincha']
+    ],
+    "Sean's Oolongs": [
+      [2014, 'Hongshui', 150],
+      [2016, 'Foshou', 150],
     ]
   };
 
