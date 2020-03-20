@@ -25,17 +25,17 @@ class ActiveTeaSessionModel extends ChangeNotifier {
     _currentTea = newTea;
     if (newTea != null) {
       _brewProfile = newTea.defaultBrewProfile;
-      _currentSteep = _brewProfile.steepTimings[0] > 0 ? 0 : 1;
     } else {
       _brewProfile = BrewProfile.getDefault();
-      _currentSteep = 0;
     }
+    _currentSteep = 0;
+
     notifyListeners();
   }
 
   set brewProfile(BrewProfile brewProfile) {
     _brewProfile = brewProfile;
-    _currentSteep = brewProfile.steepTimings[0] > 0 ? 0 : 1;
+    _currentSteep = 0;
     notifyListeners();
   }
 

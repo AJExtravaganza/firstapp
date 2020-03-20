@@ -20,7 +20,6 @@ class TeaProducer {
     return TeaProducer(data['name'], data['short_name'], producerDocument.documentID);
   }
 
-  bool operator ==(dynamic other) {
-    return this.name == other.name;
-  }
+  bool operator==(dynamic other) => other is TeaProducer
+      && this.name == other.name;
 }

@@ -27,10 +27,12 @@ class SessionControllerState extends State<SessionController> {
 
   Timer _timer;
   Duration _timeRemaining;
+  bool _finished = false;
 
   Duration get timeRemaining => _timeRemaining;
 
   bool get active => _timer != null && _timer.isActive;
+  bool get finished => _finished;
 
   bool get muted => _muted;
 
@@ -78,8 +80,8 @@ class SessionControllerState extends State<SessionController> {
   }
 
   decrementSteep() {
-    try {
-      if (activeTeaSession.currentSteep > 1) {
+//    try {
+      if (activeTeaSession.currentSteep > 0) {
         activeTeaSession.decrementSteep();
       }
 
@@ -88,14 +90,14 @@ class SessionControllerState extends State<SessionController> {
       }
 
       _resetTimer();
-    } catch (err) {
-      //display a message
-      print(err.toString());
-    }
+//    } catch (err) {
+//      //display a message
+//      print(err.toString());
+//    }
   }
 
   incrementSteep() {
-    try {
+//    try {
       activeTeaSession.incrementSteep();
 
       if (_timer != null) {
@@ -103,15 +105,16 @@ class SessionControllerState extends State<SessionController> {
       }
 
       _resetTimer();
-    } catch (err) {
-      //display a message
-      print(err.toString());
-    }
+//    } catch (err) {
+//      //display a message
+//      print(err.toString());
+//    }
   }
 
   _resetTimer() {
     _cancelBrewTimer();
     setState(() {
+      _finished = false;
       _timeRemaining = Duration(
           seconds: activeTeaSession
               .brewProfile.steepTimings[activeTeaSession.currentSteep]);
@@ -143,6 +146,9 @@ class SessionControllerState extends State<SessionController> {
           }
 
           if (!(_timeRemaining > Duration(seconds: 0))) {
+            setState(() {
+              _finished = true;
+            });
             timer.cancel();
             if (_deviceHasVibrator) {
               Vibration.vibrate(duration: 1000, amplitude: 255);
@@ -150,7 +156,7 @@ class SessionControllerState extends State<SessionController> {
             if (!_muted || !_deviceHasVibrator) {
               FlutterRingtonePlayer.playNotification();
             }
-            incrementSteep();
+//            incrementSteep();
           }
         });
       });

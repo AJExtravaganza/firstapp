@@ -21,10 +21,15 @@ class TeaProduction {
 
   TeaProduction(this.name, this.nominalWeightGrams, this.producer, this.productionYear, [this.id]);
 
+  bool operator==(other) => other is TeaProduction
+      && other.name == name
+      && other.nominalWeightGrams == nominalWeightGrams
+      && other.producer == producer
+      && other.productionYear == productionYear;
+
   static TeaProduction fromDocumentSnapshot (DocumentSnapshot productionDocument,
       TeaProducerCollectionModel producers) {
     final data = productionDocument.data;
-    //TODO: Figure out why data['producer'] returns String rather than TeaProducer
     return TeaProduction(data['name'], data['nominal_weight_grams'], producers.getById(data['producer']), data['production_year'], productionDocument.documentID);
   }
 }

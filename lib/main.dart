@@ -3,11 +3,9 @@
 // found in the LICENSE file.
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firstapp/db.dart';
 import 'package:firstapp/models/active_tea_session.dart';
 import 'package:firstapp/models/brewing_vessel.dart';
-import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/models/tea_collection.dart';
 import 'package:firstapp/models/tea_producer.dart';
 import 'package:firstapp/models/tea_producer_collection.dart';
@@ -21,12 +19,11 @@ import 'package:firstapp/screens/teasessions/teasessions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
-void resetTeaData(BuildContext context) async {
+Future nukeDb(BuildContext context) async {
   final producers =
-      Provider.of<TeaProducerCollectionModel>(context, listen: false);
+  Provider.of<TeaProducerCollectionModel>(context, listen: false);
   final productions =
-      Provider.of<TeaProductionCollectionModel>(context, listen: false);
+  Provider.of<TeaProductionCollectionModel>(context, listen: false);
   final teas = Provider.of<TeaCollectionModel>(context, listen: false);
   final user = await fetchUser();
 
@@ -50,37 +47,98 @@ void resetTeaData(BuildContext context) async {
   old_producers.documents.forEach((doc) async {
     await doc.reference.delete();
   });
-  print('done.');
+
+  print('Done.');
+}
+
+Future rebuildTeaData(BuildContext context) async {
+//  await nukeDb(context);
+
+  final producers =
+      Provider.of<TeaProducerCollectionModel>(context, listen: false);
+  final productions =
+      Provider.of<TeaProductionCollectionModel>(context, listen: false);
+
   print('Repopulating database/local collections...');
 
-  final xizihaoRef = await producers.put(TeaProducer('Xizihao', 'XZH'));
-  final dayiRef =
-      await producers.put(TeaProducer('Menghai Dayi Tea Factory', 'Dayi'));
-  final wistariaRef = await producers.put(TeaProducer('Wistaria', 'Wistaria'));
+  final producersPopList = [
+    'Wistaria',
+    'Xiaguan',
+    'Dayi',
+    'Nanqiao',
+    'Changtai',
+    'Xizihao',
+    'Yangqinghao'
+  ];
 
-  final dingjiRef = await productions.put(TeaProduction(
-      'Dingji Gushu', 400, producers.getById(xizihaoRef.documentID), 2007));
-  final lmeRef = await productions.put(TeaProduction(
-      "Laoman'e Gushu", 500, producers.getById(xizihaoRef.documentID), 2006));
-  final seven542Ref = await productions.put(TeaProduction(
-      '502-7542', 357, producers.getById(dayiRef.documentID), 2005));
-  final purpleDayiRef = await productions.put(TeaProduction(
-      'Purple Dayi', 357, producers.getById(dayiRef.documentID), 2003));
-  final ziyinNannuoRef = await productions.put(TeaProduction(
-      'Ziyin Nannuo', 357, producers.getById(wistariaRef.documentID), 2003));
-  final zipinRef = await productions.put(TeaProduction(
-      'Zipin', 357, producers.getById(wistariaRef.documentID), 2003));
+  final productionPopList = {
+    'Wistaria': [
+      [2003, 'Zipin'],
+      [2003, 'Ziyin You'],
+      [2003, 'Ziyin Nannuo'],
+      [2007, 'Lanyin'],
+      [2007, 'Hongyin'],
+    ],
+    'Xiaguan': [
+        [2001, '8653 Tiebing'],
+        [2007, 'Jinsi Tuo', 100]
+    ],
+    'Dayi': [
+      [2005, '502-7542'],
+      [2003, 'Purple Dayi'],
+    ],
+    'Nanqiao': [],
+    'Changtai': [],
+    'Xizihao': [
+      [2006, "Laoman'e Gushu", 500],
+      [2006, "Huanshanling Youle", 400],
+      [2006, "Yiwu Chahuang", 400],
+      [2006, "Black Taiji LBZ", 400],
+      [2007, 'Huangshanlin', 400],
+      [2007, 'Yuanshilin', 400],
+      [2007, 'Shenshanlin', 400],
+      [2007, "'8582'", 400],
+      [2007, 'Dinji Gushu', 400],
+      [2007, '6FTM Blend', 400],
+      [2007, 'Dinji Gushu', 400],
+      [2007, 'Puzhen', 250],
+      [2007, 'Xueshan Chunlu', 250],
+    ],
+    'Yangqinghao': [
+      [2004, 'Tejipin', 500],
+      [2004, 'Zhencang Chawang', 400],
+      [2007, 'Lingya', 400],
+      [2007, 'Jincha']
+    ]
+  };
 
-  await teas.put(Tea(3, productions.getById(dingjiRef.documentID)));
-  await teas.put(Tea(2, productions.getById(seven542Ref.documentID)));
-  await teas.put(Tea(2, productions.getById(seven542Ref.documentID)));
-  await teas.put(Tea(1, productions.getById(ziyinNannuoRef.documentID)));
+  producersPopList.forEach((producerName) async {
+    final producer = TeaProducer(producerName, producerName);
+    if (!producers.contains(producer)) {
+      print('Inserting ${producer.asString()}');
+      await producers.put(producer);
+    }
+
+    try{
+      final prodArr = productionPopList[producerName];
+      final producerId = producers.getByName(producerName).id;
+        prodArr.forEach((prod) async {
+          final production = TeaProduction(prod[1], prod.length > 2 ? prod[2] : 357,
+              producers.getById(producerId), prod[0]);
+          if (!productions.contains(production)) {
+            print('Inserting ${production.asString()}');
+            await productions.put(production);
+          }
+      });
+    } catch (err) {
+      print('Error populating productions for $producerName - please run again or fix rebuildTeaData() to wait for the async producer insertion');
+    }
+  });
 
   print('done.');
 }
 
 void main() {
-
   //This is necessary to allow subscription to the db snapshots prior to calling runApp()
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -89,6 +147,7 @@ void main() {
   final teaProductionCollectionModel =
       TeaProductionCollectionModel(teaProducerCollectionModel);
   final teaCollectionModel = TeaCollectionModel(teaProductionCollectionModel);
+  final activeTeaSessionModel = ActiveTeaSessionModel(teaCollectionModel);
 
   runApp(MaterialApp(
       title: 'TeaVault',
@@ -106,7 +165,7 @@ void main() {
           ChangeNotifierProvider<TeapotCollectionModel>(
               create: (_) => TeapotCollectionModel(userTeapotCollection)),
           ChangeNotifierProvider<ActiveTeaSessionModel>(
-              create: (_) => ActiveTeaSessionModel(teaCollectionModel)),
+              create: (_) => activeTeaSessionModel),
         ],
         child: MyApp(),
       ))));
@@ -115,16 +174,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    try {
-      final teaCollection =
-          Provider.of<TeaCollectionModel>(context, listen: false);
-      final activeTeaSession =
-          Provider.of<ActiveTeaSessionModel>(context, listen: false);
-
-    } catch (err) {
-      print(
-          "Failed to load initial app state.  User probably isn't logged in yet"); //TODO fix this block so it makes more sense once auth/sign-up/login work is complete
-    }
+    rebuildTeaData(context);
 
     return MaterialApp(
       title: 'TeaVault',

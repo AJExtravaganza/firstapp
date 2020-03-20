@@ -2,7 +2,6 @@ import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firstapp/models/tea_producer.dart';
-import 'package:firstapp/models/tea_production.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -18,7 +17,12 @@ class TeaProducerCollectionModel extends ChangeNotifier {
 
   int get length => _items.length;
 
+  bool contains(TeaProducer producer) {
+    return _items.values.any((existingProducer) => existingProducer == producer);
+  }
+
   TeaProducer getById(String id) => _items[id];
+  TeaProducer getByName(String name) => _items.values.singleWhere((producer) => producer.name == name);
 
 
   Future<DocumentReference> put(TeaProducer producer) async {

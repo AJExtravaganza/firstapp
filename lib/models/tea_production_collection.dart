@@ -20,6 +20,10 @@ class TeaProductionCollectionModel extends ChangeNotifier {
   int get length => _items.length;
 
   TeaProduction getById(String id) => _items[id];
+  
+  bool contains(TeaProduction production) {
+    return _items.values.any((existingProduction) => existingProduction == production);
+  }
 
   Future<DocumentReference> put(TeaProduction production) async {
     final newDocumentReference = await Firestore.instance

@@ -74,16 +74,25 @@ class TimerDisplay extends StatelessWidget {
     final _context = context;
     final timerState =
         context.findAncestorStateOfType<SessionControllerState>();
-    final currentMinutes = (timerState.timeRemaining.inMinutes % 60).toInt();
-    final currentSeconds = (timerState.timeRemaining.inSeconds % 60).toInt();
     String currentValueStr =
         timerState.timeRemaining.toString().split('.').first.substring(2);
 
-    return FlatButton(
-      child: Text(
+    Text timerTextContent;
+    if (timerState.timeRemaining.inSeconds != 0 || timerState.finished) {
+      timerTextContent = Text(
         currentValueStr,
         style: TextStyle(fontSize: 72, fontFamily: 'RobotoMono'),
-      ),
+      );
+    } else {
+      timerTextContent = Text(
+        'FLASH',
+        style: TextStyle(
+            height: 1.4, fontSize: 60, fontFamily: 'RobotoMonoCondensed'),
+      );
+    }
+
+    return FlatButton(
+      child: timerTextContent,
       onPressed: () {
         timerState.stopBrewTimer();
 
@@ -92,7 +101,8 @@ class TimerDisplay extends StatelessWidget {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
             backgroundColor: Colors.white,
-            builder: (context) => TimerPickerSheetContents(_context, timerState));
+            builder: (context) =>
+                TimerPickerSheetContents(_context, timerState));
       },
     );
   }
@@ -129,7 +139,9 @@ class TimerPickerSheetContents extends StatelessWidget {
                       ? IconButton(
                           onPressed: () async {
                             Navigator.pop(context);
-                            Scaffold.of(_parentContext).showSnackBar(SnackBar(content: Text("Saving change to brew profile...")));
+                            Scaffold.of(_parentContext).showSnackBar(SnackBar(
+                                content:
+                                    Text("Saving change to brew profile...")));
                             await _timerState.saveSteepTimeToBrewProfile();
                           },
                           icon: Icon(Icons.save_alt),
@@ -264,9 +276,16 @@ class BrewButton extends StatelessWidget {
         icon: Icon(Icons.pause),
         alignment: Alignment.center,
       );
-    } else {
+    } else if (timerState.timeRemaining.inSeconds > 0) {
       return IconButton(
         onPressed: timerState.startBrewTimer,
+        icon: Icon(Icons.play_arrow),
+        alignment: Alignment.center,
+      );
+    } else {
+      //Disable for Flash Steep
+      return IconButton(
+        onPressed: () {},
         icon: Icon(Icons.play_arrow),
         alignment: Alignment.center,
       );
