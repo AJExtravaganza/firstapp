@@ -115,14 +115,28 @@ class TimerDisplay extends StatelessWidget {
   }
 }
 
-class TimerPickerSheetContents extends StatelessWidget {
+class TimerPickerSheetContents extends StatefulWidget {
   final SessionControllerState _timerState;
   final BuildContext _parentContext;
 
   TimerPickerSheetContents(this._parentContext, this._timerState);
 
   @override
+  State<StatefulWidget> createState() =>
+      TimerPickerSheetContentsState(this._parentContext, this._timerState);
+}
+
+class TimerPickerSheetContentsState extends State<TimerPickerSheetContents> {
+  final SessionControllerState _timerState;
+  final BuildContext _parentContext;
+  int _selectedValueInSeconds;
+
+  TimerPickerSheetContentsState(this._parentContext, this._timerState);
+
+  @override
   Widget build(BuildContext context) {
+    _selectedValueInSeconds = _timerState.activeTeaSession.brewProfile.steepTimings[_timerState.currentSteep];
+    ;
     final orientation = MediaQuery.of(context).orientation;
     final portrait = Orientation.portrait;
     int buttonFlex = orientation == portrait ? 15 : 20;
@@ -145,6 +159,8 @@ class TimerPickerSheetContents extends StatelessWidget {
                   child: _timerState.activeTeaSession.currentTea != null
                       ? IconButton(
                           onPressed: () async {
+                            this._timerState.timeRemaining =
+                                Duration(seconds: this._selectedValueInSeconds);
                             Navigator.pop(context);
                             Scaffold.of(_parentContext).showSnackBar(SnackBar(
                                 content:
@@ -158,12 +174,14 @@ class TimerPickerSheetContents extends StatelessWidget {
                 ),
                 Expanded(
                   flex: timerPickerFlex,
-                  child: BrewTimerPicker(this._timerState),
+                  child: BrewTimerPicker(),
                 ),
                 Expanded(
                   flex: buttonFlex,
                   child: IconButton(
                     onPressed: () {
+                      this._timerState.timeRemaining =
+                          Duration(seconds: this._selectedValueInSeconds);
                       Navigator.pop(context);
                     },
                     icon: Icon(Icons.check_box),
@@ -176,17 +194,18 @@ class TimerPickerSheetContents extends StatelessWidget {
 }
 
 class BrewTimerPicker extends StatelessWidget {
-  final SessionControllerState timerState;
-
-  BrewTimerPicker(this.timerState);
+  BrewTimerPicker();
 
   @override
   Widget build(BuildContext context) {
+    final parentWidgetState =
+        context.findAncestorStateOfType<TimerPickerSheetContentsState>();
     return CupertinoTimerPicker(
         mode: CupertinoTimerPickerMode.ms,
-        initialTimerDuration: timerState.timeRemaining,
+        initialTimerDuration:
+            Duration(seconds: parentWidgetState._selectedValueInSeconds),
         onTimerDurationChanged: (Duration newDuration) {
-          timerState.timeRemaining = newDuration;
+          parentWidgetState._selectedValueInSeconds = newDuration.inSeconds;
         });
   }
 }
