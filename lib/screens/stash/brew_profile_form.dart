@@ -87,6 +87,51 @@ class _BrewProfileFormState extends State<BrewProfileForm> {
 
   _BrewProfileFormState(this._tea, [this._name = '', this._nominalRatio = 15, this._brewTemperatureCelsius = 100, this._steepTimings]);
 
+  //  Necessary for TextFormField select-all-on-focus
+  String _nominalRatioFieldInitialValue;
+  TextEditingController _nominalRatioFieldController;
+  FocusNode _nominalRatioFieldFocusNode;
+  
+  String _brewTemperatureFieldInitialValue;
+  TextEditingController _brewTemperatureFieldController;
+  FocusNode _brewTemperatureFieldFocusNode;
+
+  @override
+  initState() {
+    super.initState();
+
+
+    //  This stuff all implements TextFormField select-all-on-focus
+    this._nominalRatioFieldInitialValue = this._nominalRatio.toString();
+    this._nominalRatioFieldController = TextEditingController(text: _nominalRatioFieldInitialValue);
+    _nominalRatioFieldFocusNode = FocusNode();
+
+    this._brewTemperatureFieldInitialValue = this._brewTemperatureCelsius.toString();
+    this._brewTemperatureFieldController = TextEditingController(text: _brewTemperatureFieldInitialValue);
+    _brewTemperatureFieldFocusNode = FocusNode();
+
+    _nominalRatioFieldFocusNode.addListener(() {
+      if (_nominalRatioFieldFocusNode.hasFocus) {
+        _nominalRatioFieldController.selection =
+            TextSelection(baseOffset: 0, extentOffset: _nominalRatioFieldInitialValue.length);
+      }
+    });
+
+    _brewTemperatureFieldFocusNode.addListener(() {
+      if (_brewTemperatureFieldFocusNode.hasFocus) {
+        _brewTemperatureFieldController.selection =
+            TextSelection(baseOffset: 0, extentOffset: _brewTemperatureFieldInitialValue.length);
+      }
+    });
+  }
+
+  @override
+  dispose() {
+    _nominalRatioFieldFocusNode.dispose();
+    _brewTemperatureFieldFocusNode.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -117,7 +162,8 @@ class _BrewProfileFormState extends State<BrewProfileForm> {
         TextFormField(
             decoration: InputDecoration(
                 labelText: 'Enter Ratio', hintText: 'Enter x to represent 1:x leaf:water'),
-            initialValue: this._nominalRatio.toString(),
+            focusNode: _nominalRatioFieldFocusNode,
+            controller: _nominalRatioFieldController,
             validator: (value) {
               if (int.tryParse(value) == null || int.parse(value) < 5 || int.parse(value) >200 ) {
                 return 'Please enter a valid value (5-200)';
@@ -134,7 +180,8 @@ class _BrewProfileFormState extends State<BrewProfileForm> {
         TextFormField(
             decoration: InputDecoration(
                 labelText: 'Enter Brew Temperature (°C)', hintText: ''),
-            initialValue: this._brewTemperatureCelsius.toString(),
+            focusNode: _brewTemperatureFieldFocusNode,
+            controller: _brewTemperatureFieldController,
             validator: (value) {
               if (int.tryParse(value) == null || int.parse(value) < 1 || int.parse(value) >100 ) {
                 return 'Please enter a valid value (1-100)';
