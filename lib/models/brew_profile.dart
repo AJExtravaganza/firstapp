@@ -14,12 +14,27 @@ class BrewProfile {
         'name': name,
         'nominal_ratio': nominalRatio,
         'brew_temperature_celsius': brewTemperatureCelsius,
-        'steep_timings': steepTimings,
+        'steep_timings': _trimSteepTimingsList(steepTimings),
         'is_favorite': isFavorite
       };
 
   BrewProfile(this.name, this.nominalRatio, this.brewTemperatureCelsius,
       this.steepTimings, [this.isFavorite = false]);
+
+  static List<int> _trimSteepTimingsList(List<int> steepTimingsList) {
+    bool timedSteepFound = false;
+    List<int> trimmedList = [];
+    steepTimingsList.forEach((value) {
+      if (value != 0) {
+        timedSteepFound = true;
+        trimmedList.add(value);
+      } else if (!timedSteepFound) {
+        trimmedList.add(value);
+      }
+    });
+
+    return trimmedList;
+  }
 
   static BrewProfile fromJson(Map<String, dynamic> json) {
     List<int> steepTimings = List<int>.from(json['steep_timings']);

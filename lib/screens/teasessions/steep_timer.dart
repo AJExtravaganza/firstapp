@@ -326,8 +326,16 @@ class NextSteepButton extends StatelessWidget {
         context.findAncestorStateOfType<SessionControllerState>();
     return IconButton(
         onPressed: () {
-          if (timerState.steepsRemainingInProfile > 1)
+          final steepTimings = timerState.activeTeaSession.brewProfile.steepTimings;
+          if (timerState.steepsRemainingInProfile > 1) {
             timerState.incrementSteep();
+
+          } else if (steepTimings[timerState.currentSteep] != 0 || timerState.currentSteep == 0) {
+            steepTimings.add(0);
+            timerState.incrementSteep();
+          }
+
+
         },
         icon: Icon(Icons.arrow_forward_ios));
   }

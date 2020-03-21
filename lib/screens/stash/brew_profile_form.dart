@@ -91,7 +91,7 @@ class _BrewProfileFormState extends State<BrewProfileForm> {
   String _nominalRatioFieldInitialValue;
   TextEditingController _nominalRatioFieldController;
   FocusNode _nominalRatioFieldFocusNode;
-  
+
   String _brewTemperatureFieldInitialValue;
   TextEditingController _brewTemperatureFieldController;
   FocusNode _brewTemperatureFieldFocusNode;
@@ -200,10 +200,6 @@ class _BrewProfileFormState extends State<BrewProfileForm> {
                 labelText: 'Enter Steep Timings', hintText: 'Enter in seconds, comma-separated.  First value is rinse.'),
             initialValue: _steepTimings != null && _steepTimings.length > 0 ? _steepTimings.join(',') : '',
             validator: (value) {
-              if (value.split(',').length < 2  ) {
-                return 'Please enter a valid set of comma-separated integers.';
-              }
-
               try {
                 value.replaceAll(' ', '').split(',').where((str) => str != '').map((str) => int.parse(str));
               } on FormatException catch (err) {
@@ -214,7 +210,8 @@ class _BrewProfileFormState extends State<BrewProfileForm> {
             },
             onSaved: (value) {
               setState(() {
-                _steepTimings = value.replaceAll(' ', '').split(',').map((str) => max(int.parse(str), 0)).toList();
+                final timingsList = value.trim().length > 0 ? value.replaceAll(' ', '').split(',').map((str) => max(int.parse(str), 0)).toList() : [0,];
+                _steepTimings = timingsList;
               });
             },
             keyboardType: TextInputType.number),
