@@ -3,7 +3,7 @@ import 'package:firstapp/models/brewing_vessel.dart';
 import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/screens/stash/brew_profiles_screen.dart';
 import 'package:firstapp/screens/stash/stash.dart';
-import 'package:firstapp/screens/teasessions/tea_session_controller.dart';
+import 'package:firstapp/tea_session_controller.dart';
 import 'package:firstapp/screens/teasessions/steep_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';

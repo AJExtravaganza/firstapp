@@ -3,7 +3,7 @@ import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/models/tea_collection.dart';
 import 'package:firstapp/screens/stash/add_new_tea_to_stash_form.dart';
 import 'package:firstapp/screens/stash/brew_profiles_screen.dart';
-import 'package:firstapp/screens/teasessions/tea_session_controller.dart';
+import 'package:firstapp/tea_session_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

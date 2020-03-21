@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firstapp/db.dart';
+import 'package:firstapp/models/user.dart';
 import 'package:firstapp/models/brewing_vessel.dart';
 import 'package:firstapp/models/tea_collection.dart';
 import 'package:firstapp/models/tea_producer.dart';
@@ -13,8 +13,8 @@ import 'package:firstapp/models/tea_production_collection.dart';
 import 'package:firstapp/models/teapot_collection.dart';
 import 'package:firstapp/screens/authentication/authentication_wrapper.dart';
 import 'package:firstapp/screens/stash/stash.dart';
-import 'package:firstapp/climate.dart' as climate;
-import 'package:firstapp/screens/teasessions/tea_session_controller.dart';
+import 'package:firstapp/screens/climate/climate.dart' as climate;
+import 'package:firstapp/tea_session_controller.dart';
 import 'package:firstapp/screens/teasessions/teasessions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

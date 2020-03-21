@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firstapp/db.dart';
+import 'package:firstapp/models/user.dart';
 import 'package:firstapp/models/brew_profile.dart';
 import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/models/tea_production_collection.dart';
