@@ -80,35 +80,25 @@ class SessionControllerState extends State<SessionController> {
   }
 
   decrementSteep() {
-//    try {
-      if (activeTeaSession.currentSteep > 0) {
-        activeTeaSession.decrementSteep();
-      }
+    if (activeTeaSession.currentSteep > 0) {
+      activeTeaSession.decrementSteep();
+    }
 
-      if (_timer != null) {
-        _timer.cancel();
-      }
+    if (_timer != null) {
+      _timer.cancel();
+    }
 
-      _resetTimer();
-//    } catch (err) {
-//      //display a message
-//      print(err.toString());
-//    }
+    _resetTimer();
   }
 
   incrementSteep() {
-//    try {
-      activeTeaSession.incrementSteep();
+    activeTeaSession.incrementSteep();
 
-      if (_timer != null) {
-        _timer.cancel();
-      }
+    if (_timer != null) {
+      _timer.cancel();
+    }
 
-      _resetTimer();
-//    } catch (err) {
-//      //display a message
-//      print(err.toString());
-//    }
+    _resetTimer();
   }
 
   _resetTimer() {
@@ -156,7 +146,6 @@ class SessionControllerState extends State<SessionController> {
             if (!_muted || !_deviceHasVibrator) {
               FlutterRingtonePlayer.playNotification();
             }
-//            incrementSteep();
           }
         });
       });
