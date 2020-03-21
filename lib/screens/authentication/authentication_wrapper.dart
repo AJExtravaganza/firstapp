@@ -1,8 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firstapp/screens/authentication/sign_in.dart';
 import 'package:firstapp/screens/services/auth.dart';
 import 'package:flutter/cupertino.dart';
-
 
 //Serves sign-in screen when not logged in, and listens to changes in authentication state
 class AuthenticationWrapper extends StatefulWidget {
@@ -23,7 +21,7 @@ class AuthenticationWrapperState extends State<AuthenticationWrapper> {
 
   Future signInAnonymously() async {
     final user = await _authService.signInAnonymously();
-     setState(() {
+    setState(() {
       _currentUser = user;
     });
   }
@@ -54,5 +52,4 @@ class AuthenticationWrapperState extends State<AuthenticationWrapper> {
 //      return SignIn();
     }
   }
-
 }

@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firstapp/models/brewing_vessel.dart';
 
 class BrewProfile {
@@ -18,8 +17,7 @@ class BrewProfile {
         'is_favorite': isFavorite
       };
 
-  BrewProfile(this.name, this.nominalRatio, this.brewTemperatureCelsius,
-      this.steepTimings, [this.isFavorite = false]);
+  BrewProfile(this.name, this.nominalRatio, this.brewTemperatureCelsius, this.steepTimings, [this.isFavorite = false]);
 
   static List<int> _trimSteepTimingsList(List<int> steepTimingsList) {
     bool timedSteepFound = false;
@@ -38,8 +36,8 @@ class BrewProfile {
 
   static BrewProfile fromJson(Map<String, dynamic> json) {
     List<int> steepTimings = List<int>.from(json['steep_timings']);
-    return BrewProfile(json['name'], json['nominal_ratio'],
-        json['brew_temperature_celsius'], steepTimings, json['is_favorite']);
+    return BrewProfile(
+        json['name'], json['nominal_ratio'], json['brew_temperature_celsius'], steepTimings, json['is_favorite']);
   }
 
   static BrewProfile getDefault() {

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firstapp/models/user.dart';
 import 'package:firstapp/models/brewing_vessel.dart';
 import 'package:firstapp/models/tea_collection.dart';
 import 'package:firstapp/models/tea_producer.dart';
@@ -11,30 +10,24 @@ import 'package:firstapp/models/tea_producer_collection.dart';
 import 'package:firstapp/models/tea_production.dart';
 import 'package:firstapp/models/tea_production_collection.dart';
 import 'package:firstapp/models/teapot_collection.dart';
+import 'package:firstapp/models/user.dart';
 import 'package:firstapp/screens/authentication/authentication_wrapper.dart';
-import 'package:firstapp/screens/stash/stash.dart';
 import 'package:firstapp/screens/climate/climate.dart' as climate;
-import 'package:firstapp/tea_session_controller.dart';
+import 'package:firstapp/screens/stash/stash.dart';
 import 'package:firstapp/screens/teasessions/teasessions.dart';
+import 'package:firstapp/tea_session_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 Future nukeDb(BuildContext context) async {
-  final producers =
-  Provider.of<TeaProducerCollectionModel>(context, listen: false);
-  final productions =
-  Provider.of<TeaProductionCollectionModel>(context, listen: false);
+  final producers = Provider.of<TeaProducerCollectionModel>(context, listen: false);
+  final productions = Provider.of<TeaProductionCollectionModel>(context, listen: false);
   final teas = Provider.of<TeaCollectionModel>(context, listen: false);
   final user = await fetchUser();
 
-  final old_producers = await Firestore.instance
-      .collection(producers.dbCollectionName)
-      .getDocuments();
-  final old_productions = await Firestore.instance
-      .collection(productions.dbCollectionName)
-      .getDocuments();
-  final old_teas =
-      await user.reference.collection(teas.dbCollectionName).getDocuments();
+  final old_producers = await Firestore.instance.collection(producers.dbCollectionName).getDocuments();
+  final old_productions = await Firestore.instance.collection(productions.dbCollectionName).getDocuments();
+  final old_teas = await user.reference.collection(teas.dbCollectionName).getDocuments();
 
   print('Deleting all producers, productions and teas...');
 
@@ -54,10 +47,8 @@ Future nukeDb(BuildContext context) async {
 Future rebuildTeaData(BuildContext context) async {
 //  await nukeDb(context);
 
-  final producers =
-      Provider.of<TeaProducerCollectionModel>(context, listen: false);
-  final productions =
-      Provider.of<TeaProductionCollectionModel>(context, listen: false);
+  final producers = Provider.of<TeaProducerCollectionModel>(context, listen: false);
+  final productions = Provider.of<TeaProductionCollectionModel>(context, listen: false);
 
   print('Repopulating database/local collections...');
 
@@ -81,11 +72,11 @@ Future rebuildTeaData(BuildContext context) async {
       [2007, 'Hongyin'],
     ],
     'Xiaguan': [
-        [2001, '8653 Tiebing'],
-        [2007, 'Jinsi Tuo', 100],
-        [2013, 'Love Forever (Paper Tong)'],
-        [2012, '8653'],
-        [2007, 'Green G']
+      [2001, '8653 Tiebing'],
+      [2007, 'Jinsi Tuo', 100],
+      [2013, 'Love Forever (Paper Tong)'],
+      [2012, '8653'],
+      [2007, 'Green G']
     ],
     'Menghai Dayi': [
       [2005, '502-7542'],
@@ -128,19 +119,20 @@ Future rebuildTeaData(BuildContext context) async {
       await producers.put(producer);
     }
 
-    try{
+    try {
       final prodArr = productionPopList[producerName];
       final producerId = producers.getByName(producerName).id;
-        prodArr.forEach((prod) async {
-          final production = TeaProduction(prod[1], prod.length > 2 ? prod[2] : 357,
-              producers.getById(producerId), prod[0]);
-          if (!productions.contains(production)) {
-            print('Inserting ${production.asString()}');
-            await productions.put(production);
-          }
+      prodArr.forEach((prod) async {
+        final production =
+            TeaProduction(prod[1], prod.length > 2 ? prod[2] : 357, producers.getById(producerId), prod[0]);
+        if (!productions.contains(production)) {
+          print('Inserting ${production.asString()}');
+          await productions.put(production);
+        }
       });
     } catch (err) {
-      print('Error populating productions for $producerName - please run again or fix rebuildTeaData() to wait for the async producer insertion');
+      print(
+          'Error populating productions for $producerName - please run again or fix rebuildTeaData() to wait for the async producer insertion');
     }
   });
 
@@ -153,8 +145,7 @@ void main() {
 
   List<BrewingVessel> userTeapotCollection = getSampleVesselList();
   final teaProducerCollectionModel = TeaProducerCollectionModel();
-  final teaProductionCollectionModel =
-      TeaProductionCollectionModel(teaProducerCollectionModel);
+  final teaProductionCollectionModel = TeaProductionCollectionModel(teaProducerCollectionModel);
   final teaCollectionModel = TeaCollectionModel(teaProductionCollectionModel);
   final teaSessionController = TeaSessionController(teaCollectionModel);
 
@@ -171,10 +162,8 @@ void main() {
           ChangeNotifierProvider<TeaCollectionModel>(
             create: (_) => teaCollectionModel,
           ),
-          ChangeNotifierProvider<TeapotCollectionModel>(
-              create: (_) => TeapotCollectionModel(userTeapotCollection)),
-          ChangeNotifierProvider<TeaSessionController>(
-              create: (_) => teaSessionController),
+          ChangeNotifierProvider<TeapotCollectionModel>(create: (_) => TeapotCollectionModel(userTeapotCollection)),
+          ChangeNotifierProvider<TeaSessionController>(create: (_) => teaSessionController),
         ],
         child: MyApp(),
       ))));
@@ -210,8 +199,7 @@ class HomeView extends StatefulWidget {
   HomeViewState createState() => HomeViewState();
 }
 
-class HomeViewState extends State<HomeView>
-    with SingleTickerProviderStateMixin {
+class HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin {
   static final String sessionTabLabel = 'Session';
   static final String stashTabLabel = 'Stash';
   static final String climateTabLabel = 'Climate';
@@ -270,8 +258,7 @@ class HomeViewState extends State<HomeView>
               } else if (tab.text == climateTabLabel) {
                 return climate.DateTimeComboLinePointChart.withSampleData();
               } else {
-                return getStubContent(
-                    'ERROR: INVALID TAB ${tab.text} SPECIFIED');
+                return getStubContent('ERROR: INVALID TAB ${tab.text} SPECIFIED');
               }
             }).toList()),
       ),

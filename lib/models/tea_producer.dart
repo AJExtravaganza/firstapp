@@ -5,13 +5,9 @@ class TeaProducer {
   String name;
   String shortName;
 
-  String asString() =>
-      "${this.name}";
+  String asString() => "${this.name}";
 
-  Map<String, String> asMap() => {
-    'name': this.name,
-    'short_name': this.shortName
-  };
+  Map<String, String> asMap() => {'name': this.name, 'short_name': this.shortName};
 
   TeaProducer(this.name, this.shortName, [this.id]);
 
@@ -20,6 +16,5 @@ class TeaProducer {
     return TeaProducer(data['name'], data['short_name'], producerDocument.documentID);
   }
 
-  bool operator==(dynamic other) => other is TeaProducer
-      && this.name == other.name;
+  bool operator ==(dynamic other) => other is TeaProducer && this.name == other.name;
 }

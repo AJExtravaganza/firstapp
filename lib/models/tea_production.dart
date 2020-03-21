@@ -9,8 +9,7 @@ class TeaProduction {
   TeaProducer producer;
   int productionYear;
 
-  String asString() =>
-      "${this.productionYear} ${this.producer.shortName} ${this.name}";
+  String asString() => "${this.productionYear} ${this.producer.shortName} ${this.name}";
 
   Map<String, dynamic> asMap() => {
         'name': this.name,
@@ -21,15 +20,16 @@ class TeaProduction {
 
   TeaProduction(this.name, this.nominalWeightGrams, this.producer, this.productionYear, [this.id]);
 
-  bool operator==(other) => other is TeaProduction
-      && other.name == name
-      && other.nominalWeightGrams == nominalWeightGrams
-      && other.producer == producer
-      && other.productionYear == productionYear;
+  bool operator ==(other) =>
+      other is TeaProduction &&
+      other.name == name &&
+      other.nominalWeightGrams == nominalWeightGrams &&
+      other.producer == producer &&
+      other.productionYear == productionYear;
 
-  static TeaProduction fromDocumentSnapshot (DocumentSnapshot productionDocument,
-      TeaProducerCollectionModel producers) {
+  static TeaProduction fromDocumentSnapshot(DocumentSnapshot productionDocument, TeaProducerCollectionModel producers) {
     final data = productionDocument.data;
-    return TeaProduction(data['name'], data['nominal_weight_grams'], producers.getById(data['producer']), data['production_year'], productionDocument.documentID);
+    return TeaProduction(data['name'], data['nominal_weight_grams'], producers.getById(data['producer']),
+        data['production_year'], productionDocument.documentID);
   }
 }

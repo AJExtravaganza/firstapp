@@ -26,9 +26,8 @@ class Tea {
       "${this.production.producer.shortName} ${this.production.productionYear} ${this.production.name}";
 
   Map<String, dynamic> asMap() {
-    final brewProfileList = this.brewProfiles != null
-        ? this.brewProfiles.map((brewProfile) => brewProfile.asMap()).toList()
-        : [];
+    final brewProfileList =
+        this.brewProfiles != null ? this.brewProfiles.map((brewProfile) => brewProfile.asMap()).toList() : [];
     return {
       'quantity': this.quantity,
       'production': production.id,
@@ -44,7 +43,8 @@ class Tea {
 
   static Tea fromDocumentSnapshot(DocumentSnapshot producerDocument, TeaProductionCollectionModel productions) {
     final data = producerDocument.data;
-    List<BrewProfile> brewProfiles = List.from(data['brew_profiles'].map((json) => BrewProfile.fromJson(json))); //TODO: Implement
+    List<BrewProfile> brewProfiles =
+    List.from(data['brew_profiles'].map((json) => BrewProfile.fromJson(json))); //TODO: Implement
     return Tea(data['quantity'], productions.getById(data['production']), brewProfiles);
   }
 

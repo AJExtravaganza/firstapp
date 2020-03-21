@@ -15,7 +15,6 @@ class StashView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     Widget stashListWidget(TeaCollectionModel teas) => Expanded(
           child: ListView.builder(
               itemCount: teas.length,
@@ -24,10 +23,7 @@ class StashView extends StatelessWidget {
         );
 
     return Consumer<TeaCollectionModel>(
-        builder: (context, teas, child) => Column(
-            children: [
-              stashListWidget(teas),
-              getAddTeaListItem(context)]));
+        builder: (context, teas, child) => Column(children: [stashListWidget(teas), getAddTeaListItem(context)]));
   }
 }
 
@@ -40,8 +36,7 @@ StatelessWidget getAddTeaListItem(BuildContext context) {
               child: RaisedButton(
         child: Text("Add New Tea"),
         onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => AddNewTeaToStash()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => AddNewTeaToStash()));
         },
       )))
     ],
@@ -61,29 +56,29 @@ class StashListItem extends StatelessWidget {
       child: ListTile(
         leading: FlutterLogo(size: 72.0),
         title: Text(tea.asString()),
-        subtitle:
-            Text('${tea.quantity}x ${tea.production.nominalWeightGrams}g' + '\n'
+        subtitle: Text('${tea.quantity}x ${tea.production.nominalWeightGrams}g' +
+            '\n'
                 'Default Profile: ${tea.defaultBrewProfile.name}'),
-        trailing: this.suppressTileMenu ? Container(width: 1, height: 1,) : PopupMenuButton<StashTileInteraction>(
-          onSelected: (StashTileInteraction result) {
-            if (result == StashTileInteraction.brewProfiles) {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => BrewProfilesScreen(tea)));
-            } else {
-              throw Exception(
-                  'You managed to select an invalid StashTileInteraction.  Good job, guy.');
-            }
-          },
-          itemBuilder: (BuildContext context) =>
-              <PopupMenuEntry<StashTileInteraction>>[
-            const PopupMenuItem<StashTileInteraction>(
-              value: StashTileInteraction.brewProfiles,
-              child: Text('Brew Profiles'),
-            ),
-          ],
-        ),
+        trailing: this.suppressTileMenu
+            ? Container(
+                width: 1,
+                height: 1,
+              )
+            : PopupMenuButton<StashTileInteraction>(
+                onSelected: (StashTileInteraction result) {
+                  if (result == StashTileInteraction.brewProfiles) {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => BrewProfilesScreen(tea)));
+                  } else {
+                    throw Exception('You managed to select an invalid StashTileInteraction.  Good job, guy.');
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<StashTileInteraction>>[
+                  const PopupMenuItem<StashTileInteraction>(
+                    value: StashTileInteraction.brewProfiles,
+                    child: Text('Brew Profiles'),
+                  ),
+                ],
+              ),
         isThreeLine: true,
         onTap: () {
           Provider.of<TeaSessionController>(context, listen: false).currentTea = tea;
@@ -97,5 +92,7 @@ class StashListItem extends StatelessWidget {
     );
   }
 
-  StashListItem(this.tea, {this.suppressTileMenu = false}) {this._popAfterSelection = this.suppressTileMenu;}
+  StashListItem(this.tea, {this.suppressTileMenu = false}) {
+    this._popAfterSelection = this.suppressTileMenu;
+  }
 }

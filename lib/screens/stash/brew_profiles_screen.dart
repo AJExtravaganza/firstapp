@@ -11,7 +11,7 @@ class BrewProfilesScreen extends StatelessWidget {
   final Tea _tea;
   final bool suppressTileMenu;
 
-  BrewProfilesScreen(this._tea, {this.suppressTileMenu=false});
+  BrewProfilesScreen(this._tea, {this.suppressTileMenu = false});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class BrewProfilesScreen extends StatelessWidget {
     );
   }
 
-  Widget getBrewProfilesListView(Tea _tea, BuildContext context, {suppressTileMenu=false}) {
+  Widget getBrewProfilesListView(Tea _tea, BuildContext context, {suppressTileMenu = false}) {
     final tea = Provider.of<TeaCollectionModel>(context).getUpdated(_tea);
     if (tea.brewProfiles.length == 0) {
       return getAddBrewProfileWidget(context, tea);
@@ -49,10 +49,7 @@ class BrewProfilesScreen extends StatelessWidget {
                 child: RaisedButton(
           child: Text("Add New Brew Profile"),
           onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => AddNewBrewProfile(tea)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => AddNewBrewProfile(tea)));
           },
         )))
       ],
@@ -67,7 +64,7 @@ class BrewProfilesListItem extends StatelessWidget {
   final Tea _tea;
   final bool suppressTileMenu;
 
-  BrewProfilesListItem(this._brewProfile, this._tea, {this.suppressTileMenu=false});
+  BrewProfilesListItem(this._brewProfile, this._tea, {this.suppressTileMenu = false});
 
   String steepTimeAsHMS(int seconds) {
     if (seconds < 60) {
@@ -92,36 +89,34 @@ class BrewProfilesListItem extends StatelessWidget {
         subtitle: Text('1:${_brewProfile.nominalRatio}, ${_brewProfile.brewTemperatureCelsius}°C' +
             '\n'
                 '${_brewProfile.steepTimings.map(steepTimeAsHMS).join('/')}'),
-        trailing: this.suppressTileMenu ? Container(width: 1, height: 1) : PopupMenuButton<BrewProfilesTileInteraction>(
-          onSelected: (BrewProfilesTileInteraction result) {
-            if (result == BrewProfilesTileInteraction.edit) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => EditBrewProfile(_tea, _brewProfile)));
-            } else if (result == BrewProfilesTileInteraction.delete) {
+        trailing: this.suppressTileMenu
+            ? Container(width: 1, height: 1)
+            : PopupMenuButton<BrewProfilesTileInteraction>(
+                onSelected: (BrewProfilesTileInteraction result) {
+                  if (result == BrewProfilesTileInteraction.edit) {
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (context) => EditBrewProfile(_tea, _brewProfile)));
+                  } else if (result == BrewProfilesTileInteraction.delete) {
 //              delete();
-            } else {
-              throw Exception(
-                  'You managed to select an invalid StashTileInteraction.  Good job, guy.');
-            }
-          },
-          itemBuilder: (BuildContext context) =>
-              <PopupMenuEntry<BrewProfilesTileInteraction>>[
-            const PopupMenuItem<BrewProfilesTileInteraction>(
-              value: BrewProfilesTileInteraction.edit,
-              child: Text('Edit'),
-            ),
-            const PopupMenuItem<BrewProfilesTileInteraction>(
-              value: BrewProfilesTileInteraction.delete,
-              child: Text('Delete'),
-            ),
-          ],
-        ),
+                  } else {
+                    throw Exception('You managed to select an invalid StashTileInteraction.  Good job, guy.');
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<BrewProfilesTileInteraction>>[
+                  const PopupMenuItem<BrewProfilesTileInteraction>(
+                    value: BrewProfilesTileInteraction.edit,
+                    child: Text('Edit'),
+                  ),
+                  const PopupMenuItem<BrewProfilesTileInteraction>(
+                    value: BrewProfilesTileInteraction.delete,
+                    child: Text('Delete'),
+                  ),
+                ],
+              ),
         isThreeLine: true,
         onTap: () {
-        Provider.of<TeaSessionController>(context, listen: false).brewProfile = _brewProfile;
-        Navigator.pop(context);
+          Provider.of<TeaSessionController>(context, listen: false).brewProfile = _brewProfile;
+          Navigator.pop(context);
         },
       ),
     );

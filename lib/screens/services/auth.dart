@@ -3,6 +3,7 @@ import 'package:firstapp/models/user.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
   Future<FirebaseUser> get currentUser {
     return _auth.currentUser();
   }
@@ -18,12 +19,12 @@ class AuthService {
       print('Signed in anonymously as user "${result.user.uid}"');
 
       return user;
-    } on RangeError catch (err){
+    } on RangeError catch (err) {
       print('Could not find existing profile for user.\nCreating new profile...');
       await initialiseNewUser();
       print('Success.');
-    }catch (e) {
-      throw AuthException(null, "Anonymous authentication failed: ${e.toString()}");
+    } catch (err) {
+      throw AuthException(null, "Anonymous authentication failed: ${err.toString()}");
     }
 
     return currentUser;

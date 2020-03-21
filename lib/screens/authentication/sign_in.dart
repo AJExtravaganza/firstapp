@@ -1,8 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firstapp/screens/authentication/authentication_wrapper.dart';
-import 'package:firstapp/screens/services/auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class SignIn extends StatefulWidget {
   @override
@@ -10,7 +7,6 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
-
 //  final AuthService _authService = AuthService();
 
   @override
@@ -23,19 +19,20 @@ class _SignInState extends State<SignIn> {
         title: Text('Sign in to TeaVault'),
       ),
       body: Container(
-        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
-        child: RaisedButton(
-          child: Text('Sign In Anonymously'),
-          onPressed: () async {
-            try {
-              print('Attempting anonymous sign-in');
-              context.findAncestorStateOfType<AuthenticationWrapperState>().signInAnonymously().then((_) {print('Anonymous sign-in successful');});
-            } catch(err) {
-              print(err);
-            }
-          },
-        )
-      ),
+          padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
+          child: RaisedButton(
+            child: Text('Sign In Anonymously'),
+            onPressed: () async {
+              try {
+                print('Attempting anonymous sign-in');
+                context.findAncestorStateOfType<AuthenticationWrapperState>().signInAnonymously().then((_) {
+                  print('Anonymous sign-in successful');
+                });
+              } catch (err) {
+                print(err);
+              }
+            },
+          )),
     );
   }
 }

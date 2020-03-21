@@ -1,10 +1,9 @@
 import 'dart:collection';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firstapp/models/user.dart';
 import 'package:firstapp/models/brew_profile.dart';
 import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/models/tea_production_collection.dart';
+import 'package:firstapp/models/user.dart';
 import 'package:flutter/cupertino.dart';
 
 class TeaCollectionModel extends ChangeNotifier {
@@ -20,8 +19,7 @@ class TeaCollectionModel extends ChangeNotifier {
 
   int get length => _items.length;
 
-  Tea getUpdated(Tea tea) =>
-      (tea != null && _items.containsKey(tea.id)) ? _items[tea.id] : null;
+  Tea getUpdated(Tea tea) => (tea != null && _items.containsKey(tea.id)) ? _items[tea.id] : null;
 
   Future<void> put(Tea tea) async {
     if (_items.containsKey(tea.id)) {
@@ -37,12 +35,10 @@ class TeaCollectionModel extends ChangeNotifier {
   Future<void> putBrewProfile(BrewProfile brewProfile, Tea tea) async {
     if (_items[tea.id]
             .brewProfiles
-            .where((existingBrewProfile) =>
-                existingBrewProfile.name == brewProfile.name)
+            .where((existingBrewProfile) => existingBrewProfile.name == brewProfile.name)
             .length >
         0) {
-      throw Exception(
-          'A brew profile named ${brewProfile.name} already exists for this tea');
+      throw Exception('A brew profile named ${brewProfile.name} already exists for this tea');
     }
 
     _items[tea.id].brewProfiles.add(brewProfile);
@@ -54,8 +50,7 @@ class TeaCollectionModel extends ChangeNotifier {
     try {
       _items[tea.id].brewProfiles.remove(_items[tea.id]
           .brewProfiles
-          .singleWhere((existingBrewProfile) =>
-              existingBrewProfile.name == brewProfile.name));
+          .singleWhere((existingBrewProfile) => existingBrewProfile.name == brewProfile.name));
     } catch (err) {
       //ignore if not present
     }
@@ -63,8 +58,7 @@ class TeaCollectionModel extends ChangeNotifier {
   }
 
   Future<void> push(Tea tea) async {
-    final userSnapshot =
-        await fetchUser(); //TODO start using static state from enclosing auth class
+    final userSnapshot = await fetchUser(); //TODO start using static state from enclosing auth class
     final teasCollection = await userSnapshot.reference.collection(dbCollectionName);
     await teasCollection.document(tea.id).setData(tea.asMap());
     notifyListeners();
@@ -77,8 +71,7 @@ class TeaCollectionModel extends ChangeNotifier {
     updateStream.listen((querySnapshot) {
       querySnapshot.documentChanges.forEach((documentChange) {
         final document = documentChange.document;
-        this._items[document.documentID] =
-            Tea.fromDocumentSnapshot(document, productions);
+        this._items[document.documentID] = Tea.fromDocumentSnapshot(document, productions);
         print('Got change to Tea ${document.documentID}');
         notifyListeners();
       });

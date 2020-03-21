@@ -1,10 +1,8 @@
-
 import 'package:firstapp/screens/teasessions/popup_content.dart';
 import 'package:firstapp/screens/teasessions/popup_layout.dart';
 import 'package:flutter/material.dart';
 
-showPopup(BuildContext context, Widget widget, String title,
-    {BuildContext popupContext}) {
+showPopup(BuildContext context, Widget widget, String title, {BuildContext popupContext}) {
   Navigator.push(
     context,
     PopupLayout(

@@ -22,13 +22,11 @@ class TeaProducerCollectionModel extends ChangeNotifier {
   }
 
   TeaProducer getById(String id) => _items[id];
+
   TeaProducer getByName(String name) => _items.values.singleWhere((producer) => producer.name == name);
 
-
   Future<DocumentReference> put(TeaProducer producer) async {
-    final newDocumentReference = await Firestore.instance
-        .collection(dbCollectionName)
-        .add(producer.asMap());
+    final newDocumentReference = await Firestore.instance.collection(dbCollectionName).add(producer.asMap());
     producer.id = newDocumentReference.documentID;
     _items[newDocumentReference.documentID] = producer;
     return newDocumentReference;

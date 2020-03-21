@@ -5,8 +5,7 @@ class BrewingVessel {
 
   BrewingVessel(this.volumeMilliliters, this.material, this.form);
 
-  String asString() =>
-      '${this.volumeMilliliters}ml ${this.material} ${this.form.asString}';
+  String asString() => '${this.volumeMilliliters}ml ${this.material} ${this.form.asString}';
 }
 
 enum VesselForm { gaiwan, shuiping, xishi }

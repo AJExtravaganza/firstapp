@@ -13,8 +13,7 @@ class PopupLayout extends ModalRoute {
   String get barrierLabel => null;
 
   @override
-  Widget buildPage(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation) {
+  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
     return GestureDetector(
       onTap: () {
         SystemChannels.textInput.invokeMethod('TextInput.hide');
@@ -31,18 +30,14 @@ class PopupLayout extends ModalRoute {
 
   _buildOverlayContent(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(
-          bottom: this.bottom,
-          left: this.left,
-          right: this.right,
-          top: this.top),
+      margin: EdgeInsets.only(bottom: this.bottom, left: this.left, right: this.right, top: this.top),
       child: this.child,
     );
   }
 
   @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation, Widget child) {
+  Widget buildTransitions(
+      BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) {
     return FadeTransition(
       opacity: animation,
       child: ScaleTransition(
@@ -69,11 +64,5 @@ class PopupLayout extends ModalRoute {
   final Widget child;
 
   PopupLayout(
-      {Key key,
-      this.bgColor,
-      @required this.child,
-      this.top = 10,
-      this.bottom = 20,
-      this.left = 20,
-      this.right = 20});
+      {Key key, this.bgColor, @required this.child, this.top = 10, this.bottom = 20, this.left = 20, this.right = 20});
 }

@@ -45,8 +45,7 @@ class _StashAddNewTeaFormState extends State<StashAddNewTeaForm> {
     //  Implements TextFormField select-all-on-focus
     _quantityFieldFocusNode.addListener(() {
       if (_quantityFieldFocusNode.hasFocus) {
-        _quantityFieldController.selection =
-            TextSelection(baseOffset: 0, extentOffset: _quantityInitialValue.length);
+        _quantityFieldController.selection = TextSelection(baseOffset: 0, extentOffset: _quantityInitialValue.length);
       }
     });
   }
@@ -57,31 +56,24 @@ class _StashAddNewTeaFormState extends State<StashAddNewTeaForm> {
     super.dispose();
   }
 
-  List<DropdownMenuItem<TeaProducer>> getProducerDropdownList(
-      BuildContext context) {
-    return Provider
-        .of<TeaProducerCollectionModel>(context)
+  List<DropdownMenuItem<TeaProducer>> getProducerDropdownList(BuildContext context) {
+    return Provider.of<TeaProducerCollectionModel>(context)
         .items
-        .map((producer) =>
-        DropdownMenuItem(
-          child: Text(producer.asString()),
-          value: producer,
-        ))
+        .map((producer) => DropdownMenuItem(
+              child: Text(producer.asString()),
+              value: producer,
+            ))
         .toList();
   }
 
-  List<DropdownMenuItem<TeaProduction>> getProductionDropdownList(
-      BuildContext context) {
-    return Provider
-        .of<TeaProductionCollectionModel>(context)
+  List<DropdownMenuItem<TeaProduction>> getProductionDropdownList(BuildContext context) {
+    return Provider.of<TeaProductionCollectionModel>(context)
         .items
-        .map((production) =>
-        DropdownMenuItem(
-          child: Text(production.asString()),
-          value: production,
-        ))
-        .where((dropdownListItem) =>
-    (_producer == null || dropdownListItem.value.producer == _producer))
+        .map((production) => DropdownMenuItem(
+              child: Text(production.asString()),
+              value: production,
+            ))
+        .where((dropdownListItem) => (_producer == null || dropdownListItem.value.producer == _producer))
         .toList();
   }
 
@@ -116,8 +108,7 @@ class _StashAddNewTeaFormState extends State<StashAddNewTeaForm> {
             },
             isExpanded: true),
         TextFormField(
-            decoration: InputDecoration(
-                labelText: 'Enter Quantity', hintText: 'Quantity'),
+            decoration: InputDecoration(labelText: 'Enter Quantity', hintText: 'Quantity'),
             validator: (value) {
               if (int.tryParse(value) == null) {
                 return 'Please enter a valid quantity';
@@ -137,8 +128,7 @@ class _StashAddNewTeaFormState extends State<StashAddNewTeaForm> {
             textColor: Colors.white,
             child: new Text('Add to Stash'),
             onPressed: () async {
-              await addNewTeaFormSubmit(
-                  Provider.of<TeaCollectionModel>(context, listen: false));
+              await addNewTeaFormSubmit(Provider.of<TeaCollectionModel>(context, listen: false));
             })
       ]),
     );
@@ -148,8 +138,7 @@ class _StashAddNewTeaFormState extends State<StashAddNewTeaForm> {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       FocusScope.of(context).unfocus(); //Dismiss the keyboard
-      Scaffold.of(context).showSnackBar(
-          SnackBar(content: Text('Adding new tea to stash...')));
+      Scaffold.of(context).showSnackBar(SnackBar(content: Text('Adding new tea to stash...')));
       await teaCollection.put(Tea(_quantity, _production));
       Navigator.pop(context);
     }

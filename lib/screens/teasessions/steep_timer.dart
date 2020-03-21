@@ -8,11 +8,7 @@ class SteepTimer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: <Widget>[
-        TimerDisplayRow(),
-        SteepCountRow(),
-        SteepTimerControls()
-      ],
+      children: <Widget>[TimerDisplayRow(), SteepCountRow(), SteepTimerControls()],
     );
   }
 }
@@ -73,16 +69,14 @@ class TimerDisplay extends StatelessWidget {
     final _context = context;
     final teaSessionController = Provider.of<TeaSessionController>(context, listen: false);
 
-    String currentValueStr =
-        teaSessionController.timeRemaining.toString().split('.').first.substring(2);
+    String currentValueStr = teaSessionController.timeRemaining.toString().split('.').first.substring(2);
 
     Text timerTextContent;
     if (teaSessionController.timeRemaining.inSeconds == 0 && !teaSessionController.finished) {
       if (teaSessionController.currentSteep == 0) {
         timerTextContent = Text(
           'FLASH',
-          style: TextStyle(
-              height: 1.4, fontSize: 60, fontFamily: 'RobotoMonoCondensed'),
+          style: TextStyle(height: 1.4, fontSize: 60, fontFamily: 'RobotoMonoCondensed'),
         );
       } else {
         timerTextContent = Text(
@@ -104,11 +98,9 @@ class TimerDisplay extends StatelessWidget {
 
         showModalBottomSheet(
             context: context,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
             backgroundColor: Colors.white,
-            builder: (context) =>
-                TimerPickerSheetContents(_context, teaSessionController));
+            builder: (context) => TimerPickerSheetContents(_context, teaSessionController));
       },
     );
   }
@@ -121,8 +113,7 @@ class TimerPickerSheetContents extends StatefulWidget {
   TimerPickerSheetContents(this._parentContext, this.teaSessionController);
 
   @override
-  State<StatefulWidget> createState() =>
-      TimerPickerSheetContentsState(this._parentContext, this.teaSessionController);
+  State<StatefulWidget> createState() => TimerPickerSheetContentsState(this._parentContext, this.teaSessionController);
 }
 
 class TimerPickerSheetContentsState extends State<TimerPickerSheetContents> {
@@ -158,13 +149,12 @@ class TimerPickerSheetContentsState extends State<TimerPickerSheetContents> {
                   child: teaSessionController.currentTea != null
                       ? IconButton(
                           onPressed: () async {
-                            this.teaSessionController.timeRemaining =
-                                Duration(seconds: this._selectedValueInSeconds);
+                            this.teaSessionController.timeRemaining = Duration(seconds: this._selectedValueInSeconds);
                             Navigator.pop(context);
-                            Scaffold.of(_parentContext).showSnackBar(SnackBar(
-                                content:
-                                    Text("Saving change to brew profile...")));
-                            await teaSessionController.saveSteepTimeToBrewProfile(teaSessionController.currentSteep, this._selectedValueInSeconds);
+                            Scaffold.of(_parentContext)
+                                .showSnackBar(SnackBar(content: Text("Saving change to brew profile...")));
+                            await teaSessionController.saveSteepTimeToBrewProfile(
+                                teaSessionController.currentSteep, this._selectedValueInSeconds);
                           },
                           icon: Icon(Icons.save_alt),
                           iconSize: 48,
@@ -179,8 +169,7 @@ class TimerPickerSheetContentsState extends State<TimerPickerSheetContents> {
                   flex: buttonFlex,
                   child: IconButton(
                     onPressed: () {
-                      this.teaSessionController.timeRemaining =
-                          Duration(seconds: this._selectedValueInSeconds);
+                      this.teaSessionController.timeRemaining = Duration(seconds: this._selectedValueInSeconds);
                       Navigator.pop(context);
                     },
                     icon: Icon(Icons.check_box),
@@ -197,12 +186,10 @@ class BrewTimerPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final parentWidgetState =
-        context.findAncestorStateOfType<TimerPickerSheetContentsState>();
+    final parentWidgetState = context.findAncestorStateOfType<TimerPickerSheetContentsState>();
     return CupertinoTimerPicker(
         mode: CupertinoTimerPickerMode.ms,
-        initialTimerDuration:
-            Duration(seconds: parentWidgetState._selectedValueInSeconds),
+        initialTimerDuration: Duration(seconds: parentWidgetState._selectedValueInSeconds),
         onTimerDurationChanged: (Duration newDuration) {
           parentWidgetState._selectedValueInSeconds = newDuration.inSeconds;
         });
@@ -230,9 +217,7 @@ class TimerMuteIconButton extends StatelessWidget {
         teaSessionController.muted = !teaSessionController.muted;
       },
       alignment: Alignment.center,
-      icon: Icon(teaSessionController.muted
-          ? Icons.notifications_off
-          : Icons.notifications_active),
+      icon: Icon(teaSessionController.muted ? Icons.notifications_off : Icons.notifications_active),
     );
   }
 }
@@ -325,13 +310,10 @@ class NextSteepButton extends StatelessWidget {
           final steepTimings = teaSessionController.brewProfile.steepTimings;
           if (teaSessionController.steepsRemainingInProfile > 1) {
             teaSessionController.incrementSteep();
-
           } else if (steepTimings[teaSessionController.currentSteep] != 0 || teaSessionController.currentSteep == 0) {
             steepTimings.add(0);
             teaSessionController.incrementSteep();
           }
-
-
         },
         icon: Icon(Icons.arrow_forward_ios));
   }

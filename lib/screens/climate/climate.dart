@@ -6,7 +6,6 @@
 /// drawing points with the "includePoints" option, but those points will share
 /// the same color as the line.
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:firstapp/main.dart';
 import 'package:flutter/material.dart';
 
 class DateTimeComboLinePointChart extends StatelessWidget {
@@ -24,7 +23,6 @@ class DateTimeComboLinePointChart extends StatelessWidget {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return new charts.TimeSeriesChart(
@@ -38,7 +36,7 @@ class DateTimeComboLinePointChart extends StatelessWidget {
       // Custom renderer configuration for the point series.
       customSeriesRenderers: [
         new charts.PointRendererConfig(
-          // ID used to link series to this renderer.
+            // ID used to link series to this renderer.
             customRendererId: 'customPoint')
       ],
       // Optionally pass in a [DateTimeFactory] used by the chart. The factory
