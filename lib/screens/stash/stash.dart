@@ -1,9 +1,9 @@
 import 'package:firstapp/main.dart';
-import 'package:firstapp/models/active_tea_session.dart';
 import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/models/tea_collection.dart';
 import 'package:firstapp/screens/stash/add_new_tea_to_stash_form.dart';
 import 'package:firstapp/screens/stash/brew_profiles_screen.dart';
+import 'package:firstapp/screens/teasessions/tea_session_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -53,7 +53,7 @@ enum StashTileInteraction { brewProfiles }
 class StashListItem extends StatelessWidget {
   final Tea tea;
   final bool suppressTileMenu;
-  bool popAfterSelection;
+  bool _popAfterSelection;
 
   @override
   Widget build(BuildContext context) {
@@ -86,8 +86,8 @@ class StashListItem extends StatelessWidget {
         ),
         isThreeLine: true,
         onTap: () {
-          Provider.of<ActiveTeaSessionModel>(context, listen: false).currentTea = tea;
-          if (this.popAfterSelection) {
+          Provider.of<TeaSessionController>(context, listen: false).currentTea = tea;
+          if (this._popAfterSelection) {
             Navigator.pop(context);
           } else {
             context.findAncestorStateOfType<HomeViewState>().switchToTab(HomeViewState.SESSIONTABIDX);
@@ -97,5 +97,5 @@ class StashListItem extends StatelessWidget {
     );
   }
 
-  StashListItem(this.tea, {this.suppressTileMenu = false}) {this.popAfterSelection = this.suppressTileMenu;}
+  StashListItem(this.tea, {this.suppressTileMenu = false}) {this._popAfterSelection = this.suppressTileMenu;}
 }

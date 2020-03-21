@@ -1,5 +1,4 @@
-import 'package:firstapp/models/active_tea_session.dart';
-import 'package:firstapp/screens/teasessions/session_controller.dart';
+import 'package:firstapp/screens/teasessions/tea_session_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -25,7 +24,7 @@ class SteepCountRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ActiveTeaSessionModel>(
+    return Consumer<TeaSessionController>(
         builder: (context, activeTeaSession, child) => Row(
               children: <Widget>[
                 Expanded(
@@ -43,7 +42,7 @@ class SteepCountRow extends StatelessWidget {
 class TimerDisplayRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<ActiveTeaSessionModel>(
+    return Consumer<TeaSessionController>(
         builder: (context, activeTeaSession, child) => Row(
               children: <Widget>[
                 Expanded(
@@ -72,14 +71,14 @@ class TimerDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _context = context;
-    final timerState =
-        context.findAncestorStateOfType<SessionControllerState>();
+    final teaSessionController = Provider.of<TeaSessionController>(context, listen: false);
+
     String currentValueStr =
-        timerState.timeRemaining.toString().split('.').first.substring(2);
+        teaSessionController.timeRemaining.toString().split('.').first.substring(2);
 
     Text timerTextContent;
-    if (timerState.timeRemaining.inSeconds == 0 && !timerState.finished) {
-      if (timerState.currentSteep == 0) {
+    if (teaSessionController.timeRemaining.inSeconds == 0 && !teaSessionController.finished) {
+      if (teaSessionController.currentSteep == 0) {
         timerTextContent = Text(
           'FLASH',
           style: TextStyle(
@@ -101,7 +100,7 @@ class TimerDisplay extends StatelessWidget {
     return FlatButton(
       child: timerTextContent,
       onPressed: () {
-        timerState.stopBrewTimer();
+        teaSessionController.stopBrewTimer();
 
         showModalBottomSheet(
             context: context,
@@ -109,33 +108,33 @@ class TimerDisplay extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10.0)),
             backgroundColor: Colors.white,
             builder: (context) =>
-                TimerPickerSheetContents(_context, timerState));
+                TimerPickerSheetContents(_context, teaSessionController));
       },
     );
   }
 }
 
 class TimerPickerSheetContents extends StatefulWidget {
-  final SessionControllerState _timerState;
+  final TeaSessionController teaSessionController;
   final BuildContext _parentContext;
 
-  TimerPickerSheetContents(this._parentContext, this._timerState);
+  TimerPickerSheetContents(this._parentContext, this.teaSessionController);
 
   @override
   State<StatefulWidget> createState() =>
-      TimerPickerSheetContentsState(this._parentContext, this._timerState);
+      TimerPickerSheetContentsState(this._parentContext, this.teaSessionController);
 }
 
 class TimerPickerSheetContentsState extends State<TimerPickerSheetContents> {
-  final SessionControllerState _timerState;
+  final TeaSessionController teaSessionController;
   final BuildContext _parentContext;
   int _selectedValueInSeconds;
 
-  TimerPickerSheetContentsState(this._parentContext, this._timerState);
+  TimerPickerSheetContentsState(this._parentContext, this.teaSessionController);
 
   @override
   Widget build(BuildContext context) {
-    _selectedValueInSeconds = _timerState.activeTeaSession.brewProfile.steepTimings[_timerState.currentSteep];
+    _selectedValueInSeconds = teaSessionController.brewProfile.steepTimings[teaSessionController.currentSteep];
     ;
     final orientation = MediaQuery.of(context).orientation;
     final portrait = Orientation.portrait;
@@ -156,16 +155,16 @@ class TimerPickerSheetContentsState extends State<TimerPickerSheetContents> {
               children: <Widget>[
                 Expanded(
                   flex: buttonFlex,
-                  child: _timerState.activeTeaSession.currentTea != null
+                  child: teaSessionController.currentTea != null
                       ? IconButton(
                           onPressed: () async {
-                            this._timerState.timeRemaining =
+                            this.teaSessionController.timeRemaining =
                                 Duration(seconds: this._selectedValueInSeconds);
                             Navigator.pop(context);
                             Scaffold.of(_parentContext).showSnackBar(SnackBar(
                                 content:
                                     Text("Saving change to brew profile...")));
-                            await _timerState.saveSteepTimeToBrewProfile();
+                            await teaSessionController.saveSteepTimeToBrewProfile(teaSessionController.currentSteep, this._selectedValueInSeconds);
                           },
                           icon: Icon(Icons.save_alt),
                           iconSize: 48,
@@ -180,7 +179,7 @@ class TimerPickerSheetContentsState extends State<TimerPickerSheetContents> {
                   flex: buttonFlex,
                   child: IconButton(
                     onPressed: () {
-                      this._timerState.timeRemaining =
+                      this.teaSessionController.timeRemaining =
                           Duration(seconds: this._selectedValueInSeconds);
                       Navigator.pop(context);
                     },
@@ -224,15 +223,14 @@ class TimerIconButton extends StatelessWidget {
 class TimerMuteIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final timerState =
-        context.findAncestorStateOfType<SessionControllerState>();
+    final teaSessionController = Provider.of<TeaSessionController>(context, listen: false);
 
     return IconButton(
       onPressed: () {
-        timerState.muted = !timerState.muted;
+        teaSessionController.muted = !teaSessionController.muted;
       },
       alignment: Alignment.center,
-      icon: Icon(timerState.muted
+      icon: Icon(teaSessionController.muted
           ? Icons.notifications_off
           : Icons.notifications_active),
     );
@@ -280,10 +278,10 @@ class SteepTimerControls extends StatelessWidget {
 class PreviousSteepButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final timerState =
-        context.findAncestorStateOfType<SessionControllerState>();
+    final teaSessionController = Provider.of<TeaSessionController>(context);
+
     return IconButton(
-      onPressed: timerState.decrementSteep,
+      onPressed: teaSessionController.decrementSteep,
       icon: Icon(Icons.arrow_back_ios),
       alignment: Alignment.center,
     );
@@ -293,18 +291,17 @@ class PreviousSteepButton extends StatelessWidget {
 class BrewButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final timerState =
-        context.findAncestorStateOfType<SessionControllerState>();
+    final teaSessionController = Provider.of<TeaSessionController>(context, listen: false);
 
-    if (timerState.active) {
+    if (teaSessionController.active) {
       return IconButton(
-        onPressed: timerState.stopBrewTimer,
+        onPressed: teaSessionController.stopBrewTimer,
         icon: Icon(Icons.pause),
         alignment: Alignment.center,
       );
-    } else if (timerState.timeRemaining.inSeconds > 0) {
+    } else if (teaSessionController.timeRemaining.inSeconds > 0) {
       return IconButton(
-        onPressed: timerState.startBrewTimer,
+        onPressed: teaSessionController.startBrewTimer,
         icon: Icon(Icons.play_arrow),
         alignment: Alignment.center,
       );
@@ -322,17 +319,16 @@ class BrewButton extends StatelessWidget {
 class NextSteepButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final timerState =
-        context.findAncestorStateOfType<SessionControllerState>();
+    final teaSessionController = Provider.of<TeaSessionController>(context, listen: false);
     return IconButton(
         onPressed: () {
-          final steepTimings = timerState.activeTeaSession.brewProfile.steepTimings;
-          if (timerState.steepsRemainingInProfile > 1) {
-            timerState.incrementSteep();
+          final steepTimings = teaSessionController.brewProfile.steepTimings;
+          if (teaSessionController.steepsRemainingInProfile > 1) {
+            teaSessionController.incrementSteep();
 
-          } else if (steepTimings[timerState.currentSteep] != 0 || timerState.currentSteep == 0) {
+          } else if (steepTimings[teaSessionController.currentSteep] != 0 || teaSessionController.currentSteep == 0) {
             steepTimings.add(0);
-            timerState.incrementSteep();
+            teaSessionController.incrementSteep();
           }
 
 

@@ -4,7 +4,6 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firstapp/db.dart';
-import 'package:firstapp/models/active_tea_session.dart';
 import 'package:firstapp/models/brewing_vessel.dart';
 import 'package:firstapp/models/tea_collection.dart';
 import 'package:firstapp/models/tea_producer.dart';
@@ -15,6 +14,7 @@ import 'package:firstapp/models/teapot_collection.dart';
 import 'package:firstapp/screens/authentication/authentication_wrapper.dart';
 import 'package:firstapp/screens/stash/stash.dart';
 import 'package:firstapp/climate.dart' as climate;
+import 'package:firstapp/screens/teasessions/tea_session_controller.dart';
 import 'package:firstapp/screens/teasessions/teasessions.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -156,7 +156,7 @@ void main() {
   final teaProductionCollectionModel =
       TeaProductionCollectionModel(teaProducerCollectionModel);
   final teaCollectionModel = TeaCollectionModel(teaProductionCollectionModel);
-  final activeTeaSessionModel = ActiveTeaSessionModel(teaCollectionModel);
+  final teaSessionController = TeaSessionController(teaCollectionModel);
 
   runApp(MaterialApp(
       title: 'TeaVault',
@@ -173,8 +173,8 @@ void main() {
           ),
           ChangeNotifierProvider<TeapotCollectionModel>(
               create: (_) => TeapotCollectionModel(userTeapotCollection)),
-          ChangeNotifierProvider<ActiveTeaSessionModel>(
-              create: (_) => activeTeaSessionModel),
+          ChangeNotifierProvider<TeaSessionController>(
+              create: (_) => teaSessionController),
         ],
         child: MyApp(),
       ))));
@@ -183,6 +183,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    //Append any new TeaProducer/TeaProduction definitions to the database
     rebuildTeaData(context);
 
     return MaterialApp(

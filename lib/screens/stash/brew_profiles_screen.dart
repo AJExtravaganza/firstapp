@@ -1,8 +1,8 @@
-import 'package:firstapp/models/active_tea_session.dart';
 import 'package:firstapp/models/brew_profile.dart';
 import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/models/tea_collection.dart';
 import 'package:firstapp/screens/stash/brew_profile_form.dart';
+import 'package:firstapp/screens/teasessions/tea_session_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -73,12 +73,12 @@ class BrewProfilesListItem extends StatelessWidget {
     if (seconds < 60) {
       return '${seconds}s';
     } else if (seconds < 60 * 60) {
-      int minutes = (seconds / 60).toInt();
+      int minutes = seconds ~/ 60;
       seconds %= 60;
       return seconds > 0 ? '${minutes}m${seconds}s' : '${minutes}m';
     } else {
-      int hours = (seconds / 3600).toInt();
-      int minutes = (seconds % 3600 / 60).toInt();
+      int hours = seconds ~/ 3600;
+      int minutes = (seconds % 3600) ~/ 60;
       return minutes > 0 ? '${hours}h${minutes}m' : '${hours}h';
     }
   }
@@ -120,7 +120,7 @@ class BrewProfilesListItem extends StatelessWidget {
         ),
         isThreeLine: true,
         onTap: () {
-        Provider.of<ActiveTeaSessionModel>(context, listen: false).brewProfile = _brewProfile;
+        Provider.of<TeaSessionController>(context, listen: false).brewProfile = _brewProfile;
         Navigator.pop(context);
         },
       ),

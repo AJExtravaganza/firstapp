@@ -1,10 +1,9 @@
-import 'package:firstapp/models/active_tea_session.dart';
 import 'package:firstapp/models/brew_profile.dart';
 import 'package:firstapp/models/brewing_vessel.dart';
 import 'package:firstapp/models/tea.dart';
 import 'package:firstapp/screens/stash/brew_profiles_screen.dart';
 import 'package:firstapp/screens/stash/stash.dart';
-import 'package:firstapp/screens/teasessions/session_controller.dart';
+import 'package:firstapp/screens/teasessions/tea_session_controller.dart';
 import 'package:firstapp/screens/teasessions/steep_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -22,14 +21,20 @@ class SessionsView extends StatefulWidget {
 class _SessionsView extends State<SessionsView> {
   @override
   Widget build(BuildContext context) {
-    return SessionController(
-        child: (context) => OrientationBuilder(builder: (context, orientation) => orientation == Orientation.portrait
-            ? _portraitSessionsView(context)
-            : _landscapeSessionsView(context)
-        ));
+    return Consumer<TeaSessionController>(
+        builder: (context, teaSessionController, child) =>
+            OrientationBuilder(builder: (context, orientation) =>
+            orientation == Orientation.portrait
+                ? _portraitSessionsView(context)
+                : _landscapeSessionsView(context)
+            ));
   }
 
   Widget _portraitSessionsView(BuildContext context) {
+    final teaSessionController = Provider.of<TeaSessionController>(context, listen: false);
+    final bool displaySteepTimer = teaSessionController.currentTea != null
+        && teaSessionController.brewProfile != null;
+
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -50,12 +55,16 @@ class _SessionsView extends State<SessionsView> {
           ),
           Expanded(
             flex: 3,
-            child: SteepTimer(),
+            child: displaySteepTimer ? SteepTimer() : Container(),
           )
         ]);
   }
 
   Widget _landscapeSessionsView(BuildContext context) {
+    final teaSessionController = Provider.of<TeaSessionController>(context, listen: false);
+    final bool displaySteepTimer = teaSessionController.currentTea != null
+        && teaSessionController.brewProfile != null;
+
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -65,7 +74,7 @@ class _SessionsView extends State<SessionsView> {
           ),
           Expanded(
             flex: 3,
-            child: SteepTimer(),
+            child: displaySteepTimer ? SteepTimer() : Container(),
           )
         ]);
   }
@@ -74,7 +83,7 @@ class _SessionsView extends State<SessionsView> {
 class BrewProfileInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Tea currentTea = Provider.of<ActiveTeaSessionModel>(context).currentTea;
+    Tea currentTea = Provider.of<TeaSessionController>(context).currentTea;
     if (currentTea == null) {
       return Material(
           borderRadius: (BorderRadius.only(
@@ -141,7 +150,7 @@ void selectTeaFromStash(BuildContext context) {
         context,
         MaterialPageRoute(
             builder: (context) => BrewProfilesScreen(
-                  Provider.of<ActiveTeaSessionModel>(context).currentTea,
+                  Provider.of<TeaSessionController>(context).currentTea,
                   suppressTileMenu: true,
                 )));
   });
@@ -150,7 +159,7 @@ void selectTeaFromStash(BuildContext context) {
 class TeaNameRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Tea currentTea = Provider.of<ActiveTeaSessionModel>(context).currentTea;
+    Tea currentTea = Provider.of<TeaSessionController>(context).currentTea;
     return InkWell(
       onTap: () {
         selectTeaFromStash(context);
@@ -173,7 +182,7 @@ class TeaNameRow extends StatelessWidget {
 class BrewProfileNameRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<ActiveTeaSessionModel>(
+    return Consumer<TeaSessionController>(
         builder: (context, activeTeaSession, child) => Row(children: <Widget>[
               Expanded(
                   child: Center(
@@ -188,9 +197,9 @@ class BrewingParametersRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BrewingVessel currentBrewingVessel =
-        Provider.of<ActiveTeaSessionModel>(context).brewingVessel;
+        Provider.of<TeaSessionController>(context).brewingVessel;
     BrewProfile currentBrewProfile =
-        Provider.of<ActiveTeaSessionModel>(context).brewProfile;
+        Provider.of<TeaSessionController>(context).brewProfile;
     return Row(children: <Widget>[
       Expanded(
         flex: 10,
